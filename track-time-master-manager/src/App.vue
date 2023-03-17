@@ -34,9 +34,9 @@ const clickMenuOption = () => {
   <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow">
     <div class="container">
 
-      <router-link :to="{ name: 'home' }"><a class="btn" role="button">
+      <a class="btn" role="button">
         <h4><b>TtmM</b></h4>
-      </a></router-link>
+      </a>
 
       <div class="collapse navbar-collapse justify-content-end">
         <ul class="navbar-nav">
