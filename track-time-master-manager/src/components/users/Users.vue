@@ -17,6 +17,7 @@
     axios.get('users')
         .then((response) => {
           users.value = response.data.data
+          console.log(users.value)
         })
         .catch((error) => {
           console.log(error)
@@ -33,7 +34,8 @@
 </script>
 
 <template>
-  <h3 class="mt-5 mb-3">Team Members</h3>
+  <h3 class="mt-5 mb-3">Users</h3>
+  <button type="button" class="btn btn-dark">Novo User</button>
   <hr>
   <user-table
     :users="users"

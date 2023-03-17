@@ -18,7 +18,7 @@ const login = async () => {
   if (await userStore.login(credentials.value)) {
     toast.success('User ' + credentials.value.username + ' has entered the application.')
     emit('login')
-    router.back()
+    router.push({name: 'Vehicles'})
   }
   else {
     credentials.value.password = ''
@@ -28,50 +28,57 @@ const login = async () => {
 </script>
 
 <template>
-  <form
-    class="row g-3 needs-validation"
-    novalidate
-    @submit.prevent="login"
-  >
-    <h3 class="mt-5 mb-3">Login</h3>
-    <hr>
-    <div class="mb-3">
-      <div class="mb-3">
-        <label
-          for="inputUsername"
-          class="form-label"
-        >Username</label>
-        <input
-          type="text"
-          class="form-control"
-          id="inputUsername"
-          required
-          v-model="credentials.username"
-        >
+  <div class="container-fluid bg-dark text-white" style="padding-top: 5%; padding-bottom: 5%">
+    <div class="container">
+      <div class="d-flex justify-content-center">
+        <div>
+          <form
+            class="row g-3 needs-validation"
+            novalidate
+            @submit.prevent="login"
+          >
+          <h3 class="mt-5 mb-3">Login</h3>
+          <div class="mb-3">
+            <div class="mb-3">
+              <label
+                for="inputUsername"
+                class="form-label"
+              >Username</label>
+              <input
+                type="text"
+                class="form-control"
+                id="inputUsername"
+                required
+                v-model="credentials.username"
+              >
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="mb-3">
+              <label
+                for="inputPassword"
+                class="form-label"
+              >Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="inputPassword"
+                required
+                v-model="credentials.password"
+              >
+            </div>
+          </div>
+          <div class="mb-3 d-flex justify-content-center">
+            <button
+              type="button"
+              class="btn btn-primary px-5"
+              @click="login"
+            >Login</button>
+          </div>
+          </form>
+        </div>
       </div>
     </div>
-    <div class="mb-3">
-      <div class="mb-3">
-        <label
-          for="inputPassword"
-          class="form-label"
-        >Password</label>
-        <input
-          type="password"
-          class="form-control"
-          id="inputPassword"
-          required
-          v-model="credentials.password"
-        >
-      </div>
-    </div>
-    <div class="mb-3 d-flex justify-content-center">
-      <button
-        type="button"
-        class="btn btn-primary px-5"
-        @click="login"
-      >Login</button>
-    </div>
-  </form>
+  </div>
 </template>
 

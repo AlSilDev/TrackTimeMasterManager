@@ -7,27 +7,31 @@ const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
 
 const props = defineProps({
-  users: {
+  vehicles: {
     type: Array,
     default: () => [],
   },
   showId: {
     type: Boolean,
-    default: true,
+    default: false,
   },
-  showEmail: {
+  showModel: {
     type: Boolean,
     default: true,
   },
-  showAdmin: {
+  showClass: {
     type: Boolean,
     default: true,
   },
-  showGender: {
+  showLicensePlate: {
     type: Boolean,
     default: true,
   },
-  showPhoto: {
+  showYear: {
+    type: Boolean,
+    default: true,
+  },
+  showEngineCapacity: {
     type: Boolean,
     default: true,
   },
@@ -61,25 +65,31 @@ const canViewUserDetail = (userId) => {
   <table class="table">
     <thead>
       <tr>
-        <th v-if="showId" class="align-middle">#</th>
-        <th v-if="showPhoto" class="align-middle">Photo</th>
-        <th class="align-middle">Name</th>
-        <th v-if="showEmail" class="align-middle">Email</th>
-        <th v-if="showAdmin" class="align-middle">Tipo</th>
-        <th v-if="showGender" class="align-middle">Bloqueado</th>
-        <th v-if="showEditButton" class="align-middle"></th>
+        <th class="align-middle">#</th>
+        <th class="align-middle">Model</th>
+        <th class="align-middle">Category</th>
+        <th class="align-middle">Class</th>
+        <th class="align-middle">License Plate</th>
+        <th class="align-middle">Year</th>
+        <th class="align-middle">Engine Capacity</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="user in users" :key="user.id">
-        <td v-if="showId" class="align-middle"></td>
-        <td v-if="showPhoto" class="align-middle">
+      <tr v-for="vehicle in vehicles" :key="vehicle.id">
+        <td class="align-middle"></td>
+        <td class="align-middle">{{ vehicle.model }}</td>
+        <td class="align-middle">{{ vehicle.category }}</td>
+        <td class="align-middle">{{ vehicle.class }}</td>
+        <td class="align-middle">{{ vehicle.license_plate }}</td>
+        <td class="align-middle">{{ vehicle.year }}</td>
+        <td class="align-middle">{{ vehicle.engine_capacity }}</td>
+        <!--td class="align-middle">
           <img :src="photoFullUrl(user)" class="rounded-circle img_photo" />
         </td>
         <td class="align-middle">{{ user.name }}</td>
         <td v-if="showEmail" class="align-middle">{{ user.email }}</td>
-        <td v-if="showAdmin" class="align-middle">{{ user.type == "A" ? "Admin" : "Secretariado" }}</td>
-        <td v-if="showGender" class="align-middle">{{ user.blocked == 0 ? "Não" : "Sim"}}</td>
+        <td v-if="showAdmin" class="align-middle">{{ user.type == "A" ? "Sim" : "" }}</td>
+        <td v-if="showGender" class="align-middle">{{ user.gender_name }}</td>
         <td class="text-end align-middle" v-if="showEditButton">
           <div class="d-flex justify-content-end" v-if="canViewUserDetail(user.id)">
             <button
@@ -90,7 +100,7 @@ const canViewUserDetail = (userId) => {
               <i class="bi bi-xs bi-pencil"></i>
             </button>
           </div>
-        </td>
+        </td-->
       </tr>
     </tbody>
   </table>

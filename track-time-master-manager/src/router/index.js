@@ -4,6 +4,9 @@ import Login from '../components/auth/Login.vue'
 import ChangePassword from "../components/auth/ChangePassword.vue"
 import Users from "../components/users/Users.vue"
 import User from "../components/users/User.vue"
+import Vehicles from "../components/vehicles/Vehicles.vue"
+import Drivers from "../components/drivers/Drivers.vue"
+import Secretariado from '../components/secretariado/Secretariado.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,10 +28,25 @@ const router = createRouter({
     },
     ,
     {
-      path: '/users',
+      path: '/secretariado/users',
       name: 'Users',
       component: Users,
     },
+    {
+      path: '/secretariado/vehicles',
+      name: 'Vehicles',
+      component: Vehicles,
+    },
+    {
+      path: '/secretariado/drivers',
+      name: 'Drivers',
+      component: Drivers,
+    },
+    /*{
+      path: '/secretariado',
+      name: 'Secretariado',
+      component: Secretariado,
+    },*/
     {
       path: '/users/:id',
       name: 'User',

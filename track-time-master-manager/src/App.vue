@@ -2,6 +2,9 @@
 import { useRouter, RouterLink, RouterView } from "vue-router";
 import { ref, inject } from "vue";
 import { useUserStore } from './stores/user.js'
+import Login from './components/auth/Login.vue'
+import Secretariado from './components/secretariado/Secretariado.vue'
+
 
 const router = useRouter()
 const axios = inject("axios")
@@ -12,8 +15,8 @@ const buttonSidebarExpand = ref(null)
 const logout = async () => {
   if (await userStore.logout()) {
     toast.success('User has logged out of the application.')
-    clickMenuOption()
     router.push({name: 'home'})
+    //clickMenuOption()
   }
   else {
     toast.error('There was a problem logging out of the application!')
@@ -28,40 +31,18 @@ const clickMenuOption = () => {
 </script>
 
 <template>
-  <nav
-    class="navbar navbar-expand-md navbar-dark bg-dark sticky-top flex-md-nowrap p-0 shadow"
-  >
-    <div class="container-fluid">
-      <router-link class="navbar-brand col-md-3 col-lg-2 me-0 px-3" :to="{ name: 'home' }" @click="clickMenuOption">
-        <img src="@/assets/logo.svg" alt="" width="30" height="24"
-        class="d-inline-block align-text-top"/>
-        App name
-      </router-link>
-      <button
-        id="buttonSidebarExpandId"
-        ref="buttonSidebarExpand"
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#sidebarMenu"
-        aria-controls="sidebarMenu"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow">
+    <div class="container">
+
+      <router-link :to="{ name: 'home' }"><a class="btn" role="button">
+        <h4><b>TtmM</b></h4>
+      </a></router-link>
 
       <div class="collapse navbar-collapse justify-content-end">
         <ul class="navbar-nav">
           <li class="nav-item" v-show="!userStore.user">
-            <a class="nav-link" href="#"
-              ><i class="bi bi-person-check-fill"></i>
-              Register
-            </a>
-          </li>
-          <li class="nav-item" v-show="!userStore.user">
             <router-link
-              class="nav-link"
+              class="nav-link text-dark"
               :class="{ active: $route.name === 'Login' }"
               :to="{ name: 'Login' }"
               @click="clickMenuOption"
@@ -126,100 +107,12 @@ const clickMenuOption = () => {
     </div>
   </nav>
 
-  <div class="container-fluid">
-    <div class="row">
-      <nav
-        id="sidebarMenu"
-        class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
-      >
-        <div class="position-sticky pt-3">
-          <ul class="nav flex-column" v-if="userStore.user">
-            Hellooooo cyka
-          </ul>
 
-          
-
-          <div class="d-block d-md-none">
-            <h6
-              class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted"
-            >
-              <span>User</span>
-            </h6>
-            <ul class="nav flex-column mb-2">
-              <li class="nav-item" v-show="!userStore.user">
-                <a class="nav-link" href="#"
-                  ><i class="bi bi-person-check-fill"></i>
-                  Register
-                </a>
-              </li>
-              <li class="nav-item" v-show="!userStore.user">
-                <router-link
-                  class="nav-link"
-                  :class="{ active: $route.name === 'Login' }"
-                  :to="{ name: 'Login' }"
-                  @click="clickMenuOption"
-                >
-                  <i class="bi bi-box-arrow-in-right"></i>
-                  Login
-                </router-link>
-              </li>
-              <li class="nav-item dropdown" v-show="userStore.user">
-                <a
-                  class="nav-link dropdown-toggle"
-                  href="#"
-                  id="navbarDropdownMenuLink2"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <img
-                    src="@/assets/avatar-exemplo-1.jpg"
-                    class="rounded-circle z-depth-0 avatar-img"
-                    alt="avatar image"
-                  />
-                  <span class="avatar-text">{{ userStore.user?.name ?? 'Anonymous' }}</span>
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink2">
-                  <li>
-                    <router-link
-                      class="dropdown-item"
-                      :class="{ active: $route.name == 'User' && $route.params.id == userStore.userId }"
-                      :to="{ name: 'User', params: { id: userStore.userId } }"
-                      @click="clickMenuOption"
-                    >
-                      <i class="bi bi-person-square"></i>Profile
-                    </router-link>
-                  </li>
-                  <li>
-                    <router-link
-                      class="dropdown-item"
-                      :class="{ active: $route.name === 'ChangePassword' }"
-                      :to="{ name: 'ChangePassword' }"
-                      @click="clickMenuOption"
-                    >
-                      <i class="bi bi-key-fill"></i>
-                      Change password
-                    </router-link>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider" />
-                  </li>
-                  <li>
-                    <a class="dropdown-item" @click.prevent="logout">
-                      <i class="bi bi-arrow-right"></i>Logout
-                    </a>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-        <router-view></router-view>
-      </main>
-    </div>
+  <div class="container-fluid" v-if="userStore.user">
+    <Secretariado :clickMenuOption="clickMenuOption"></Secretariado>
+  </div>
+  <div v-else>
+    <router-view></router-view>
   </div>
 </template>
 
