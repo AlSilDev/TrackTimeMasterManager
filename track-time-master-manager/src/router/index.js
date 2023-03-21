@@ -4,6 +4,7 @@ import Login from '../components/auth/Login.vue'
 import ChangePassword from "../components/auth/ChangePassword.vue"
 import Users from "../components/users/Users.vue"
 import User from "../components/users/User.vue"
+import UserCreate from "../components/users/UserCreate.vue"
 import Vehicles from "../components/vehicles/Vehicles.vue"
 import Drivers from "../components/drivers/Drivers.vue"
 import Secretariado from '../components/secretariado/Secretariado.vue'
@@ -26,7 +27,6 @@ const router = createRouter({
       name: 'ChangePassword',
       component: ChangePassword
     },
-    ,
     {
       path: '/secretariado/users',
       name: 'Users',
@@ -41,6 +41,11 @@ const router = createRouter({
       path: '/secretariado/drivers',
       name: 'Drivers',
       component: Drivers,
+    },
+    {
+      path: '/users/create',
+      name: 'UserCreate',
+      component: UserCreate
     },
     /*{
       path: '/secretariado',

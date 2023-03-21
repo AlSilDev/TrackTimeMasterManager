@@ -35,7 +35,12 @@
 
 <template>
   <h3 class="mt-5 mb-3">Users</h3>
-  <button type="button" class="btn btn-dark">Novo User</button>
+  <router-link
+    :class="{ active: $route.name === 'UserCreate' }"
+    :to="{ name: 'UserCreate' }"
+    >
+    <button type="button" class="btn btn-dark">Novo Utilizador</button>
+  </router-link>
   <hr>
   <user-table
     :users="users"
