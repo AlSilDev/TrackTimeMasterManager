@@ -16,8 +16,9 @@
   const loadVehicles = () => {
     axios.get('vehicles')
         .then((response) => {
-          vehicles.value = response.data.data
+          vehicles.value = response.data
           console.log(vehicles.value)
+          console.log(response)
         })
         .catch((error) => {
           console.log(error)
