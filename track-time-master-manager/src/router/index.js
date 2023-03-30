@@ -6,6 +6,7 @@ import Users from "../components/users/Users.vue"
 import User from "../components/users/User.vue"
 import UserCreate from "../components/users/UserCreate.vue"
 import Vehicles from "../components/vehicles/Vehicles.vue"
+import Vehicle from "../components/vehicles/Vehicle.vue"
 import Drivers from "../components/drivers/Drivers.vue"
 import Secretariado from '../components/secretariado/Secretariado.vue'
 
@@ -36,6 +37,11 @@ const router = createRouter({
       path: '/secretariado/vehicles',
       name: 'Vehicles',
       component: Vehicles,
+    },
+    {
+      path: '/secretariado/vehicles/new',
+      name: 'NewVehicle',
+      component: Vehicle,
     },
     {
       path: '/secretariado/drivers',
