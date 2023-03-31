@@ -2,6 +2,7 @@
 import { ref, inject, onMounted } from "vue";
 import { useUserStore } from "../../stores/user.js"
 import avatarNoneUrl from '@/assets/avatar-none.png'
+import { BIconArrowLeft } from "bootstrap-icons-vue";
 
 const axios = inject('axios')
 const serverBaseUrl = inject("serverBaseUrl");
@@ -95,15 +96,15 @@ onMounted(async ()=>{
 </script>
 
 <template>
-  <table class="table table-hover">
-    <thead class="thead-dark">
+  <table class="table table-hover table-striped">
+    <thead class="table-dark" style="cursor: pointer">
       <tr>
-        <th class="align-middle" @click="sortByColumn('model')">Modelo <span v-if="sortedColumn == 'model'"><i v-if="order === 'asc' " class="fas fa-arrow-up"></i><i v-else class="fas fa-arrow-down"></i></span></th>
-        <th class="align-middle" @click="sortByColumn('category')">Categoria <span v-if="sortedColumn == 'category'"><i v-if="order === 'asc' " class="fas fa-arrow-up"></i><i v-else class="fas fa-arrow-down"></i></span></th>
-        <th class="align-middle" @click="sortByColumn('class')">Classe <span v-if="sortedColumn == 'class'"><i v-if="order === 'asc' " class="fas fa-arrow-up"></i><i v-else class="fas fa-arrow-down"></i></span></th>
-        <th class="align-middle" @click="sortByColumn('license_plate')">Matrícula <span v-if="sortedColumn == 'license_plate'"><i v-if="order === 'asc' " class="fas fa-arrow-up"></i><i v-else class="fas fa-arrow-down"></i></span></th>
-        <th class="align-middle" @click="sortByColumn('year')">Ano <span v-if="sortedColumn == 'year'"><i v-if="order === 'asc' " class="fas fa-arrow-up"></i><i v-else class="fas fa-arrow-down"></i></span></th>
-        <th class="align-middle" @click="sortByColumn('engine_capacity')">Cilindrada (cm3) <span v-if="sortedColumn == 'engine_capacity'"><i v-if="order === 'asc' " class="fas fa-arrow-up"></i><i v-else class="fas fa-arrow-down"></i></span></th>
+        <th class="align-middle" @click="sortByColumn('model')">Modelo <span v-if="sortedColumn == 'model'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+        <th class="align-middle" @click="sortByColumn('category')">Categoria <span v-if="sortedColumn == 'category'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+        <th class="align-middle" @click="sortByColumn('class')">Classe <span v-if="sortedColumn == 'class'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+        <th class="align-middle" @click="sortByColumn('license_plate')">Matrícula <span v-if="sortedColumn == 'license_plate'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+        <th class="align-middle" @click="sortByColumn('year')">Ano <span v-if="sortedColumn == 'year'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+        <th class="align-middle" @click="sortByColumn('engine_capacity')">Cilindrada (cm3) <span v-if="sortedColumn == 'engine_capacity'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
       </tr>
     </thead>
     <tbody>
@@ -120,9 +121,9 @@ onMounted(async ()=>{
 
   <div>
     <ul class="pagination" style="cursor: pointer">
-      <li v-if="currentPage != 1" class="page-item"><a class="page-link" @click="getResults(currentPage-1)">Previous</a></li>
-      <li v-for="(link, index) in filteredPages" class="page-item" :class="{active: currentPage == filteredPages[index].label}" @click="getResults(index+1)"><a class="page-link">{{filteredPages[index].label}}</a></li>
-      <li v-if="currentPage != laravelData.last_page" class="page-item"><a class="page-link" @click="getResults(currentPage+1)">Next</a></li>
+      <li v-if="currentPage != 1" class="page-item"><a class="page-link text-dark" @click="getResults(currentPage-1)">&laquo;</a></li>
+      <li v-for="(link, index) in filteredPages" class="page-item" :class="{active: currentPage == filteredPages[index].label}" @click="getResults(index+1)"><a class="page-link text-dark">{{filteredPages[index].label}}</a></li>
+      <li v-if="currentPage != laravelData.last_page" class="page-item"><a class="page-link text-dark" @click="getResults(currentPage+1)">&raquo;</a></li>
     </ul>
   </div>
 </template>
@@ -136,5 +137,11 @@ button {
 .img_photo {
   width: 3.2rem;
   height: 3.2rem;
+}
+
+.page-item.active > .page-link {
+  color:white !important;
+  background-color: dimgrey !important;
+  border-color: black;
 }
 </style>
