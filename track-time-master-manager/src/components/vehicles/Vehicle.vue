@@ -55,7 +55,7 @@
             vehicle.value = response.data.data
             originalValueStr = dataAsString()
             toast.success('Vehicle #' + vehicle.value.id + ' was created successfully.')
-            router.back()
+            router.push({name: 'Vehicles'})
           })
           .catch((error) => {
             if (error.response.status == 422) {
@@ -71,7 +71,7 @@
           vehicle.value = response.data.data
           originalValueStr = dataAsString()
           toast.success('Vehicle #' + vehicle.value.id + ' was updated successfully.')
-          router.back()
+          router.push({name: 'Vehicles'})
         })
         .catch((error) => {
           if (error.response.status == 422) {
@@ -86,7 +86,7 @@
 
   const cancel = () => {
     originalValueStr = dataAsString()
-    router.back()
+    router.push({name: 'Vehicles'})
   }
 
   const dataAsString = () => {

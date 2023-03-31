@@ -46,25 +46,34 @@ const vehicleTitle = computed(() => {
 
 const save = () => {
   emit("save", editingVehicle.value);
-}
+};
 
 const cancel = () => {
   emit("cancel", editingVehicle.value);
-}
+};
 
-const CLType = () => {
+const isCLType = () => {
   if (editingVehicle.category == 'CL'){
-    return true;
+    console.log("Entrou em CL");
+    return editingVehicle.category == 'CL';
   }
-  return false;
-}
+};
 
-const DPType = () => {
+const isDPType = () => {
   if (editingVehicle.category == 'DP'){
-    return true;
+    console.log("Entrou em DP");
+    return editingVehicle.category == 'DP';
   }
-  return false;
-}
+};
+
+const loadClass = () => {
+  if (editingVehicle.category == 'CL'){
+    newVehicle.class = 'A3';
+  }
+  if (editingVehicle.category == 'DP'){
+    newVehicle.class = 'D14';
+  }
+};
 </script>
 
 <template>
@@ -75,12 +84,12 @@ const DPType = () => {
     <div class="d-flex flex-wrap justify-content-center">
       <div class="w-75 pe-4">
         <div class="mb-3">
-          <label for="inputModel" class="form-label">Model</label>
+          <label for="inputModel" class="form-label">Modelo</label>
           <input
             type="text"
             class="form-control"
             id="inputModel"
-            placeholder="Model"
+            placeholder="Modelo"
             required
             v-model="editingVehicle.model"
           />
@@ -88,7 +97,7 @@ const DPType = () => {
         </div>
 
         <div class="mb-3 px-1">
-          <label for="inputCategory" class="form-label">Category</label>
+          <label for="inputCategory" class="form-label">Categoria</label>
           <br>
           <select name="category" v-model="editingVehicle.category">
               <option value="CL">CL</option>
@@ -98,18 +107,24 @@ const DPType = () => {
           <field-error-message :errors="errors" fieldName="category"></field-error-message>
         </div>
 
-        <div class="mb-3 px-1" v-if="editingVehicle.category == 'CL' || editingVehicle.category == 'DP'">
+        <div class="mb-3 px-1" v-if="editingVehicle.category == 'CL'">
           <label for="inputClass" class="form-label">Class</label>
           <br>
-          <select name="category" v-if="editingVehicle.category == 'CL'" v-model="editingVehicle.class">
+          <select name="category" v-model="editingVehicle.class">
               <option value="A3">A3</option>
               <option value="C09">C09</option>
               <option value="C10">C10</option>
               <option value="C11">C11</option>
               <option value="C12">C12</option>
           </select>
-          <select name="category" v-if="editingVehicle.category == 'DP'" v-model="editingVehicle.class">
-              <option value="D14" default>D14</option>
+          <field-error-message :errors="errors" fieldName="class"></field-error-message>
+        </div>
+
+        <div class="mb-3 px-1" v-if="editingVehicle.category == 'DP'">
+          <label for="inputClass" class="form-label">Classe</label>
+          <br>
+          <select name="category" v-model="editingVehicle.class">
+              <option value="D14">D14</option>
               <option value="D15">D15</option>
               <option value="D16">D16</option>
               <option value="E18">E18</option>
@@ -121,12 +136,12 @@ const DPType = () => {
         </div>
 
         <div class="mb-3 px-1">
-          <label for="inputLicensePlate" class="form-label">License Plate</label>
+          <label for="inputLicensePlate" class="form-label">Matricula</label>
           <input
             type="text"
             class="form-control"
             id="inputLicensePlate"
-            placeholder="License Plate"
+            placeholder="Matricula"
             required
             v-model="editingVehicle.license_plate"
           />
@@ -134,12 +149,12 @@ const DPType = () => {
         </div>
 
         <div class="mb-3 px-1">
-          <label for="inputYear" class="form-label">Year</label>
+          <label for="inputYear" class="form-label">Ano</label>
           <input
             type="number"
             class="form-control"
             id="inputYear"
-            placeholder="Year"
+            placeholder="Ano"
             required
             v-model="editingVehicle.year"
           />
@@ -147,12 +162,12 @@ const DPType = () => {
         </div>
 
         <div class="mb-3 px-1">
-          <label for="inputEngineCapacity" class="form-label">Engine Capacity</label>
+          <label for="inputEngineCapacity" class="form-label">Cilindrada (cm3)</label>
           <input
             type="number"
             class="form-control"
             id="inputEngineCapacity"
-            placeholder="Engine Capacity"
+            placeholder="Cilindrada (cm3)"
             required
             v-model="editingVehicle.engine_capacity"
           />
@@ -169,8 +184,8 @@ const DPType = () => {
       </div-->
     </div>
     <div class="mb-3 d-flex justify-content-center">
-      <button type="button" class="btn btn-primary px-5" @click="save">Save</button>
-      <button type="button" class="btn btn-light px-5" @click="cancel">Cancel</button>
+      <button type="button" class="btn btn-primary px-5" @click="save">Guardar</button>
+      <button type="button" class="btn btn-light px-5" @click="cancel">Cancelar</button>
     </div>
   </form>
 </template>
