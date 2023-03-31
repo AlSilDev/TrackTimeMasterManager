@@ -71,7 +71,7 @@ const login = async () => {
           <div class="mb-3 d-flex justify-content-center">
             <button
               type="button"
-              class="btn btn-primary px-5"
+              class="btn btn-light px-5"
               @click="login"
             >Login</button>
           </div>

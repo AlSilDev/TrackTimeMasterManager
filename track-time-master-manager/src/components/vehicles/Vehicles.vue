@@ -1,5 +1,6 @@
 <script setup>
-  import { ref, computed, onMounted, inject } from 'vue'
+  import { BIconSearch } from 'bootstrap-icons-vue';
+import { ref, computed, onMounted, inject } from 'vue'
   import {useRouter} from 'vue-router'
   import VehicleTable from "./VehicleTable.vue"
   
@@ -7,13 +8,13 @@
 
   const axios = inject('axios')
 
-  const vehicles = ref([])
+  /*const vehicles = ref([])
 
   const totalVehicles = computed(() => {
     return vehicles.value.length
-  })
+  })*/
 
-  const loadVehicles = () => {
+  /*const loadVehicles = () => {
     axios.get('vehicles')
         .then((response) => {
           vehicles.value = response.data
@@ -23,32 +24,35 @@
         .catch((error) => {
           console.log(error)
         })
-    }
+    }*/
 
-  const editVehicle = (vehicle) => {
+
+  /*const editVehicle = (vehicle) => {
     router.push({ name: 'Vehicle', params: { id: vehicle.id } })
+  }*/
+
+  const addVehicle = () => {
+    router.push({ name: 'NewVehicle' })
   }
 
-  onMounted (() => {
-    loadVehicles()
-  })
 </script>
 
 <template>
   <h3 class="mt-5 mb-3">Viaturas</h3>
   <div class="container">
     <div class="d-flex justify-content-between">
-      <div class="col-sm"><button type="button" class="btn btn-dark">Nova Viatura</button></div>
+      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addVehicle">Nova Viatura</button></div>
       <div class="col-sm"><button type="button" class="btn btn-dark">Importar Viatura(s)</button></div>
       <div class="col-sm"><button type="button" class="btn btn-dark">Exportar Viatura(s)</button></div>
     </div>
   </div>
+  
   <hr>
   <vehicle-table
-    :vehicles="vehicles"
     :showId="false"
     @edit="editVehicle"
   ></vehicle-table>
+  
 </template>
 
 <style scoped>
