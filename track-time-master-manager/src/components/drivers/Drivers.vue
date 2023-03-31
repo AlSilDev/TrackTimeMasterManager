@@ -16,7 +16,7 @@
   const loadDrivers = () => {
     axios.get('drivers')
         .then((response) => {
-          drivers.value = response.data
+          drivers.value = response.data.data
           console.log(drivers.value)
         })
         .catch((error) => {
