@@ -1,6 +1,6 @@
 <script setup>
-  import { ref, watch, inject } from 'vue'
-  import UserDetail from "./DriverDetail.vue"
+  import { ref, watch, computed, inject } from 'vue'
+  import DriverDetail from "./DriverDetail.vue"
   import { useRouter, onBeforeRouteLeave } from 'vue-router'  
   
   const router = useRouter()  
@@ -14,27 +14,31 @@
       }
   })
 
-  const newUser = () => {
+  const operation = computed( () => (!props.id || props.id < 0) ? 'insert' : 'update')
+
+  const newDriver = () => {
       return {
         id: null,
         name: '',
         email: '',
-        gender: 'M',
-        photo_url: null
+        license_num: null,
+        license_expiry: Date,
+        phone_num: null,
+        affiliate_num: null
       }
   }
 
   let originalValueStr = ''
-  const loadUser = (id) => {    
+  const loadDriver = (id) => {    
     originalValueStr = ''
       errors.value = null
       if (!id || (id < 0)) {
-        user.value = newUser()
+        driver.value = newDriver()
         originalValueStr = dataAsString()
       } else {
-        axios.get('users/' + id)
+        axios.get('drivers/' + id)
           .then((response) => {
-            user.value = response.data.data
+            driver.value = response.data.data
             originalValueStr = dataAsString()
           })
           .catch((error) => {
@@ -45,30 +49,48 @@
 
   const save = () => {
       errors.value = null
-      axios.put('users/' + props.id, user.value)
+      if (operation.value == "insert"){
+        axios.post('drivers', driver.value)
+          .then((response) => {
+            driver.value = response.data.data
+            originalValueStr = dataAsString()
+            toast.success('Driver #' + driver.value.id + ' was created successfully.')
+            router.push({name: 'Drivers'})
+          })
+          .catch((error) => {
+            if (error.response.status == 422) {
+              toast.error('Driver was not created due to validation errors!')
+              errors.value = error.response.data.errors
+            } else {
+              toast.error('Driver was not created due to unknown server error!')
+            }
+          })
+      }else{
+        axios.put('drivers/' + props.id, driver.value)
         .then((response) => {
-          user.value = response.data.data
+          driver.value = response.data.data
           originalValueStr = dataAsString()
-          toast.success('User #' + user.value.id + ' was updated successfully.')
-          router.back()
+          toast.success('Driver #' + driver.value.id + ' was updated successfully.')
+          router.push({name: 'Drivers'})
         })
         .catch((error) => {
           if (error.response.status == 422) {
-              toast.error('User #' + props.id + ' was not updated due to validation errors!')
+              toast.error('Driver #' + props.id + ' was not updated due to validation errors!')
               errors.value = error.response.data.errors
             } else {
-              toast.error('User #' + props.id + ' was not updated due to unknown server error!')
+              toast.error('Driver #' + props.id + ' was not updated due to unknown server error!')
             }
         })
+      }
   }
 
   const cancel = () => {
     originalValueStr = dataAsString()
-    router.back()
+    router.push({name: 'Drivers'})
   }
 
   const dataAsString = () => {
-      return JSON.stringify(user.value)
+      return JSON.stringify(driver.value)
   }
 
   let nextCallBack = null
@@ -89,14 +111,14 @@
     }
   })  
 
-  const user = ref(newUser())
+  const driver = ref(newDriver())
   const errors = ref(null)
   const confirmationLeaveDialog = ref(null)
 
   watch(
     () => props.id,
     (newValue) => {
-        loadUser(newValue)
+        loadDriver(newValue)
       },
     {immediate: true}  
     )
@@ -112,10 +134,10 @@
   >
   </confirmation-dialog>  
 
-  <user-detail
-    :user="user"
+  <driver-detail
+    :driver="driver"
     :errors="errors"
     @save="save"
     @cancel="cancel"
-  ></user-detail>
+  ></driver-detail>
 </template>
