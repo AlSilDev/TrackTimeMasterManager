@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter, RouterLink, RouterView } from "vue-router";
-import { ref, inject } from "vue";
+import { ref, inject, onMounted } from "vue";
 import { useUserStore } from './stores/user.js'
 import Login from './components/auth/Login.vue'
 import Secretariado from './components/secretariado/Secretariado.vue'
@@ -28,6 +28,10 @@ const clickMenuOption = () => {
     buttonSidebarExpand.value.click()
   }
 }
+
+onMounted(()=>{
+  userStore.restoreToken()
+})
 </script>
 
 <template>
