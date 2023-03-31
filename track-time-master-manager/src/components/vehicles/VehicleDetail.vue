@@ -51,6 +51,20 @@ const save = () => {
 const cancel = () => {
   emit("cancel", editingVehicle.value);
 }
+
+const CLType = () => {
+  if (editingVehicle.category == 'CL'){
+    return true;
+  }
+  return false;
+}
+
+const DPType = () => {
+  if (editingVehicle.category == 'DP'){
+    return true;
+  }
+  return false;
+}
 </script>
 
 <template>
@@ -75,27 +89,34 @@ const cancel = () => {
 
         <div class="mb-3 px-1">
           <label for="inputCategory" class="form-label">Category</label>
-          <input
-            type="text"
-            class="form-control"
-            id="inputCategory"
-            placeholder="Category"
-            required
-            v-model="editingVehicle.category"
-          />
+          <br>
+          <select name="category" v-model="editingVehicle.category">
+              <option value="CL">CL</option>
+              <option value="DP">DP</option>
+              <option value="PR">PR</option>
+          </select>
           <field-error-message :errors="errors" fieldName="category"></field-error-message>
         </div>
 
-        <div class="mb-3 px-1">
+        <div class="mb-3 px-1" v-if="editingVehicle.category == 'CL' || editingVehicle.category == 'DP'">
           <label for="inputClass" class="form-label">Class</label>
-          <input
-            type="text"
-            class="form-control"
-            id="inputClass"
-            placeholder="Class"
-            required
-            v-model="editingVehicle.class"
-          />
+          <br>
+          <select name="category" v-if="editingVehicle.category == 'CL'" v-model="editingVehicle.class">
+              <option value="A3">A3</option>
+              <option value="C09">C09</option>
+              <option value="C10">C10</option>
+              <option value="C11">C11</option>
+              <option value="C12">C12</option>
+          </select>
+          <select name="category" v-if="editingVehicle.category == 'DP'" v-model="editingVehicle.class">
+              <option value="D14" default>D14</option>
+              <option value="D15">D15</option>
+              <option value="D16">D16</option>
+              <option value="E18">E18</option>
+              <option value="E19">E19</option>
+              <option value="E20">E20</option>
+              <option value="F24">F24</option>
+          </select>
           <field-error-message :errors="errors" fieldName="class"></field-error-message>
         </div>
 
@@ -137,50 +158,6 @@ const cancel = () => {
           />
           <field-error-message :errors="errors" fieldName="engine_capacity"></field-error-message>
         </div>
-        <!--div class="d-flex ms-1 mt-4 flex-wrap justify-content-between">
-          <div class="mb-3 me-3 flex-grow-1">
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                true-value="A"
-                false-value="M"
-                v-model="editingVehicle.type"
-                id="inputType"
-              />
-              <label class="form-check-label" for="inputType">
-                User is Administrator
-              </label>
-              <field-error-message :errors="errors" fieldName="type"></field-error-message>
-            </div>
-          </div>
-          <div class="mb-3 ms-xs-3 flex-grow-1">
-            <div class="form-check form-check-inline">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="radioGender"
-                value="M"
-                required
-                v-model="editingVehicle.gender"
-                id="inputGenderM"
-              />
-              <label class="form-check-label" for="inputGenderM">Masculino</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="radioGender"
-                value="F"
-                v-model="editingVehicle.gender"
-                id="inputGenderF"
-              />
-              <label class="form-check-label" for="inputGenderF">Feminino</label>
-            </div>
-            <field-error-message :errors="errors" fieldName="gender"></field-error-message>
-          </div>
-        </div-->
       </div>
       <!--div class="w-25">
         <div class="mb-3">

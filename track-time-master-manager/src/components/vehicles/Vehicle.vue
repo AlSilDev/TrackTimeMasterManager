@@ -20,7 +20,7 @@
       return {
         id: null,
         model: '',
-        category: '',
+        category: 'CL',
         class: '',
         license_plate: '',
         year: null,

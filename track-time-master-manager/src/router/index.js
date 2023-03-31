@@ -49,7 +49,7 @@ const router = createRouter({
       component: Drivers,
     },
     {
-      path: '/users/create',
+      path: '/secretariado/users/new',
       name: 'UserCreate',
       component: UserCreate
     },
