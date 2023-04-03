@@ -31,16 +31,19 @@
   onMounted (() => {
     loadUsers()
   })
+
+  const addUser = () => {
+    router.push({ name: 'NewUser' })
+  }
 </script>
 
 <template>
   <h3 class="mt-5 mb-3">Users</h3>
-  <router-link
-    :class="{ active: $route.name === 'UserCreate' }"
-    :to="{ name: 'UserCreate' }"
-    >
-    <button type="button" class="btn btn-dark">Novo Utilizador</button>
-  </router-link>
+  <div class="container">
+    <div class="d-flex justify-content-between">
+      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addUser">Novo Utilizador</button></div>
+    </div>
+  </div>
   <hr>
   <user-table
     :users="users"

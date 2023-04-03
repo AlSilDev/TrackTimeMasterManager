@@ -58,8 +58,8 @@ const router = createRouter({
     },
     {
       path: '/secretariado/users/new',
-      name: 'UserCreate',
-      component: UserCreate
+      name: 'NewUser',
+      component: User,
     },
     /*{
       path: '/secretariado',
