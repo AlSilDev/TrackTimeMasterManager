@@ -10,6 +10,7 @@ import UserCreate from "../components/users/UserCreate.vue"
 import Vehicles from "../components/vehicles/Vehicles.vue"
 import Vehicle from "../components/vehicles/Vehicle.vue"
 import Drivers from "../components/drivers/Drivers.vue"
+import Driver from "../components/drivers/Driver.vue"
 import Secretariado from '../components/secretariado/Secretariado.vue'
 
 const router = createRouter({
@@ -55,6 +56,11 @@ const router = createRouter({
       path: '/secretariado/drivers',
       name: 'Drivers',
       component: Drivers,
+    },
+    {
+      path: '/secretariado/drivers/new',
+      name: 'NewDriver',
+      component: Driver,
     },
     {
       path: '/secretariado/users/new',
