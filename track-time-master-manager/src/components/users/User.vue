@@ -1,11 +1,13 @@
 <script setup>
-  import { ref, watch, inject } from 'vue'
+  import { ref, watch, inject, computed } from 'vue'
   import UserDetail from "./UserDetail.vue"
+  import { useUserStore } from '../../stores/user';
   import { useRouter, onBeforeRouteLeave } from 'vue-router'  
   
   const router = useRouter()  
   const axios = inject('axios')
   const toast = inject('toast')
+  const userStore = useUserStore()
 
   const props = defineProps({
       id: {
@@ -14,12 +16,16 @@
       }
   })
 
+  const operation = computed( () => (!props.id || props.id < 0) ? 'insert' : 'update')
+
   const newUser = () => {
       return {
         id: null,
         name: '',
         email: '',
-        gender: 'M',
+        type: 'A',
+        blocked: 0,
+        password: '',
         photo_url: null
       }
   }
@@ -43,7 +49,7 @@
       }
   }
 
-  const save = () => {
+  /*const save = () => {
       errors.value = null
       axios.put('users/' + props.id, user.value)
         .then((response) => {
@@ -60,7 +66,7 @@
               toast.error('User #' + props.id + ' was not updated due to unknown server error!')
             }
         })
-  }
+  }*/
 
   const cancel = () => {
     originalValueStr = dataAsString()
@@ -113,9 +119,9 @@
   </confirmation-dialog>  
 
   <user-detail
+    :operationType="operation"
     :user="user"
     :errors="errors"
-    @save="save"
     @cancel="cancel"
   ></user-detail>
 </template>
