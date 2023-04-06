@@ -68,9 +68,62 @@
         })
   }*/
 
+  const save = (editingUserValue, photo_fileValue) => {
+      errors.value = null
+      const formData = new FormData()
+      if(photo_fileValue){
+          formData.append('photo_file', photo_fileValue)
+      }
+      formData.append('name', editingUserValue.name)
+      formData.append('email', editingUserValue.email)
+      formData.append('password', editingUserValue.password)
+      formData.append('type', editingUserValue.type)
+
+      console.log('FormData:' + formData.values())
+
+      if (operation.value == "insert"){
+        axios.post('users', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+          .then((response) => {
+            user.value = response.data.data
+            originalValueStr = dataAsString()
+            console.log(response.data)
+            console.log(editingUserValue.name)
+            toast.success('User ' +  editingUserValue.name + ' was created successfully.')
+            router.push({name: 'Users'})
+            //emit("save", editingUser.value);
+          })
+          .catch((error) => {
+            if (error.response.status == 422) {
+              toast.error('User was not created due to validation errors!')
+              errors.value = error.response.data.errors
+            } else {
+              toast.error('User was not created due to unknown server error!')
+            }
+          })
+      }else{
+        console.log("Put method not implemented yet!")
+        /*axios.put('vehicles/' + props.id, user.value)
+        .then((response) => {
+          vehicle.value = response.data.data
+          originalValueStr = dataAsString()
+          toast.success('Vehicle #' + vehicle.value.id + ' was updated successfully.')
+          router.push({name: 'Vehicles'})
+        })
+        .catch((error) => {
+          if (error.response.status == 422) {
+              toast.error('Vehicle #' + props.id + ' was not updated due to validation errors!')
+              errors.value = error.response.data.errors
+            } else {
+              toast.error('Vehicle #' + props.id + ' was not updated due to unknown server error!')
+            }
+        })*/
+      }
+  }
+
   const cancel = () => {
     originalValueStr = dataAsString()
-    router.back()
+    router.push({name: 'Users'})
+    //router.back()
   }
 
   const dataAsString = () => {
@@ -93,7 +146,7 @@
     } else {
       next()
     }
-  })  
+  }) 
 
   const user = ref(newUser())
   const errors = ref(null)
@@ -123,5 +176,6 @@
     :user="user"
     :errors="errors"
     @cancel="cancel"
+    @save="save"
   ></user-detail>
 </template>
