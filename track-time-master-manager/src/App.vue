@@ -16,13 +16,14 @@ const logout = async () => {
   if (await userStore.logout()) {
     toast.success('User has logged out of the application.')
     router.push({name: 'home'})
-    //clickMenuOption()
+    clickMenuOption()
   }
   else {
     toast.error('There was a problem logging out of the application!')
   }
 }
 
+//For boostrap dropdown
 const clickMenuOption = () => {
   if (window.getComputedStyle(buttonSidebarExpand.value).display !== "none") {
     buttonSidebarExpand.value.click()
@@ -49,7 +50,6 @@ onMounted(()=>{
               class="nav-link text-dark"
               :class="{ active: $route.name === 'Login' }"
               :to="{ name: 'Login' }"
-              @click="clickMenuOption"
             >
               <i class="bi bi-box-arrow-in-right"></i>
               Login
