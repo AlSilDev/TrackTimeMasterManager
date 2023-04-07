@@ -28,12 +28,10 @@ const props = defineProps({
   },
 })
 
-//const emit = defineEmits(["save", "cancel"]);
-const emit = defineEmits(["cancel"]);
+const emit = defineEmits(["save", "cancel"]);
+//const emit = defineEmits(["cancel"]);
 
 const editingUser = ref(props.user)
-
-const errors = ref(props.errors)
 
 watch(
   () => props.user,
@@ -58,14 +56,14 @@ const photoFullUrl = ref()
 onMounted(()=>{
   setTimeout(()=>{
     photoFullUrl.value = editingUser.value.photo_url ? serverBaseUrl + "/storage/fotos/" + editingUser.value.photo_url : avatarNoneUrl;
-    console.log("Photo: " + photoFullUrl.value)
-    console.log("Photo: " + editingUser.value.photo_url)
-    console.log("Photo props: " + props.user.photo_file)
+    //console.log("Photo: " + photoFullUrl.value)
+    //console.log("Photo: " + editingUser.value.photo_url)
+    //console.log("Photo props: " + props.user.photo_file)
   },1000);
   
 }) 
 
-const save = () => {
+/*const save = () => {
       errors.value = null
       const formData = new FormData()
       if(photo_file.value){
@@ -76,7 +74,7 @@ const save = () => {
       formData.append('password', editingUser.value.password)
       formData.append('type', editingUser.value.type)
 
-      console.log('FormData:' + formData)
+      console.log('FormData:' + formData.values())
 
       if (props.operationType == "insert"){
         axios.post('users', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
@@ -84,20 +82,22 @@ const save = () => {
             //user.value = response.data.data
             //originalValueStr = dataAsString()
             console.log(response.data)
+            console.log(editingUser.value.name)
             toast.success('User ' +  editingUser.value.name + ' was created successfully.')
             router.push({name: 'Users'})
+            //emit("save", editingUser.value);
           })
           .catch((error) => {
-            /*if (error.response.status == 422) {
+            if (error.response.status == 422) {
               toast.error('User was not created due to validation errors!')
               //errors.value = error.response.data.errors
             } else {
               toast.error('User was not created due to unknown server error!')
-            }*/
+            }
           })
       }else{
         console.log("Put method not implemented yet!")
-        /*axios.put('vehicles/' + props.id, user.value)
+        axios.put('vehicles/' + props.id, user.value)
         .then((response) => {
           vehicle.value = response.data.data
           originalValueStr = dataAsString()
@@ -111,9 +111,13 @@ const save = () => {
             } else {
               toast.error('Vehicle #' + props.id + ' was not updated due to unknown server error!')
             }
-        })*/
+        })
       }
-  }
+  }*/
+
+const save = () => {
+  emit("save", editingUser.value, photo_file.value);
+}
 
 const cancel = () => {
   emit("cancel", editingUser.value);
@@ -167,11 +171,11 @@ const userTitle = computed(() => {
         <div class="mb-3 px-1" v-if="props.operationType == 'insert'">
           <label for="inputTipo" class="form-label">Tipo</label>
           <br>
-          <select name="tipo" v-model="editingUser.type">
+          <select name="type" v-model="editingUser.type">
               <option value="A">Administrador</option>
               <option value="S">Secretariado</option>
           </select>
-          <field-error-message :errors="errors" fieldName="tipo"></field-error-message>
+          <field-error-message :errors="errors" fieldName="type"></field-error-message>
         </div>
 
         <div class="mb-3 px-1" v-if="props.operationType == 'insert'">
