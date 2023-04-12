@@ -59,10 +59,13 @@ const filteredPages = ref([])
 const sortedColumn = ref('id')
 const order = ref('asc')
 const attribute = ref()
+const search = ref()
 
 const getResultsFiltered = async (page = 1) => {
-  console.log('endpoint: ', `users?page=${page}&column=${sortedColumn.value}&order=${order.value}`)
-  await axios.get(`users?page=${page}&column=${sortedColumn.value}&order=${order.value}`)
+  if (attribute.value.value === "type")
+    search.value.value = search.value.value.charAt(0)
+  console.log('endpoint: ', `users?page=${page}&column=${sortedColumn.value}&order=${order.value}&attribute=${attribute.value.value}&search=${search.value.value}`)
+  await axios.get(`users?page=${page}&column=${sortedColumn.value}&order=${order.value}&attribute=${attribute.value.value}&search=${search.value.value}`)
     .then((response) => {
       laravelData.value = response.data
       currentPage.value = page
@@ -92,6 +95,21 @@ onMounted(async ()=>{
 </script>
 
 <template>
+  <div class="mb-2 justify-content-center">
+    <div class="input-group">
+      <span class="input-group-text"><BIconSearch/></span>
+      <input placeholder="Procurar..." type="string" id="search" class="form-control" ref="search" />
+      <select class="form-select" id="inputGroupSelect01" ref="attribute">
+        <option value="" selected>Escolher Atributo...</option>
+        <option value="name">Nome</option>
+        <option value="email">Email</option>
+        <option value="type">Tipo</option>
+      </select>
+      <button class="btn btn-outline-secondary" type="button" @click="getResultsFiltered()">Procurar</button>
+      <button class="btn btn-outline-secondary" type="button" @click="restartSearch()">Reiniciar</button>
+    </div>
+  </div>
+
   <table class="table table-hover table-striped">
     <thead class="table-dark" style="cursor: pointer">
       <tr>
