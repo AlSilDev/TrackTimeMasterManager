@@ -89,6 +89,12 @@ const sortByColumn = (column) => {
     getResultsFiltered()
 }
 
+const restartSearch = () => {
+  search.value.value = ""
+  attribute.value.selectedIndex = 0
+  getResultsFiltered()
+}
+
 onMounted(async ()=>{
   await getResultsFiltered()
 })
