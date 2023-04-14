@@ -31,7 +31,7 @@
   }
 
   let originalValueStr = ''
-  const loadUser = (id) => {    
+  const loadUser = (id) => { 
     originalValueStr = ''
       errors.value = null
       if (!id || (id < 0)) {
