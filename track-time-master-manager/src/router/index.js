@@ -37,7 +37,7 @@ const router = createRouter({
       //path: '/secretariado/users/user/password',
       name: 'ChangePassword',
       component: ChangePassword,
-      //props: route => ({ id: parseInt(route.params.id) })
+      props: route => ({ id: parseInt(route.params.id) })
     },
     {
       path: '/secretariado/users',

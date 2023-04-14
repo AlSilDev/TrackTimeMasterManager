@@ -1,12 +1,14 @@
 <script setup>
-  import { ref, watch, inject } from "vue"
+  import { ref, watch, inject, onMounted } from "vue"
   import { useUserStore } from "../../stores/user.js"
-  import { useRouter } from "vue-router"
+  import { useRouter, onBeforeRouteLeave } from "vue-router"
 
   const router = useRouter()
   const axios = inject('axios')
   const userStore = useUserStore()
   const toast = inject("toast")
+  
+  const serverBaseUrl = inject("serverBaseUrl");
   
   const passwords = ref({
         current_password: '',
@@ -106,6 +108,16 @@
         toast.error("Password has not been changed!")
       }
   }
+
+  const photoFullUrl = ref()
+  onMounted(()=>{
+    setTimeout(()=>{
+      photoFullUrl.value = user.value.photo_url ? serverBaseUrl + "/storage/fotos/" + user.value.photo_url : avatarNoneUrl;
+      //console.log("Photo: " + photoFullUrl.value)
+      //console.log("Photo: " + editingUser.value.photo_url)
+      //console.log("Photo props: " + props.user.photo_file)
+    },1000);
+}) 
 </script>
 
 <template>
@@ -119,8 +131,32 @@
   {{userStore.errors}}
   <form class="row g-3 needs-validation" novalidate @submit.prevent="changePassword">
     <h3 class="mt-5 mb-3">Mudar a password</h3>
-    <h4 class="mt-5 mb-3">Nome: {{ user.name }}</h4>
     <hr />
+
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-2">
+          <div class="mb-3">
+            <div class="form-control text-center">
+              <img :src="photoFullUrl" class="w-100" />
+            </div>
+          </div>
+        </div>
+        <div class="col-sm align-self-center">
+          <div class="mb-3">
+          <label class="bg-warning" v-if="user.type == 'A'">ADMINISTRADOR</label>
+          <label class="bg-success" v-if="user.type == 'S'">SECRETARIADO</label>
+          </div>
+          <div class="mb-3">
+            Nome: <label class="fw-bold"> {{ user.name }}</label>
+          </div>
+          <div class="mb-3">
+            Email: <label class="fw-bold"> {{ user.email }}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <div class="mb-3">
       <div class="mb-3">
         <label for="inputCurrentPassword" class="form-label">Atual Password</label>
