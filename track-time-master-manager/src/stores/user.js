@@ -7,7 +7,7 @@ export const useUserStore = defineStore('user', () => {
     const serverBaseUrl = inject('serverBaseUrl')
 
     const user = ref(null)
-    const inProgressProjects = ref([])
+    const errors = ref(null)
 
     const userPhotoUrl = computed(() => {
         if (!user.value?.photo_url) {
@@ -36,33 +36,16 @@ export const useUserStore = defineStore('user', () => {
         user.value = null
     }
 
-    async function loadInProgressProjects () {
-        try {
-            const response = await axios.get('users/' + userId.value + '/projects/inprogress')
-            inProgressProjects.value = response.data.data
-        }
-        catch(error) {
-            clearInProgressProjects()
-            throw error
-        }
-    }
-    
-    function clearInProgressProjects () {
-        inProgressProjects.value = []
-    }
-
     async function login (credentials) {
         try {
             const response = await axios.post('login', credentials)
             axios.defaults.headers.common.Authorization = "Bearer " + response.data.access_token
             sessionStorage.setItem('token', response.data.access_token)
             await loadUser()
-            //await loadInProgressProjects()
             return true
         }
         catch(error) {
             clearUser()
-            //clearInProgressProjects()
             return false
         }
     }
@@ -71,7 +54,6 @@ export const useUserStore = defineStore('user', () => {
         try {
             await axios.post('logout')
             clearUser()
-            //clearInProgressProjects()
             return true
         } catch (error) {
             return false
@@ -83,12 +65,27 @@ export const useUserStore = defineStore('user', () => {
         if (storedToken) {
             axios.defaults.headers.common.Authorization = "Bearer " + storedToken
             await loadUser()
-            //await loadInProgressProjects()
             return true
         }
         clearUser()
         return false
     }
 
-    return { user, inProgressProjects, userId, userPhotoUrl, loadUser, clearUser, login, logout, restoreToken }
+    async function changePassword (passwords) {
+        errors.value = null
+        if (passwords.password != passwords.password_confirmation) {
+            return false
+        }
+        try {
+            await axios.patch('users/' +userId.value + '/password', passwords)
+            return true;
+        } catch (error) {
+            if (error.response.status == 422) {
+                errors.value = error.response.data.errors
+            }
+            return false
+        }
+    }
+
+    return { user, userId, userPhotoUrl, loadUser, clearUser, login, logout, restoreToken, changePassword }
 })
