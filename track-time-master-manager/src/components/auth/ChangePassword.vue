@@ -118,7 +118,7 @@
   </confirmation-dialog> 
   {{userStore.errors}}
   <form class="row g-3 needs-validation" novalidate @submit.prevent="changePassword">
-    <h3 class="mt-5 mb-3">Mudar Password</h3>
+    <h3 class="mt-5 mb-3">Mudar a password</h3>
     <h4 class="mt-5 mb-3">Nome: {{ user.name }}</h4>
     <hr />
     <div class="mb-3">
