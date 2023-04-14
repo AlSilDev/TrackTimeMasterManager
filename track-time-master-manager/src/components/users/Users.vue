@@ -9,11 +9,11 @@
 
   const users = ref([])
 
-  const totalUsers = computed(() => {
+  /*const totalUsers = computed(() => {
     return users.value.length
-  })
+  })*/
 
-  const loadUsers = () => {
+  /*const loadUsers = () => {
     axios.get('users')
         .then((response) => {
           users.value = response.data.data
@@ -22,15 +22,15 @@
         .catch((error) => {
           console.log(error)
         })
-    }
+    }*/
 
   const editUser = (user) => {
     router.push({ name: 'User', params: { id: user.id } })
   }
 
-  onMounted (() => {
+  /*onMounted (() => {
     loadUsers()
-  })
+  })*/
 
   const addUser = () => {
     router.push({ name: 'NewUser' })
@@ -46,7 +46,6 @@
   </div>
   <hr>
   <user-table
-    :users="users"
     :showId="false"
     @edit="editUser"
   ></user-table>
