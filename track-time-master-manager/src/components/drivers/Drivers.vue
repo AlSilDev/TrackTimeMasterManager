@@ -24,14 +24,6 @@
         })
     }
 
-  const editDrivers = (driver) => {
-    router.push({ name: 'Driver', params: { id: driver.id } })
-  }
-
-  onMounted (() => {
-    loadDrivers()
-  })
-
   const addDriver = () => {
     router.push({ name: 'NewDriver' })
   }
@@ -49,7 +41,6 @@
   </div>
   <hr>
   <driver-table
-    :drivers="drivers"
     :showId="false"
     @edit="editDrivers"
   ></driver-table>
