@@ -1,13 +1,28 @@
 <script setup>
   import { ref, computed, onMounted, inject } from 'vue'
   import {useRouter} from 'vue-router'
+  import { useUserStore } from "../../stores/user.js"
   import UserTable from "./UserTable.vue"
   
   const router = useRouter()
+  const userStore = useUserStore()
 
   const axios = inject('axios')
+  const toast = inject('toast')
 
   const users = ref([])
+
+  const emit = defineEmits(["changeBlockValue"])
+
+  const changeBlockValue = async (user) => {
+    if (await userStore.changeBlockValue(user)) {
+      toast.success("Block Value has been changed correctly!")
+      emit("changeBlockValue")
+      router.back()
+    } else {
+      toast.error("Block Value has not been changed!")
+    }
+  }
 
   /*const totalUsers = computed(() => {
     return users.value.length
@@ -48,6 +63,7 @@
   <user-table
     :showId="false"
     @edit="editUser"
+    @changeBlockValue="changeBlockValue"
   ></user-table>
 </template>
 

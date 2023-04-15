@@ -90,5 +90,24 @@ export const useUserStore = defineStore('user', () => {
         return false
     }
 
-    return { user, inProgressProjects, userId, userPhotoUrl, loadUser, clearUser, login, logout, restoreToken }
+    async function changeBlockValue (user) {
+        if(user.blocked == 1){
+            var blockValue = {"blocked": 0};
+        }else{
+            var blockValue = {"blocked": 1};
+        }
+        console.log("User ID: " + user.id)
+        try {
+            console.log("User ID: " + user.id)
+            await axios.patch('users/' + user.id + '/blocked', blockValue)
+            return true;
+        } catch (error) {
+            if (error.response.status == 422) {
+                errors.value = error.response.data.errors
+            }
+            return false
+        }
+    }
+
+    return { user, inProgressProjects, userId, userPhotoUrl, loadUser, clearUser, login, logout, restoreToken, changeBlockValue }
 })

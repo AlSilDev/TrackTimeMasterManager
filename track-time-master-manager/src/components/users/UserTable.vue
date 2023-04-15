@@ -150,21 +150,29 @@ onMounted(async ()=>{
             <button
               class="btn btn-xs btn-light"
               @click="editClick(user)"
-              v-if="showEditButton"
             >
               <BIconPencil/>
             </button>
           </div>
         </td>
-        <td class="text-end align-middle" v-if="showBlockButton">
+        <td class="text-end align-middle" v-if="showBlockButton && !user.blocked">
           <div class="d-flex justify-content-end" v-if="canViewUserDetail(user.id)">
-            <button
-              class="btn btn-xs btn-light"
-              @click="editClick(user)"
-              v-if="showEditButton"
-            >
-              <BIconPencil/>
-            </button>
+              <button
+                class="btn btn-xs btn-light"
+                @click="changeBlockValue(user)"
+              >
+                <BIconShieldSlash/>
+              </button>
+          </div>
+        </td>
+        <td class="text-end align-middle" v-if="showBlockButton && user.blocked">
+          <div class="d-flex justify-content-end" v-if="canViewUserDetail(user.id)">
+              <button
+                class="btn btn-xs btn-light"
+                @click="changeBlockValue(user)"
+              >
+                <BIconShieldSlashFill/>
+              </button>
           </div>
         </td>
       </tr>
