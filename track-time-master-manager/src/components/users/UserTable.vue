@@ -119,7 +119,7 @@ onMounted(async ()=>{
   <table class="table table-hover table-striped">
     <thead class="table-dark" style="cursor: pointer">
       <tr>
-        <th v-if="showPhoto" class="align-middle">Photo</th>
+        <th v-if="showPhoto" class="align-middle">Foto</th>
         <th class="align-middle" @click="sortByColumn('name')">Nome <span v-if="sortedColumn == 'name'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
         <th class="align-middle" @click="sortByColumn('email')">Email <span v-if="sortedColumn == 'email'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
         <th class="align-middle" @click="sortByColumn('type')">Tipo <span v-if="sortedColumn == 'type'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
