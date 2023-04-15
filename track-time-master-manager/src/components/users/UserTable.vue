@@ -32,9 +32,13 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  showBlockButton: {
+    type: Boolean,
+    default: true,
+  },
 });
 
-const emit = defineEmits(["edit"]);
+const emit = defineEmits(["edit", "changeBlockValue"]);
 
 const photoFullUrl = (user) => {
   return user.photo_url
@@ -44,6 +48,10 @@ const photoFullUrl = (user) => {
 
 const editClick = (user) => {
   emit("edit", user);
+};
+
+const changeBlockValue = (user) => {
+  emit("changeBlockValue", user);
 };
 
 const canViewUserDetail = (userId) => {
@@ -125,6 +133,7 @@ onMounted(async ()=>{
         <th class="align-middle" @click="sortByColumn('type')">Tipo <span v-if="sortedColumn == 'type'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
         <th class="align-middle" @click="sortByColumn('blocked')">Bloqueado<span v-if="sortedColumn == 'blocked'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
         <th></th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -137,6 +146,17 @@ onMounted(async ()=>{
         <td class="align-middle">{{ user.type == "A" ? "Admin" : "Secretariado" }}</td>
         <td class="align-middle">{{ user.blocked == 0 ? "Não" : "Sim"}}</td>
         <td class="text-end align-middle" v-if="showEditButton">
+          <div class="d-flex justify-content-end" v-if="canViewUserDetail(user.id)">
+            <button
+              class="btn btn-xs btn-light"
+              @click="editClick(user)"
+              v-if="showEditButton"
+            >
+              <BIconPencil/>
+            </button>
+          </div>
+        </td>
+        <td class="text-end align-middle" v-if="showBlockButton">
           <div class="d-flex justify-content-end" v-if="canViewUserDetail(user.id)">
             <button
               class="btn btn-xs btn-light"
