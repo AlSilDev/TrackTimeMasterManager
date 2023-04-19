@@ -66,7 +66,7 @@
             }
           })
       }else{
-        axios.put('vehicles/' + props.id, user.value)
+        axios.put('vehicles/' + props.id, vehicle.value)
         .then((response) => {
           vehicle.value = response.data.data
           originalValueStr = dataAsString()

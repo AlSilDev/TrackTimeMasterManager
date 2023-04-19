@@ -63,9 +63,12 @@ const currentPage = ref()
 const filteredPages = ref([])
 const sortedColumn = ref('id')
 const order = ref('asc')
+const attribute = ref()
+const search = ref()
 
-const getResults = async (page = 1) => {
-  await axios.get(`vehicles?page=${page}&column=${sortedColumn.value}&order=${order.value}`)
+const getResultsFiltered = async (page = 1) => {
+  console.log('endpoint: ', `vehicles?page=${page}&column=${sortedColumn.value}&order=${order.value}&attribute=${attribute.value.value}&search=${search.value.value}`)
+  await axios.get(`vehicles?page=${page}&column=${sortedColumn.value}&order=${order.value}&attribute=${attribute.value.value}&search=${search.value.value}`)
     .then((response) => {
       laravelData.value = response.data
       currentPage.value = page
@@ -78,6 +81,12 @@ const getResults = async (page = 1) => {
     })
 }
 
+const restartSearch = () => {
+  search.value.value = ""
+  attribute.value.selectedIndex = 0
+  getResultsFiltered()
+}
+
 
 const sortByColumn = (column) => {
     if (column === sortedColumn.value) {
@@ -87,15 +96,32 @@ const sortByColumn = (column) => {
       order.value = 'asc'
     }
     currentPage.value = 1
-    getResults()
+    getResultsFiltered()
 }
 
 onMounted(async ()=>{
-  await getResults()
+  await getResultsFiltered()
 })
 </script>
 
 <template>
+  <div class="mb-2 justify-content-center">
+    <div class="input-group">
+      <span class="input-group-text"><BIconSearch/></span>
+      <input placeholder="Procurar..." type="string" id="search" class="form-control" ref="search" />
+      <select class="form-select" id="inputGroupSelect01" ref="attribute">
+        <option value="" selected>Escolher Atributo...</option>
+        <option value="model">Modelo</option>
+        <option value="category">Categoria</option>
+        <option value="class">Classe</option>
+        <option value="license_plate">Matrícula</option>
+        <option value="year">Ano</option>
+      </select>
+      <button class="btn btn-outline-secondary" type="button" @click="getResultsFiltered()">Procurar</button>
+      <button class="btn btn-outline-secondary" type="button" @click="restartSearch()">Reiniciar</button>
+    </div>
+  </div>
+
   <table class="table table-hover table-striped">
     <thead class="table-dark" style="cursor: pointer">
       <tr>
@@ -121,8 +147,8 @@ onMounted(async ()=>{
 
   <div>
     <ul class="pagination" style="cursor: pointer">
-      <li v-if="currentPage != 1" class="page-item"><a class="page-link text-dark" @click="getResults(currentPage-1)">&laquo;</a></li>
-      <li v-for="(link, index) in filteredPages" class="page-item" :class="{active: currentPage == filteredPages[index].label}" @click="getResults(index+1)"><a class="page-link text-dark">{{filteredPages[index].label}}</a></li>
+      <li v-if="currentPage != 1" class="page-item"><a class="page-link text-dark" @click="getResultsFiltered(currentPage-1)">&laquo;</a></li>
+      <li v-for="(link, index) in filteredPages" class="page-item" :class="{active: currentPage == filteredPages[index].label}" @click="getResultsFiltered(index+1)"><a class="page-link text-dark">{{filteredPages[index].label}}</a></li>
       <li v-if="currentPage != laravelData.last_page" class="page-item"><a class="page-link text-dark" @click="getResults(currentPage+1)">&raquo;</a></li>
     </ul>
   </div>

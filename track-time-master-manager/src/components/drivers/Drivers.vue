@@ -24,27 +24,23 @@
         })
     }
 
-  const editDrivers = (driver) => {
-    router.push({ name: 'Driver', params: { id: driver.id } })
+  const addDriver = () => {
+    router.push({ name: 'NewDriver' })
   }
 
-  onMounted (() => {
-    loadDrivers()
-  })
 </script>
 
 <template>
   <h3 class="mt-5 mb-3">Concorrentes</h3>
   <div class="container">
     <div class="d-flex justify-content-between">
-      <div class="col-sm"><button type="button" class="btn btn-dark">Novo Concorrente</button></div>
+      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addDriver">Novo Concorrente</button></div>
       <div class="col-sm"><button type="button" class="btn btn-dark">Importar Concorrente(s)</button></div>
       <div class="col-sm"><button type="button" class="btn btn-dark">Exportar Concorrente(s)</button></div>
     </div>
   </div>
   <hr>
   <driver-table
-    :drivers="drivers"
     :showId="false"
     @edit="editDrivers"
   ></driver-table>

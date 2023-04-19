@@ -15,14 +15,14 @@ const buttonSidebarExpand = ref(null)
 const logout = async () => {
   if (await userStore.logout()) {
     toast.success('User has logged out of the application.')
+    clickMenuOption()
     router.push({name: 'home'})
-    //clickMenuOption()
-  }
-  else {
+  } else {
     toast.error('There was a problem logging out of the application!')
   }
 }
 
+//For boostrap dropdown
 const clickMenuOption = () => {
   if (window.getComputedStyle(buttonSidebarExpand.value).display !== "none") {
     buttonSidebarExpand.value.click()
@@ -49,7 +49,6 @@ onMounted(()=>{
               class="nav-link text-dark"
               :class="{ active: $route.name === 'Login' }"
               :to="{ name: 'Login' }"
-              @click="clickMenuOption"
             >
               <i class="bi bi-box-arrow-in-right"></i>
               Login
@@ -82,18 +81,18 @@ onMounted(()=>{
                   :to="{ name: 'User', params: { id: userStore.userId } }"
                   @click="clickMenuOption"
                 >
-                  <i class="bi bi-person-square"></i>Profile
+                  <i class="bi bi-person-square"></i>Perfil
                 </router-link>
               </li>
               <li>
                 <router-link
                   class="dropdown-item"
-                  :class="{ active: $route.name === 'ChangePassword' }"
-                  :to="{ name: 'ChangePassword' }"
+                  :class="{ active: $route.name == 'ChangePassword' && $route.params.id == userStore.userId }"
+                  :to="{ name: 'ChangePassword', params: { id: userStore.userId } }"
                   @click="clickMenuOption"
                 >
                   <i class="bi bi-key-fill"></i>
-                  Change password
+                  Mudar password
                 </router-link>
               </li>
               <li>

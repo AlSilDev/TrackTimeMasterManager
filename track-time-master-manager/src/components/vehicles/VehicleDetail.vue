@@ -31,11 +31,11 @@ watch(
   { immediate: true }
 )
 
-const photoFullUrl = computed(() => {
+/*const photoFullUrl = computed(() => {
   return editingVehicle.value.photo_url
     ? serverBaseUrl + "/storage/fotos/" + editingVehicle.value.photo_url
     : avatarNoneUrl
-})
+})*/
 
 const vehicleTitle = computed(() => {
   if (!editingVehicle.value){

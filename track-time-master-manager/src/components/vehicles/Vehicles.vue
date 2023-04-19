@@ -1,5 +1,6 @@
 <script setup>
-  import { ref, computed, onMounted, inject } from 'vue'
+  import { BIconSearch } from 'bootstrap-icons-vue';
+import { ref, computed, onMounted, inject } from 'vue'
   import {useRouter} from 'vue-router'
   import VehicleTable from "./VehicleTable.vue"
   
@@ -45,6 +46,7 @@
       <div class="col-sm"><button type="button" class="btn btn-dark">Exportar Viatura(s)</button></div>
     </div>
   </div>
+  
   <hr>
   <vehicle-table
     :showId="false"
