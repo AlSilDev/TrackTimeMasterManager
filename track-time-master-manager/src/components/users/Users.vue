@@ -1,13 +1,33 @@
 <script setup>
   import { ref, computed, onMounted, inject } from 'vue'
   import {useRouter} from 'vue-router'
+  import { useUserStore } from "../../stores/user.js"
   import UserTable from "./UserTable.vue"
   
   const router = useRouter()
+  const userStore = useUserStore()
 
   const axios = inject('axios')
+  const toast = inject('toast')
 
   const users = ref([])
+
+  const emit = defineEmits(["changeBlockValue"])
+
+  const changeBlockValue = async (user) => {
+    if (await userStore.changeBlockValue(user)) {
+      if(user.blocked == 0){
+        toast.success("Utilizador " + user.name + " bloqueado")
+      }
+      if(user.blocked == 1){
+        toast.success("Utilizador " + user.name + " desbloqueado")
+      }
+      emit("changeBlockValue")
+      user.blocked = (user.blocked == 0 ? 1 : 0)
+    } else {
+      toast.error("Utilizador não foi bloqueado/desbloqueado")
+    }
+  }
 
   /*const totalUsers = computed(() => {
     return users.value.length
@@ -48,6 +68,7 @@
   <user-table
     :showId="false"
     @edit="editUser"
+    @changeBlockValue="changeBlockValue"
   ></user-table>
 </template>
 

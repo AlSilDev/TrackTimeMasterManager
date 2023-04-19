@@ -71,6 +71,17 @@ export const useUserStore = defineStore('user', () => {
         return false
     }
 
+    async function changeBlockValue (user) {
+        if(user.blocked == 1){
+            var blockValue = {"blocked": 0};
+        }else{
+            var blockValue = {"blocked": 1};
+        }
+        console.log("User ID: " + user.id)
+        try {
+            console.log("User ID: " + user.id)
+            await axios.patch('users/' + user.id + '/blocked', blockValue)
+            
     async function changePassword (passwords) {
         errors.value = null
         if (passwords.password != passwords.password_confirmation) {
@@ -87,5 +98,5 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
-    return { user, userId, userPhotoUrl, loadUser, clearUser, login, logout, restoreToken, changePassword }
+    return { user, inProgressProjects, userId, userPhotoUrl, loadUser, clearUser, login, logout, restoreToken, changeBlockValue }
 })
