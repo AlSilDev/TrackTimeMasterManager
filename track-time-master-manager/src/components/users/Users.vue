@@ -16,11 +16,16 @@
 
   const changeBlockValue = async (user) => {
     if (await userStore.changeBlockValue(user)) {
-      toast.success("Block Value has been changed correctly!")
+      if(user.blocked == 0){
+        toast.success("Utilizador " + user.name + " bloqueado")
+      }
+      if(user.blocked == 1){
+        toast.success("Utilizador " + user.name + " desbloqueado")
+      }
       emit("changeBlockValue")
-      router.back()
+      user.blocked = (user.blocked == 0 ? 1 : 0)
     } else {
-      toast.error("Block Value has not been changed!")
+      toast.error("Utilizador não foi bloqueado/desbloqueado")
     }
   }
 

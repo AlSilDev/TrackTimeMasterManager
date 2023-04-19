@@ -54,11 +54,19 @@ const changeBlockValue = (user) => {
   emit("changeBlockValue", user);
 };
 
-const canViewUserDetail = (userId) => {
+const canViewUserDetailAndBlock = (userId) => {
   if (!userStore.user) {
     return false
   }
   return userStore.user.type == 'A' || userStore.user.id == userId
+}
+
+const isUserStore = (userId) => {
+  if(userStore.user.id == userId){
+    return true
+  }else{
+    return false
+  }
 }
 
 const laravelData = ref({})
@@ -146,33 +154,41 @@ onMounted(async ()=>{
         <td class="align-middle">{{ user.type == "A" ? "Admin" : "Secretariado" }}</td>
         <td class="align-middle">{{ user.blocked == 0 ? "Não" : "Sim"}}</td>
         <td class="text-end align-middle" v-if="showEditButton">
-          <div class="d-flex justify-content-end" v-if="canViewUserDetail(user.id)">
+          <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id)">
             <button
               class="btn btn-xs btn-light"
               @click="editClick(user)"
+              title="Editar"
             >
               <BIconPencil/>
             </button>
           </div>
         </td>
-        <td class="text-end align-middle" v-if="showBlockButton && !user.blocked">
-          <div class="d-flex justify-content-end" v-if="canViewUserDetail(user.id)">
+        <td class="text-end align-middle" v-if="showBlockButton && !user.blocked && !isUserStore(user.id)">
+          <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id)">
               <button
                 class="btn btn-xs btn-light"
                 @click="changeBlockValue(user)"
+                title="Bloquear"
               >
                 <BIconShieldSlash/>
               </button>
           </div>
         </td>
-        <td class="text-end align-middle" v-if="showBlockButton && user.blocked">
-          <div class="d-flex justify-content-end" v-if="canViewUserDetail(user.id)">
+        <td class="text-end align-middle" v-if="showBlockButton && user.blocked && !isUserStore(user.id)">
+          <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id)">
               <button
                 class="btn btn-xs btn-light"
                 @click="changeBlockValue(user)"
+                title="Desbloquear"
               >
                 <BIconShieldSlashFill/>
               </button>
+          </div>
+        </td>
+        <td class="text-end align-middle" v-if="showBlockButton && isUserStore(user.id)">
+          <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id)">
+            
           </div>
         </td>
       </tr>
