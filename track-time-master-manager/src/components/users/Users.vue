@@ -58,7 +58,7 @@
 </script>
 
 <template>
-  <h3 class="mt-5 mb-3">Users</h3>
+  <h3 class="mt-5 mb-3">Utilizadores</h3>
   <div class="container">
     <div class="d-flex justify-content-between">
       <div class="col-sm"><button type="button" class="btn btn-dark" @click="addUser">Novo Utilizador</button></div>
