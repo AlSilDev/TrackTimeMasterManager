@@ -25,7 +25,7 @@
         license_plate: '',
         year: null,
         engine_capacity: null
-      }
+    }
   }
 
   let originalValueStr = ''
