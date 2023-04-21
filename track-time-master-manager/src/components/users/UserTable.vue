@@ -36,6 +36,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  showDeleteButton: {
+    type: Boolean,
+    default: true,
+  }
 });
 
 const emit = defineEmits(["edit", "changeBlockValue"]);
@@ -142,6 +146,7 @@ onMounted(async ()=>{
         <th class="align-middle" @click="sortByColumn('blocked')">Bloqueado<span v-if="sortedColumn == 'blocked'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
         <th></th>
         <th></th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -159,6 +164,17 @@ onMounted(async ()=>{
               class="btn btn-xs btn-light"
               @click="editClick(user)"
               title="Editar"
+            >
+              <BIconPencil/>
+            </button>
+          </div>
+        </td>
+        <td class="text-end align-middle" v-if="showDeleteButton">
+          <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id)">
+            <button
+              class="btn btn-xs btn-light"
+              @click="deleteClick(user)"
+              title="Apagar"
             >
               <BIconPencil/>
             </button>
