@@ -42,8 +42,8 @@ import { ref, computed, onMounted, inject } from 'vue'
   <div class="container">
     <div class="d-flex justify-content-between">
       <div class="col-sm"><button type="button" class="btn btn-dark" @click="addVehicle">Nova Viatura</button></div>
-      <div class="col-sm"><button type="button" class="btn btn-dark">Importar Viatura(s)</button></div>
-      <div class="col-sm"><button type="button" class="btn btn-dark">Exportar Viatura(s)</button></div>
+      <!--div class="col-sm"><button type="button" class="btn btn-dark">Importar Viatura(s)</button></div>
+      <div-- class="col-sm"><button type="button" class="btn btn-dark">Exportar Viatura(s)</button></div-->
     </div>
   </div>
   
