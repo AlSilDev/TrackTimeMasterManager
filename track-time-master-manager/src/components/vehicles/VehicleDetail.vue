@@ -28,7 +28,7 @@ watch(
   (newVehicle) => {
     editingVehicle.value = newVehicle
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 /*const photoFullUrl = computed(() => {
@@ -66,14 +66,33 @@ const isDPType = () => {
   }
 };
 
-const loadClass = () => {
-  if (editingVehicle.category == 'CL'){
+const loadClass = (categoryString) => {
+  if (editingVehicle.category == categoryString){
     newVehicle.class = 'A3';
   }
-  if (editingVehicle.category == 'DP'){
+  if (editingVehicle.category == categoryString){
     newVehicle.class = 'D14';
   }
 };
+
+const isCategoryCL = (categoryCL) => {
+  if(categoryCL == 'CL'){
+    editingVehicle.value.class = 'A3';
+    return true
+  }else{
+    return false
+  }
+}
+
+const isCategoryDP = (categoryDP) => {
+  if(categoryDP == 'DP'){
+    editingVehicle.value.class = 'D14';
+    return true
+  }else{
+    return false
+  }
+}
+
 </script>
 
 <template>
@@ -107,7 +126,8 @@ const loadClass = () => {
           <field-error-message :errors="errors" fieldName="category"></field-error-message>
         </div>
 
-        <div class="mb-3 px-1" v-if="editingVehicle.category == 'CL'">
+        <!--div class="mb-3 px-1" v-if="editingVehicle.category == 'CL'"-->
+        <div class="mb-3 px-1" v-if="isCategoryCL(editingVehicle.category)">
           <label for="inputClass" class="form-label">Class</label>
           <br>
           <select name="category" v-model="editingVehicle.class">
@@ -120,7 +140,7 @@ const loadClass = () => {
           <field-error-message :errors="errors" fieldName="class"></field-error-message>
         </div>
 
-        <div class="mb-3 px-1" v-if="editingVehicle.category == 'DP'">
+        <div class="mb-3 px-1" v-if="isCategoryDP(editingVehicle.category)">
           <label for="inputClass" class="form-label">Classe</label>
           <br>
           <select name="category" v-model="editingVehicle.class">
@@ -184,7 +204,7 @@ const loadClass = () => {
       </div-->
     </div>
     <div class="mb-3 d-flex justify-content-center">
-      <button type="button" class="btn btn-primary px-5" @click="save">Guardar</button>
+      <button type="button" class="btn btn-dark px-5" @click="save">Guardar</button>
       <button type="button" class="btn btn-light px-5" @click="cancel">Cancelar</button>
     </div>
   </form>
