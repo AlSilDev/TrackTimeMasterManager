@@ -176,9 +176,12 @@ const userTitle = computed(() => {
         <div class="mb-3 px-1">
           <label for="inputType" class="form-label">Tipo</label>
           <br>
-          <select name="type" v-model="editingUser.type">
+          <select name="type" v-model="editingUser.type" v-if="editingUser.type == 'A'">
               <option value="A">Administrador</option>
               <option value="S">Secretariado</option>
+          </select>
+          <select name="type" v-model="editingUser.type" v-else>
+            <option value="S">Secretariado</option>
           </select>
           <field-error-message :errors="errors" fieldName="type"></field-error-message>
         </div>
@@ -211,7 +214,7 @@ const userTitle = computed(() => {
       </div>
       <div class="w-25">
         <div class="mb-3">
-          <label class="form-label">Photo</label>
+          <label class="form-label">Fotografia</label>
           <div class="form-control text-center">
             <img :src="photoFullUrl" class="w-100" />
           </div>

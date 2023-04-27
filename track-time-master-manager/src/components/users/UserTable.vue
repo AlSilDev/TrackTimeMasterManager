@@ -1,11 +1,13 @@
 <script setup>
-import { inject, ref, onMounted } from "vue";
+import { inject, ref, onMounted, toDisplayString } from "vue";
 import { useUserStore } from "../../stores/user.js"
 import avatarNoneUrl from '@/assets/avatar-none.png'
 
 const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
+
 const axios = inject('axios')
+const toast = inject('toast')
 
 const props = defineProps({
   showId: {
@@ -49,6 +51,25 @@ const photoFullUrl = (user) => {
     ? serverBaseUrl + "/storage/fotos/" + user.photo_url
     : avatarNoneUrl;
 };
+
+const deleteClick = async (user) => {
+  await deleteUser(user);
+  console.log("Vai buscar resultados novamente")
+  await getResultsFiltered();
+  console.log("Obteve resultados")
+};
+
+const deleteUser = async (user) => {
+  await axios.delete("users/" + user.id + "/delete")
+    .then((response) => {
+      console.log("Apagou")
+      toast.info("Utilizador #" + user.id + " apagado")
+    })
+    .catch((error) => {
+      console.log("Nao Apagou")
+      toast.info("Utilizador #" + user.id + " não apagado")
+    })
+}
 
 const editClick = (user) => {
   emit("edit", user);
@@ -170,13 +191,13 @@ onMounted(async ()=>{
           </div>
         </td>
         <td class="text-end align-middle" v-if="showDeleteButton">
-          <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id)">
+          <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id) && !isUserStore(user.id)">
             <button
               class="btn btn-xs btn-light"
               @click="deleteClick(user)"
               title="Apagar"
             >
-              <BIconPencil/>
+              <BIconTrash/>
             </button>
           </div>
         </td>
