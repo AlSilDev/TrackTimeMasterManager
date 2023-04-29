@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, computed, inject, onMounted } from "vue";
 import avatarNoneUrl from '@/assets/avatar-none.png'
+import { useUserStore } from "../../stores/user.js"
 import { useRouter } from 'vue-router' 
 
 const router = useRouter()  
@@ -8,6 +9,7 @@ const axios = inject('axios')
 const toast = inject('toast')
 
 const serverBaseUrl = inject("serverBaseUrl");
+const userStore = useUserStore()
 
 const image = ref('');
 const photo_file = ref('')
@@ -176,7 +178,7 @@ const userTitle = computed(() => {
         <div class="mb-3 px-1">
           <label for="inputType" class="form-label">Tipo</label>
           <br>
-          <select name="type" v-model="editingUser.type" v-if="editingUser.type == 'A'">
+          <select name="type" v-model="editingUser.type" v-if="userStore.user.type == 'A'">
               <option value="A">Administrador</option>
               <option value="S">Secretariado</option>
           </select>
