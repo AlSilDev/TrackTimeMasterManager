@@ -27,6 +27,11 @@ const clickMenuOption = () => {
       class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
     >
       <div class="position-sticky pt-3">
+        <ul class="nav flex-column bg-info text-white">
+          <li class="nav flex-column">
+            <h6 class="text-center">Secretariado</h6>
+          </li>
+        </ul>
         <ul class="nav flex-column">
           <li class="nav flex-column">
             <router-link
@@ -61,7 +66,7 @@ const clickMenuOption = () => {
               Utilizadores
             </router-link>
           </li>
-        </ul> 
+        </ul>
       </div>
     </nav>
 
