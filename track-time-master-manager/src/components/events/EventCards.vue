@@ -1,11 +1,13 @@
 <script setup>
 import { inject, ref, onMounted } from "vue";
 import { useUserStore } from "../../stores/user.js"
+import {useRouter} from 'vue-router'
 import avatarNoneUrl from '@/assets/avatar-none.png'
 
 const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
 const axios = inject("axios")
+const router = useRouter()
 
 const props = defineProps({
   showId: {
@@ -76,7 +78,7 @@ const getResultsFiltered = async (page = 1) => {
 
 const imageFullUrl = (event) => {
   return event.image_url
-    ? serverBaseUrl + "/storage/eventos/" + event.image_url
+    ? serverBaseUrl + "/storage/fotos/eventos/" + event.image_url
     : avatarNoneUrl;
 };
 
@@ -122,8 +124,8 @@ onMounted(async ()=>{
     </div>
   </div>
 
-  <div>
-    <div class="card" style="width: 18rem;" v-for="event in laravelData.data" :key="event.id">
+  <div class="row">
+    <div class="card" style="width: 18rem; margin: 10px;" v-for="event in laravelData.data" :key="event.id">
       <img class="card-img-top" :src="imageFullUrl(event)" alt="Imagem do evento">
       <div class="card-body">
         <h5 class="card-title">{{ event.name }}</h5>
