@@ -12,6 +12,7 @@ import Vehicle from "../components/vehicles/Vehicle.vue"
 import Drivers from "../components/drivers/Drivers.vue"
 import Driver from "../components/drivers/Driver.vue"
 import Secretariado from '../components/secretariado/Secretariado.vue'
+import Events from "../components/events/Events.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -69,6 +70,16 @@ const router = createRouter({
       name: 'NewUser',
       component: User,
     },
+    {
+      path: '/events',
+      name: 'Events',
+      component: Events,
+    },
+    /*{
+      path: '/events/new',
+      name: 'NewEvent',
+      component: Event,
+    },*/
     /*{
       path: '/secretariado',
       name: 'Secretariado',
