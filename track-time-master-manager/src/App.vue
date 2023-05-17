@@ -3,7 +3,7 @@ import { useRouter, RouterLink, RouterView } from "vue-router";
 import { ref, inject, onMounted } from "vue";
 import { useUserStore } from './stores/user.js'
 import Login from './components/auth/Login.vue'
-import Secretariado from './components/secretariado/Secretariado.vue'
+import PrivatePage from './components/privatePage/PrivatePage.vue'
 
 
 const router = useRouter()
@@ -112,7 +112,7 @@ onMounted(()=>{
 
 
   <div class="container-fluid" v-if="userStore.user">
-    <Secretariado :clickMenuOption="clickMenuOption"></Secretariado>
+    <PrivatePage :clickMenuOption="clickMenuOption"></PrivatePage>
   </div>
   <div v-else>
     <router-view></router-view>
