@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed, inject } from "vue";
+import { ref, watch, computed, inject, onMounted } from "vue";
 import avatarNoneUrl from '@/assets/avatar-none.png'
 
 const serverBaseUrl = inject("serverBaseUrl");
@@ -27,11 +27,7 @@ watch(
   { immediate: true }
 )
 
-/*const photoFullUrl = computed(() => {
-  return editingUser.value.photo_url
-    ? serverBaseUrl + "/storage/fotos/" + editingUser.value.photo_url
-    : avatarNoneUrl
-})*/
+
 
 const eventTitle = computed(() => {
   if (!editingEvent.value){
@@ -70,6 +66,22 @@ const cancel = () => {
   emit("cancel", editingEvent.value);
 }
 
+onMounted(()=>{
+  setTimeout(()=>{
+    imageFullUrl.value = editingEvent.value.image_url
+      ? serverBaseUrl + "/storage/fotos/eventos/" + editingEvent.value.image_url
+      : null
+
+    console.log("image: " + imageFullUrl.value)
+
+    fileFullUrl.value = editingEvent.value.course_url
+      ? serverBaseUrl + "/storage/circuitos/" + editingEvent.value.course_url
+      : null
+
+    console.log("course: " + editingEvent.value.course_url)
+    console.log("course url: " + fileFullUrl.value)
+  }, 1000)
+})
 
 </script>
 
@@ -161,15 +173,15 @@ const cancel = () => {
         <div class="w-25">
           <div class="mb-3">
             <label class="form-label">Circuito</label>
-            <!--div class="form-control text-center">
-              <img :src="courseFullUrl" class="w-100" />
-            </div-->
+            <div class="form-control text-center">
+              <img :src="fileFullUrl" class="w-100" />
+            </div>
             <input type="file" ref="file_input" class="form-control" name="file" v-on:change="uploadCourse()"/>
           </div>
         </div>
 
         <div class="mb-3 px-1">
-          <label for="inputCategory" class="form-label">Categoria</label>
+          <label for="inputCategory" class="form-label">Categoria: </label>
           <select id="inputCategory" v-model="editingEvent.category_id">
             <option value="1">Rally em Sprint</option>
             <option value="2">Rampa</option>
