@@ -61,7 +61,7 @@
   <h3 class="mt-5 mb-3">Utilizadores</h3>
   <div class="container">
     <div class="d-flex justify-content-between">
-      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addUser">Novo Utilizador</button></div>
+      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addUser"><BIconPlus/> Novo Utilizador</button></div>
     </div>
   </div>
   <hr>
