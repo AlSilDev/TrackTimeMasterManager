@@ -1,7 +1,8 @@
 <script setup>
-import { ref, watch, computed, inject } from "vue";
-import avatarNoneUrl from '@/assets/avatar-none.png'
+import { ref, watch, computed, onMounted, inject } from "vue";
 
+const axios = inject("axios")
+const toast = inject("toast")
 const serverBaseUrl = inject("serverBaseUrl");
 
 const props = defineProps({
@@ -31,12 +32,6 @@ watch(
   { immediate: true },
 )
 
-/*const photoFullUrl = computed(() => {
-  return editingVehicle.value.photo_url
-    ? serverBaseUrl + "/storage/fotos/" + editingVehicle.value.photo_url
-    : avatarNoneUrl
-})*/
-
 const vehicleTitle = computed(() => {
   if (!editingVehicle.value){
     return ""
@@ -52,46 +47,50 @@ const cancel = () => {
   emit("cancel", editingVehicle.value);
 };
 
-const isCLType = () => {
-  if (editingVehicle.category == 'CL'){
-    console.log("Entrou em CL");
-    return editingVehicle.category == 'CL';
-  }
-};
+const categories = ref([])
+const classes = ref([])
+const classesCategoryId = ref([])
 
-const isDPType = () => {
-  if (editingVehicle.category == 'DP'){
-    console.log("Entrou em DP");
-    return editingVehicle.category == 'DP';
+const isCategoryNotNull = (categoryId) => {
+  if(categoryId != 0){
+    classesCategoryId.value.length = 0;
+    let i;
+    for (i = 0; i < classes.value.length; i++) {
+      if(((classes.value[i]).category_id) == categoryId){
+        classesCategoryId.value.push(classes.value[i]);
+      }
+    }
+    return true;
   }
-};
-
-const loadClass = (categoryString) => {
-  if (editingVehicle.category == categoryString){
-    newVehicle.class = 'A3';
-  }
-  if (editingVehicle.category == categoryString){
-    newVehicle.class = 'D14';
-  }
-};
-
-const isCategoryCL = (categoryCL) => {
-  if(categoryCL == 'CL'){
-    editingVehicle.value.class = 'A3';
-    return true
-  }else{
-    return false
-  }
+  return false;
 }
 
-const isCategoryDP = (categoryDP) => {
-  if(categoryDP == 'DP'){
-    editingVehicle.value.class = 'D14';
-    return true
-  }else{
-    return false
-  }
-}
+const loadCategories = (async()  => {
+    await axios.get('categories')
+        .then((response) => {
+          //laravelData.value = response.data
+          categories.value = response.data
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+})
+
+const loadClasses = (async()  => {
+    await axios.get('classes')
+        .then((response) => {
+          //laravelData.value = response.data
+          classes.value = response.data
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+})
+
+onMounted (() => {
+  loadCategories()
+  loadClasses()
+})
 
 </script>
 
@@ -119,15 +118,24 @@ const isCategoryDP = (categoryDP) => {
           <label for="inputCategory" class="form-label">Categoria</label>
           <br>
           <select name="category" v-model="editingVehicle.category">
-              <option value="CL">CL</option>
-              <option value="DP">DP</option>
-              <option value="PR">PR</option>
+              <option v-for="category in categories" v-bind:value="category.id">{{category.name}}</option>
           </select>
           <field-error-message :errors="errors" fieldName="category"></field-error-message>
         </div>
 
+        <div class="mb-3 px-1" v-if="isCategoryNotNull(editingVehicle.category)">
+          <label for="inputClass" class="form-label">Classe</label>
+          <br>
+          <!--select name="class_id" v-model="editingVehicle.class_id"-->
+          <select name="class_id" v-model="editingVehicle.class_id">
+              <!--option v-for="classe in classes" v-bind:value="classe.id">{{classe.name}}</option-->
+              <option v-for="classe in classesCategoryId" v-bind:value="classe.id" >{{classe.name}}</option>
+          </select>
+          <field-error-message :errors="errors" fieldName="class"></field-error-message>
+        </div>
+
         <!--div class="mb-3 px-1" v-if="editingVehicle.category == 'CL'"-->
-        <div class="mb-3 px-1" v-if="isCategoryCL(editingVehicle.category)">
+        <!--div class="mb-3 px-1" v-if="isCategoryCL(editingVehicle.category)">
           <label for="inputClass" class="form-label">Class</label>
           <br>
           <select name="category" v-model="editingVehicle.class">
@@ -138,9 +146,9 @@ const isCategoryDP = (categoryDP) => {
               <option value="C12">C12</option>
           </select>
           <field-error-message :errors="errors" fieldName="class"></field-error-message>
-        </div>
+        </div-->
 
-        <div class="mb-3 px-1" v-if="isCategoryDP(editingVehicle.category)">
+        <!--div class="mb-3 px-1" v-if="isCategoryDP(editingVehicle.category)">
           <label for="inputClass" class="form-label">Classe</label>
           <br>
           <select name="category" v-model="editingVehicle.class">
@@ -153,7 +161,7 @@ const isCategoryDP = (categoryDP) => {
               <option value="F24">F24</option>
           </select>
           <field-error-message :errors="errors" fieldName="class"></field-error-message>
-        </div>
+        </div-->
 
         <div class="mb-3 px-1">
           <label for="inputLicensePlate" class="form-label">Matricula</label>
