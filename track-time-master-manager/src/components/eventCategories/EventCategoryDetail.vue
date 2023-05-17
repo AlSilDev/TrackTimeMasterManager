@@ -17,7 +17,6 @@ const props = defineProps({
     default: "insert", // insert / update
   },
 })
-
 const emit = defineEmits(["save", "cancel"]);
 
 const editingEventCategory = ref(props.eventCategory)
@@ -43,7 +42,7 @@ const eventCategoryTitle = computed(() => {
   return props.operationType == "insert" ? "Nova Categoria de Evento" : "Categoria de Evento #" + editingEventCategory.value.id;
 })
 
-const save = () => {
+const save = (editingEventCategory) => {
   emit("save", editingEventCategory.value);
 }
 

@@ -27,6 +27,8 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(["edit"]);
+
 
 const isAdmin = () => {
   if (!userStore.user) {
@@ -35,6 +37,9 @@ const isAdmin = () => {
   return userStore.user.type == 'A'
 }
 
+const editClick = (category) => {
+  emit("edit", category);
+}
 
 </script>
 
@@ -44,12 +49,14 @@ const isAdmin = () => {
       <tr>
         <th class="align-middle" >Nome</th>
         <th class="align-middle">Descrição</th>
+        <th class="align-middle"></th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="eventCategory in eventCategories" :key="eventCategory.id">
         <td class="align-middle">{{ eventCategory.name }}</td>
         <td class="align-middle">{{ eventCategory.description }}</td>
+        <td><button v-if="isAdmin()" @click="editClick(eventCategory)" class="btn btn-dark" title="Editar"><BIconPencil/></button></td>
       </tr>
     </tbody>
   </table>
