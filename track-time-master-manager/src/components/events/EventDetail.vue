@@ -1,8 +1,11 @@
 <script setup>
 import { ref, watch, computed, inject, onMounted } from "vue";
 import avatarNoneUrl from '@/assets/avatar-none.png'
+import moment from 'moment'
 
 const serverBaseUrl = inject("serverBaseUrl");
+const axios = inject('axios')
+const toast = inject('toast')
 
 const props = defineProps({
   event: {
@@ -17,6 +20,13 @@ const props = defineProps({
 
 const emit = defineEmits(["save", "cancel"]);
 
+//https://stackoverflow.com/questions/46708110/convert-date-format-in-javascript-using-vuejs
+const formatDate = (value)=>{
+  if (value) {
+    return moment(String(value)).format('DD/MM/YYYY HH:MM:SS')
+  }
+}
+
 const editingEvent = ref(props.event)
 
 watch(
@@ -27,15 +37,12 @@ watch(
   { immediate: true }
 )
 
-
-
 const eventTitle = computed(() => {
   if (!editingEvent.value){
     return ""
   }
   return props.operationType == "insert" ? "Novo Evento" : "Evento #" + editingEvent.value.id;
 })
-
 
 const file_input = ref('');
 const file = ref('')
@@ -48,8 +55,6 @@ const uploadCourse =  ()=>{
 }
 
 const fileFullUrl = ref()
-
-
 const image_file_input = ref('');
 
 const uploadImage =  ()=>{
@@ -57,6 +62,15 @@ const uploadImage =  ()=>{
 }
 
 const imageFullUrl = ref()
+/* Press methods */
+const pressName = ref('')
+const press_file_input = ref('')
+const pressFullUrl = ref()
+
+const uploadPress =  ()=>{
+    pressFullUrl.value = URL.createObjectURL(press_file_input.value.files[0])
+}
+/* */
 
 const save = () => {
   emit("save", editingEvent.value, image_file_input.value.files[0], file.value);
@@ -64,6 +78,35 @@ const save = () => {
 
 const cancel = () => {
   emit("cancel", editingEvent.value);
+}
+
+const pressFiles = ref()
+const loadPressFiles = async ()=>{
+  await axios.get(`events/${editingEvent.value.id}/press`)
+    .then((response)=>{
+      console.log(response.data)
+      pressFiles.value = response.data
+    })
+    .catch((error)=>{
+      console.error(error)
+    })
+}
+
+const addPressFile = async ()=>{
+  const formData = new FormData()
+  formData.append('press_file', press_file_input.value.files[0])
+  formData.append('name', pressName.value)
+  await axios.post(`events/${editingEvent.value.id}/press`, formData, { headers: { 'Content-Type': 'multipart/form-data' }})
+    .then((response)=>{
+      //console.log(response.data)
+      toast.success(`O ficheiro ${pressName.value} foi adicionado com sucesso.`)
+      pressFiles.value.push(response.data)
+      //console.log(pressFiles.value)
+    })
+    .catch((error)=>{
+      toast.error('Ocorreu um erro no servidor')
+      console.error(error)
+    })
 }
 
 onMounted(()=>{
@@ -80,6 +123,8 @@ onMounted(()=>{
 
     console.log("course: " + editingEvent.value.course_url)
     console.log("course url: " + fileFullUrl.value)
+    
+    loadPressFiles()
   }, 1000)
 })
 
@@ -216,15 +261,60 @@ onMounted(()=>{
             v-model="editingEvent.point_calc_reason"
           />
         </div>
-
-
-
       </div>
     </div>
+
     <div class="mb-3 d-flex justify-content-center">
       <button type="button" class="btn btn-dark px-5" @click="save">Guardar</button>
       <button type="button" class="btn btn-light px-5" @click="cancel">Cancelar</button>
     </div>
+
+    <hr>
+    <h3>Imprensa</h3>
+
+    <!-- Press files -->
+    <div class="d-flex flex-wrap justify-content-center">
+        <div class="w-75 pe-4">
+          <div class="mb-3">
+            <label for="inputNamePress" class="form-label">Nome</label>
+            <input
+              type="text"
+              class="form-control"
+              id="inputNamePress"
+              placeholder="Nome"
+              required
+              v-model="pressName"
+            />
+          </div>
+        </div>
+        <div class="w-25">
+          <div class="mb-3">
+            <label class="form-label">Ficheiro</label>
+            <input type="file" ref="press_file_input" class="form-control" name="press" v-on:change="uploadPress()"/>
+            
+          </div>
+        </div>
+        
+      </div>
+      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addPressFile()">Adicionar Ficheiro</button></div>
+      
+      <table class="table table-hover table-striped">
+        <thead class="table-dark" style="cursor: pointer">
+          <tr>
+            <th class="align-middle">Nome</th>
+            <th class="align-middle">Data de Criação</th>
+            <th class="align-middle">Data de Atualização</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="press in pressFiles" :key="press.id">
+            <td class="align-middle">{{ press.name }}</td>
+            <td class="align-middle">{{ formatDate(press.created_at) }}</td>
+            <td class="align-middle">{{ formatDate(press.updated_at) }}</td>
+          </tr>
+        </tbody>
+      </table>
+
   </form>
 </template>
 
