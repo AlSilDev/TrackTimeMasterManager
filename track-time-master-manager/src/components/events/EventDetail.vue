@@ -308,14 +308,13 @@ onMounted(()=>{
             <div class="mb-3">
               <label class="form-label">Ficheiro</label>
               <input type="file" ref="press_file_input" class="form-control" name="press" v-on:change="uploadPress()"/>
-              
             </div>
           </div>
-          
         </div>
         <div class="col-sm"><button type="button" class="btn btn-dark" @click="addPressFile()">Adicionar Ficheiro</button></div>
       </form>
       
+      <br>
       <table class="table table-hover table-striped">
         <thead class="table-dark" style="cursor: pointer">
           <tr>
