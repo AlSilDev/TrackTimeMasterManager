@@ -27,7 +27,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["edit", "deleteCategory"]);
+const emit = defineEmits(["edit", "deleteCategory", "loadEventCategories"]);
 
 const isAdmin = () => {
   if (!userStore.user) {
@@ -38,10 +38,36 @@ const isAdmin = () => {
 
 const editClick = (category) => {
   emit("edit", category);
-  
-const deleteClick = (eventCategory) => {
-  emit("deleteCategory", eventCategory)
 }
+  
+const deleteClick = (async(eventCategory) => {
+  await getEventsWithEventCategory(eventCategory.id);
+  if (eventsWithEventCategory.value.length == 0){
+    emit("deleteCategory", eventCategory);
+    await fetchEventCategories();
+  }
+  else{
+    return;
+  }
+  
+})
+
+const eventsWithEventCategory = ref([]);
+const getEventsWithEventCategory = (async (eventcategoryId) => {
+  console.log("Loading Events With Event Category " + eventcategoryId)
+  await await axios.get('events/withEventCategory/' + eventcategoryId)
+      .then((response) => {
+        eventsWithEventCategory.value = response.data
+        console.log(eventsWithEventCategory.value)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+})
+
+const fetchEventCategories = (async() => {
+  await emit("loadEventCategories");
+})
 
 </script>
 
