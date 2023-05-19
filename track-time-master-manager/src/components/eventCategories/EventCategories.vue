@@ -28,6 +28,17 @@
     router.push({ name: 'NewEventCategory'})
   }
 
+  const deleteEventCategories = (eventCategory) => {
+    axios.delete('eventCategories/' + eventCategory)
+        .then((response) => {
+          console.log("Removed!")
+        })
+        .catch((error) => {
+          console.log(error)
+        });
+        console.log("Method DELETE - TO DO " + eventCategory.id)
+  }
+
   onMounted(()=>{
     loadEventCategories()
   })
@@ -43,6 +54,7 @@
   </div>
   <hr>
   <eventCategory-table
+    :deleteCategory="deleteEventCategories"
     :eventCategories="eventCategories"
     :showId="false"
   ></eventCategory-table>

@@ -94,6 +94,7 @@
 <template>
 
   <eventCategory-detail
+    :operationType="operation"
     :eventCategory="eventCategory"
     :errors="errors"
     @save="save"
