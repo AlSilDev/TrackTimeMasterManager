@@ -28,6 +28,9 @@
     router.push({ name: 'NewEventCategory'})
   }
 
+  const editEventCategory = (category) => {
+    router.push({ name: 'EventCategory', params: { id: category.id } })
+    
   const deleteEventCategories = (eventCategory) => {
     axios.delete('eventCategories/' + eventCategory)
         .then((response) => {
@@ -37,6 +40,7 @@
           console.log(error)
         });
         console.log("Method DELETE - TO DO " + eventCategory.id)
+        
   }
 
   onMounted(()=>{
@@ -49,13 +53,14 @@
   <h3 class="mt-5 mb-3">Categorias de Eventos</h3>
   <div class="container">
     <div class="d-flex justify-content-between">
-      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addNewEventCategory"><BIconPlus/>Nova Categoria</button></div>
+      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addNewEventCategory"><BIconPlus/> Nova Categoria</button></div>
     </div>
   </div>
   <hr>
   <eventCategory-table
     :deleteCategory="deleteEventCategories"
     :eventCategories="eventCategories"
+    @edit="editEventCategory"
     :showId="false"
   ></eventCategory-table>
 </template>

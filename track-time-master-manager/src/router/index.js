@@ -11,7 +11,7 @@ import Vehicles from "../components/vehicles/Vehicles.vue"
 import Vehicle from "../components/vehicles/Vehicle.vue"
 import Drivers from "../components/drivers/Drivers.vue"
 import Driver from "../components/drivers/Driver.vue"
-import Secretariado from '../components/secretariado/Secretariado.vue'
+import PrivatePage from '../components/privatePage/PrivatePage.vue'
 import Events from "../components/events/Events.vue"
 import Event from "../components/events/Event.vue"
 import EventCategories from "../components/eventCategories/EventCategories.vue"
@@ -79,6 +79,11 @@ const router = createRouter({
       component: EventCategory,
     },
     {
+      path: '/events/new',
+      name: 'NewEvent',
+      component: Event,
+    },
+    {
       path: '/events',
       name: 'Events',
       component: Events,
@@ -89,15 +94,10 @@ const router = createRouter({
       component: EventCategories,
     },
     {
-      path: '/events/new',
-      name: 'NewEvent',
-      component: Event,
+      path: '/privatePage',
+      name: 'PrivatePage',
+      component: PrivatePage,
     },
-    /*{
-      path: '/secretariado',
-      name: 'Secretariado',
-      component: Secretariado,
-    },*/
     {
       path: '/users/:id',
       name: 'User',
@@ -114,14 +114,14 @@ const router = createRouter({
       // Replaced with the following line to ensure that id is a number
       props: route => ({ id: parseInt(route.params.id) })
     },
-    /*{
+    {
       path: '/events/category/:id',
       name: 'EventCategory',
       component: EventCategory,
       //props: true
       // Replaced with the following line to ensure that id is a number
       props: route => ({ id: parseInt(route.params.id) })
-    },*/
+    },
     {
       path: '/about',
       name: 'about',

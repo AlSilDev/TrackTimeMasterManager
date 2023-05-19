@@ -28,7 +28,7 @@
   <div class="container">
     <div class="d-flex justify-content-between">
       <div class="col-sm"><button type="button" class="btn btn-dark" @click="addEvent"><BIconPlus/> Novo Evento</button></div>
-      <div class="col-sm"><button type="button" class="btn btn-dark" @click="showCategories">Categorias</button></div>
+      <div class="col-sm"><button type="button" class="btn btn-dark" @click="showCategories"><BIconTable/> Categorias</button></div>
       <!--div-- class="col-sm"><button type="button" class="btn btn-dark">Exportar Concorrente(s)</button></div-->
     </div>
   </div>
