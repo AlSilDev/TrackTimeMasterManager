@@ -27,8 +27,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["edit"]);
-
+const emit = defineEmits(["edit", "deleteCategory"]);
 
 const isAdmin = () => {
   if (!userStore.user) {
@@ -39,6 +38,9 @@ const isAdmin = () => {
 
 const editClick = (category) => {
   emit("edit", category);
+  
+const deleteClick = (eventCategory) => {
+  emit("deleteCategory", eventCategory)
 }
 
 </script>
@@ -50,6 +52,7 @@ const editClick = (category) => {
         <th class="align-middle" >Nome</th>
         <th class="align-middle">Descrição</th>
         <th class="align-middle"></th>
+        <th class="align-middle"></th>
       </tr>
     </thead>
     <tbody>
@@ -57,6 +60,7 @@ const editClick = (category) => {
         <td class="align-middle">{{ eventCategory.name }}</td>
         <td class="align-middle">{{ eventCategory.description }}</td>
         <td><button v-if="isAdmin()" @click="editClick(eventCategory)" class="btn btn-dark" title="Editar"><BIconPencil/></button></td>
+        <td><button v-if="isAdmin()" @click="deleteClick(eventCategory)" class="btn btn-danger" title="Apagar"><BIconTrash/></button></td>
       </tr>
     </tbody>
   </table>
