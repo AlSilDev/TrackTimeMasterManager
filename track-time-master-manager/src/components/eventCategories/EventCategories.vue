@@ -30,6 +30,7 @@
 
   const editEventCategory = (category) => {
     router.push({ name: 'EventCategory', params: { id: category.id } })
+  }
     
   const deleteEventCategories = (eventCategory) => {
     axios.delete('eventCategories/' + eventCategory)

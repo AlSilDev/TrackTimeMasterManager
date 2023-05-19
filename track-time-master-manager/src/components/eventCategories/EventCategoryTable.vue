@@ -38,6 +38,7 @@ const isAdmin = () => {
 
 const editClick = (category) => {
   emit("edit", category);
+}
   
 const deleteClick = (eventCategory) => {
   emit("deleteCategory", eventCategory)
