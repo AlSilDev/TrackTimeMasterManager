@@ -6,17 +6,22 @@
   const router = useRouter()
 
   const axios = inject('axios')
+  const toast = inject('toast')
 
   const eventCategories = ref([])
+
+  const errors = ref(null)
 
   const loadEventCategories = (async() => {
     await axios.get('eventCategories')
         .then((response) => {
           eventCategories.value = response.data
           console.log(eventCategories.value)
+          return eventCategories
         })
         .catch((error) => {
           console.log(error)
+          return null
         })
   })
 
@@ -30,18 +35,28 @@
 
   const editEventCategory = (category) => {
     router.push({ name: 'EventCategory', params: { id: category.id } })
-    
-  const deleteEventCategories = (eventCategory) => {
-    axios.delete('eventCategories/' + eventCategory)
+  }
+
+  const deleteEventCategory = (eventCategory) => {
+    //console.log("Deleting " + eventCategory.id)
+    errors.value = null
+    axios.delete('eventCategories/' + eventCategory.id)
         .then((response) => {
-          console.log("Removed!")
+          //console.log("Removed!")
+          toast.success('Categoria de evento #' + eventCategory.id + ' apagada com sucesso!')
         })
         .catch((error) => {
-          console.log(error)
+          if (error.response.status == 422) {
+              toast.error('Categoria de evento #' + props.id + ' não apagada devido a erros de validação!')
+              errors.value = error.response.data.errors
+            } else {
+              toast.error('Categoria de evento #' + eventCategory.id + ' não apagada devido a erro(s) desconhecido para o servidor!')
+            }
         });
-        console.log("Method DELETE - TO DO " + eventCategory.id)
         
   }
+
+  
 
   onMounted(()=>{
     loadEventCategories()
@@ -58,9 +73,11 @@
   </div>
   <hr>
   <eventCategory-table
-    :deleteCategory="deleteEventCategories"
+    :errors="errors"
     :eventCategories="eventCategories"
     @edit="editEventCategory"
+    @deleteCategory="deleteEventCategory"
+    @loadEventCategories="loadEventCategories"
     :showId="false"
   ></eventCategory-table>
 </template>
