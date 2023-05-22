@@ -68,11 +68,9 @@
   }
 
   const deleteEventCategory = (async(eventCategory) => {
-    //console.log("Deleting " + eventCategory.id)
     errors.value = null
     await axios.delete('eventCategories/' + eventCategory.id)
         .then((response) => {
-          //console.log("Removed!")
           toast.success('Categoria de evento #' + eventCategory.id + ' apagada com sucesso!')
         })
         .catch((error) => {
@@ -81,6 +79,23 @@
               errors.value = error.response.data.errors
             } else {
               toast.error('Categoria de evento #' + eventCategory.id + ' não apagada devido a erro(s) desconhecido para o servidor!')
+            }
+        });
+        
+  })
+
+  const restoreEventCategory = (async(eventCategory) => {
+    errors.value = null
+    await axios.get('eventCategories/restore/' + eventCategory.id)
+        .then((response) => {
+          toast.success('Categoria de evento #' + eventCategory.id + ' restaurada com sucesso!')
+        })
+        .catch((error) => {
+          if (error.response.status == 422) {
+              toast.error('Categoria de evento #' + props.id + ' não restaurada devido a erros de validação!')
+              errors.value = error.response.data.errors
+            } else {
+              toast.error('Categoria de evento #' + eventCategory.id + ' não restaurada devido a erro(s) desconhecido para o servidor!')
             }
         });
         
@@ -112,8 +127,10 @@
     :eventCategoriesOnlyTrashed="eventCategoriesOnlyTrashed"
     :eventCategoriesWithTrashed="eventCategoriesWithTrashed"
     @edit="editEventCategory"
+    @restoreCategory="restoreEventCategory"
     @deleteCategory="deleteEventCategory"
     @loadEventCategories="loadEventCategories"
+    @loadEventCategoriesAux="loadEventCategoriesAux"
     @loadEventCategoriesOnlyTrashed="loadEventCategoriesOnlyTrashed"
     @loadEventCategoriesWithTrashed="loadEventCategoriesWithTrashed"
     :showId="false"

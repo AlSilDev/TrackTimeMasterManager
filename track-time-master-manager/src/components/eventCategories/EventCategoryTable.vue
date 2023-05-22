@@ -39,7 +39,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["edit", "deleteCategory", "loadEventCategories", "loadEventCategoriesOnlyTrashed", "loadEventCategoriesWithTrashed"]);
+const emit = defineEmits(["edit", "deleteCategory", "restoreCategory", "loadEventCategories", "loadEventCategoriesAux", "loadEventCategoriesOnlyTrashed", "loadEventCategoriesWithTrashed"]);
 
 const isAdmin = () => {
   if (!userStore.user) {
@@ -65,12 +65,17 @@ const removeObjectWithId = (id) => {
     props.eventCategoriesListAux.splice(objWithIdIndex, 1);
   }
 }
+
+const addObject = (eventCategoryToAdd, arrayToUpdated) => {
+  arrayToUpdated.push(eventCategoryToAdd);
+}
   
 const deleteClick = (eventCategory) => {
   getEventsWithEventCategory(eventCategory.id);
   if (eventsWithEventCategory.value.length == 0){
     emit("deleteCategory", eventCategory);
-    removeObjectWithId(eventCategory.id)
+    removeObjectWithId(eventCategory.id);
+    addObject(eventCategory, props.eventCategoriesOnlyTrashed);
   }
   else{
     return;
@@ -79,7 +84,9 @@ const deleteClick = (eventCategory) => {
 }
 
 const restoreClick = (eventCategory) => {
-  console.log("Entrou no restore method!")
+  emit("restoreCategory", eventCategory)
+  removeObjectWithId(eventCategory.id)
+  addObject(eventCategory, props.eventCategories); 
 }
 
 const eventsWithEventCategory = ref([]);
@@ -97,13 +104,17 @@ const getEventsWithEventCategory = (async (eventcategoryId) => {
 
 const isSelected = ref(1);
 const withTrashed = () => {
-  if (isSelected.value){
-    updateArrayValues(props.eventCategoriesListAux, props.eventCategoriesOnlyTrashed)
-    isSelected.value = 0;
-  }else{
-    updateArrayValues(props.eventCategoriesListAux, props.eventCategories)
-    isSelected.value = 1;
-  }
+  setTimeout(()=>{
+    if (isSelected.value){
+      emit("loadEventCategories")
+      updateArrayValues(props.eventCategoriesListAux, props.eventCategoriesOnlyTrashed)
+      isSelected.value = 0;
+    }else{
+      emit("loadEventCategoriesOnlyTrashed")
+      updateArrayValues(props.eventCategoriesListAux, props.eventCategories)
+      isSelected.value = 1;
+    }
+  },1000);
 }
 
 const updateArrayValues = (array1, array2) => {
@@ -133,8 +144,10 @@ const updateArrayValues = (array1, array2) => {
     </thead>
     <tbody>
       <tr v-for="eventCategory in eventCategoriesListAux" :key="eventCategory.id">
-        <td class="align-middle">{{ eventCategory.name }}</td>
-        <td class="align-middle">{{ eventCategory.description }}</td>
+        <td class="align-middle text-danger text-decoration-line-through font-weight-bold" v-if="isTrashed()">{{ eventCategory.name }}</td>
+        <td class="align-middle" v-else>{{ eventCategory.name }}</td>
+        <td class="align-middle text-danger text-decoration-line-through font-weight-bold" v-if="isTrashed()">{{ eventCategory.description }}</td>
+        <td class="align-middle" v-else>{{ eventCategory.description }}</td>
         <td><button v-if="isAdmin() && !isTrashed()" @click="editClick(eventCategory)" class="btn btn-dark" title="Editar"><BIconPencil/></button></td>
         <td><button v-if="isAdmin() && !isTrashed()" @click="deleteClick(eventCategory)" class="btn btn-danger" title="Apagar"><BIconTrash/></button></td>
         <td><button v-if="isAdmin() && isTrashed()" @click="restoreClick(eventCategory)" class="btn btn-warning" title="Apagar"><BIconArrowClockwise/></button></td>
