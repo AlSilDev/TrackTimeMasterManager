@@ -9,6 +9,9 @@
   const toast = inject('toast')
 
   const eventCategories = ref([])
+  const eventCategoriesOnlyTrashed = ref([])
+  const eventCategoriesWithTrashed = ref([])
+  const eventCategoriesListAux = ref([])
 
   const errors = ref(null)
 
@@ -16,17 +19,44 @@
     await axios.get('eventCategories')
         .then((response) => {
           eventCategories.value = response.data
-          console.log(eventCategories.value)
-          return eventCategories
+          console.log("Event Categories: " + eventCategories.value)
         })
         .catch((error) => {
           console.log(error)
-          return null
         })
   })
 
-  const totalEventCategories = computed(() => {
-    return eventCategories.value.length
+  const loadEventCategoriesAux = (async() => {
+    await axios.get('eventCategories')
+        .then((response) => {
+          eventCategoriesListAux.value = response.data
+          console.log("Event Categories: " + eventCategories.value)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+  })
+
+  const loadEventCategoriesOnlyTrashed = (async() => {
+    await axios.get('eventCategories/onlyTrashed')
+        .then((response) => {
+          eventCategoriesOnlyTrashed.value = response.data
+          console.log("Event Categories only trashed: " + eventCategoriesOnlyTrashed.value)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+  })
+
+  const loadEventCategoriesWithTrashed = (async() => {
+    await axios.get('eventCategories/withTrashed')
+        .then((response) => {
+          eventCategoriesWithTrashed.value = response.data
+          console.log("Event Categories with trashed: " + eventCategoriesWithTrashed.value)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
   })
 
   const addNewEventCategory = () => {
@@ -37,10 +67,10 @@
     router.push({ name: 'EventCategory', params: { id: category.id } })
   }
 
-  const deleteEventCategory = (eventCategory) => {
+  const deleteEventCategory = (async(eventCategory) => {
     //console.log("Deleting " + eventCategory.id)
     errors.value = null
-    axios.delete('eventCategories/' + eventCategory.id)
+    await axios.delete('eventCategories/' + eventCategory.id)
         .then((response) => {
           //console.log("Removed!")
           toast.success('Categoria de evento #' + eventCategory.id + ' apagada com sucesso!')
@@ -54,12 +84,15 @@
             }
         });
         
-  }
+  })
 
   
 
   onMounted(()=>{
     loadEventCategories()
+    loadEventCategoriesAux()
+    loadEventCategoriesOnlyTrashed()
+    loadEventCategoriesWithTrashed()
   })
 
 </script>
@@ -74,10 +107,15 @@
   <hr>
   <eventCategory-table
     :errors="errors"
+    :eventCategoriesListAux="eventCategoriesListAux"
     :eventCategories="eventCategories"
+    :eventCategoriesOnlyTrashed="eventCategoriesOnlyTrashed"
+    :eventCategoriesWithTrashed="eventCategoriesWithTrashed"
     @edit="editEventCategory"
     @deleteCategory="deleteEventCategory"
     @loadEventCategories="loadEventCategories"
+    @loadEventCategoriesOnlyTrashed="loadEventCategoriesOnlyTrashed"
+    @loadEventCategoriesWithTrashed="loadEventCategoriesWithTrashed"
     :showId="false"
   ></eventCategory-table>
 </template>
