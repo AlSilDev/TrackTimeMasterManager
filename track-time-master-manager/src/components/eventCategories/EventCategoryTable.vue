@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, onMounted } from "vue";
+import { inject, computed, ref, onMounted, watch } from "vue";
 import { useUserStore } from "../../stores/user.js"
 import { useRouter } from 'vue-router'  
 
@@ -9,7 +9,19 @@ const axios = inject('axios')
 const toast = inject('toast')
 
 const props = defineProps({
+  eventCategoriesListAux: {
+    type: Array,
+    default: () => []
+  },
   eventCategories: {
+    type: Array,
+    default: () => [],
+  },
+  eventCategoriesOnlyTrashed: {
+    type: Array,
+    default: () => [],
+  },
+  eventCategoriesWithTrashed: {
     type: Array,
     default: () => [],
   },
@@ -27,7 +39,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["edit", "deleteCategory", "loadEventCategories"]);
+const emit = defineEmits(["edit", "deleteCategory", "loadEventCategories", "loadEventCategoriesOnlyTrashed", "loadEventCategoriesWithTrashed"]);
 
 const isAdmin = () => {
   if (!userStore.user) {
@@ -36,26 +48,44 @@ const isAdmin = () => {
   return userStore.user.type == 'A'
 }
 
+const isTrashed = () => {
+  if (isSelected.value){
+    return false
+  }
+  return true
+}
+
 const editClick = (category) => {
   emit("edit", category);
 }
+
+const removeObjectWithId = (id) => {
+  const objWithIdIndex = props.eventCategoriesListAux.findIndex((obj) => obj.id === id);
+  if (objWithIdIndex > -1){
+    props.eventCategoriesListAux.splice(objWithIdIndex, 1);
+  }
+}
   
-const deleteClick = (async(eventCategory) => {
-  await getEventsWithEventCategory(eventCategory.id);
+const deleteClick = (eventCategory) => {
+  getEventsWithEventCategory(eventCategory.id);
   if (eventsWithEventCategory.value.length == 0){
     emit("deleteCategory", eventCategory);
-    await fetchEventCategories();
+    removeObjectWithId(eventCategory.id)
   }
   else{
     return;
   }
   
-})
+}
+
+const restoreClick = (eventCategory) => {
+  console.log("Entrou no restore method!")
+}
 
 const eventsWithEventCategory = ref([]);
 const getEventsWithEventCategory = (async (eventcategoryId) => {
   console.log("Loading Events With Event Category " + eventcategoryId)
-  await await axios.get('events/withEventCategory/' + eventcategoryId)
+  await axios.get('events/withEventCategory/' + eventcategoryId)
       .then((response) => {
         eventsWithEventCategory.value = response.data
         console.log(eventsWithEventCategory.value)
@@ -65,28 +95,49 @@ const getEventsWithEventCategory = (async (eventcategoryId) => {
       })
 })
 
-const fetchEventCategories = (async() => {
-  await emit("loadEventCategories");
-})
+const isSelected = ref(1);
+const withTrashed = () => {
+  if (isSelected.value){
+    updateArrayValues(props.eventCategoriesListAux, props.eventCategoriesOnlyTrashed)
+    isSelected.value = 0;
+  }else{
+    updateArrayValues(props.eventCategoriesListAux, props.eventCategories)
+    isSelected.value = 1;
+  }
+}
+
+const updateArrayValues = (array1, array2) => {
+  array1.splice(0);
+  for (let index = 0; index < array2.length; index++) {
+    array1.push(array2[index]);
+  };
+}
 
 </script>
 
 <template>
+  <label class="d-flex flex-row-reverse" @click="withTrashed">&nbsp;apagadas
+    <input type="checkbox">
+    <span class="checkmark"></span>
+  </label>
+  <br>
   <table class="table table-hover table-striped">
     <thead class="table-dark" style="cursor: pointer">
       <tr>
-        <th class="align-middle" >Nome</th>
-        <th class="align-middle">Descrição</th>
-        <th class="align-middle"></th>
-        <th class="align-middle"></th>
+        <th class="align-middle w-25" >Nome</th>
+        <th class="align-middle w-50">Descrição</th>
+        <th class="align-middle w-auto"></th>
+        <th class="align-middle w-auto"></th>
+        <th class="align-middle w-auto"></th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="eventCategory in eventCategories" :key="eventCategory.id">
+      <tr v-for="eventCategory in eventCategoriesListAux" :key="eventCategory.id">
         <td class="align-middle">{{ eventCategory.name }}</td>
         <td class="align-middle">{{ eventCategory.description }}</td>
-        <td><button v-if="isAdmin()" @click="editClick(eventCategory)" class="btn btn-dark" title="Editar"><BIconPencil/></button></td>
-        <td><button v-if="isAdmin()" @click="deleteClick(eventCategory)" class="btn btn-danger" title="Apagar"><BIconTrash/></button></td>
+        <td><button v-if="isAdmin() && !isTrashed()" @click="editClick(eventCategory)" class="btn btn-dark" title="Editar"><BIconPencil/></button></td>
+        <td><button v-if="isAdmin() && !isTrashed()" @click="deleteClick(eventCategory)" class="btn btn-danger" title="Apagar"><BIconTrash/></button></td>
+        <td><button v-if="isAdmin() && isTrashed()" @click="restoreClick(eventCategory)" class="btn btn-warning" title="Apagar"><BIconArrowClockwise/></button></td>
       </tr>
     </tbody>
   </table>
