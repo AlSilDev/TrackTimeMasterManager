@@ -206,6 +206,21 @@ const addRegulationFile = async ()=>{
       console.error(error)
     })
 }
+
+const deleteRegulationFile = async (regulation)=>{
+  await axios.delete(`regulations/${regulation.id}`)
+    .then((response)=>{
+      //console.log(response.data)
+      toast.success(`O ficheiro ${regulation.name} foi eliminado com sucesso.`)
+      console.log('index: ' + regulationFiles.value.indexOf(regulation))
+      regulationFiles.value.splice(regulationFiles.value.indexOf(regulation), 1)
+      //console.log(pressFiles.value)
+    })
+    .catch((error)=>{
+      toast.error('Ocorreu um erro no servidor')
+      console.error(error)
+    })  
+}
 /* */
 
 const eventCategories = ref([])
@@ -530,6 +545,7 @@ onMounted(()=>{
             <th class="align-middle">Data de Criação</th>
             <th class="align-middle">Data de Atualização</th>
             <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -537,6 +553,7 @@ onMounted(()=>{
             <td class="align-middle">{{ regulation.name }}</td>
             <td class="align-middle">{{ formatDate(regulation.created_at) }}</td>
             <td class="align-middle">{{ formatDate(regulation.updated_at) }}</td>
+            <td class="align-middle"><button class="btn btn-danger" @click="deleteRegulationFile(regulation)"><BIconTrash/></button></td>
             <td class="align-middle"><a class="btn btn-info" :href="serverBaseUrl + '/storage/regulamentos/' + regulation.file_url" target="_blank"><BIconArrowDown/></a></td>
           </tr>
         </tbody>
