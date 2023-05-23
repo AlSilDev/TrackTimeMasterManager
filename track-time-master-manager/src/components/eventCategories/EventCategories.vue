@@ -66,7 +66,7 @@
   const editEventCategory = (category) => {
     router.push({ name: 'EventCategory', params: { id: category.id } })
   }
-
+  
   const deleteEventCategory = (async(eventCategory) => {
     errors.value = null
     await axios.delete('eventCategories/' + eventCategory.id)

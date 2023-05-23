@@ -2,6 +2,7 @@
 import { ref, watch, computed, inject, onMounted } from "vue";
 import avatarNoneUrl from '@/assets/avatar-none.png'
 import moment from 'moment'
+import { BIconTrash } from "bootstrap-icons-vue";
 
 const serverBaseUrl = inject("serverBaseUrl");
 const axios = inject('axios')
@@ -23,7 +24,7 @@ const emit = defineEmits(["save", "cancel"]);
 //https://stackoverflow.com/questions/46708110/convert-date-format-in-javascript-using-vuejs
 const formatDate = (value)=>{
   if (value) {
-    return moment(String(value)).format('DD/MM/YYYY HH:MM:SS')
+    return moment(String(value)).format('DD/MM/YYYY hh:mm:ss a')
   }
 }
 
@@ -80,7 +81,7 @@ const cancel = () => {
   emit("cancel", editingEvent.value);
 }
 
-const pressFiles = ref()
+const pressFiles = ref([])
 const loadPressFiles = async ()=>{
   await axios.get(`events/${editingEvent.value.id}/press`)
     .then((response)=>{
@@ -108,6 +109,20 @@ const addPressFile = async ()=>{
       console.error(error)
     })
 }
+const deletePressFile = async (pressFile)=>{
+  await axios.delete(`press/${pressFile.id}`)
+    .then((response)=>{
+      //console.log(response.data)
+      toast.success(`O ficheiro ${pressFile.name} foi eliminado com sucesso.`)
+      console.log('index: ' + pressFiles.value.indexOf(pressFile))
+      pressFiles.value.splice(pressFiles.value.indexOf(pressFile), 1)
+      //console.log(pressFiles.value)
+    })
+    .catch((error)=>{
+      toast.error('Ocorreu um erro no servidor')
+      console.error(error)
+    })  
+}
 
 onMounted(()=>{
   setTimeout(()=>{
@@ -123,8 +138,10 @@ onMounted(()=>{
 
     console.log("course: " + editingEvent.value.course_url)
     console.log("course url: " + fileFullUrl.value)
-    
-    loadPressFiles()
+    if (props.operationType == "update")
+    {
+      loadPressFiles()
+    }
   }, 1000)
 })
 
@@ -268,42 +285,46 @@ onMounted(()=>{
       <button type="button" class="btn btn-dark px-5" @click="save">Guardar</button>
       <button type="button" class="btn btn-light px-5" @click="cancel">Cancelar</button>
     </div>
+  </form>
 
-    <hr>
+  <hr>
+  <div>
     <h3>Imprensa</h3>
 
-    <!-- Press files -->
-    <div class="d-flex flex-wrap justify-content-center">
-        <div class="w-75 pe-4">
-          <div class="mb-3">
-            <label for="inputNamePress" class="form-label">Nome</label>
-            <input
-              type="text"
-              class="form-control"
-              id="inputNamePress"
-              placeholder="Nome"
-              required
-              v-model="pressName"
-            />
+    <form class="row g-3 needs-validation" novalidate @submit.prevent="addPressFile">
+      <!-- Press files -->
+      <div class="d-flex flex-wrap justify-content-center">
+          <div class="w-75 pe-4">
+            <div class="mb-3">
+              <label for="inputNamePress" class="form-label">Nome</label>
+              <input
+                type="text"
+                class="form-control"
+                id="inputNamePress"
+                placeholder="Nome"
+                required
+                v-model="pressName"
+              />
+            </div>
+          </div>
+          <div class="w-25">
+            <div class="mb-3">
+              <label class="form-label">Ficheiro</label>
+              <input type="file" ref="press_file_input" class="form-control" name="press" v-on:change="uploadPress()"/>
+            </div>
           </div>
         </div>
-        <div class="w-25">
-          <div class="mb-3">
-            <label class="form-label">Ficheiro</label>
-            <input type="file" ref="press_file_input" class="form-control" name="press" v-on:change="uploadPress()"/>
-            
-          </div>
-        </div>
-        
-      </div>
-      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addPressFile()">Adicionar Ficheiro</button></div>
+        <div class="col-sm"><button type="button" class="btn btn-dark" :disabled="!pressName.length && !press_file_input.length" @click="addPressFile()">Adicionar Ficheiro</button></div>
+      </form>
       
-      <table class="table table-hover table-striped">
+      <br>
+      <table class="table table-hover table-striped" v-if="pressFiles.length">
         <thead class="table-dark" style="cursor: pointer">
           <tr>
             <th class="align-middle">Nome</th>
             <th class="align-middle">Data de Criação</th>
             <th class="align-middle">Data de Atualização</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -311,11 +332,16 @@ onMounted(()=>{
             <td class="align-middle">{{ press.name }}</td>
             <td class="align-middle">{{ formatDate(press.created_at) }}</td>
             <td class="align-middle">{{ formatDate(press.updated_at) }}</td>
+            <td class="align-middle"><button class="btn btn-danger" @click="deletePressFile(press)"><BIconTrash/></button></td>
           </tr>
         </tbody>
       </table>
 
-  </form>
+      <h4 v-if="!pressFiles.length">Ainda não há ficheiros de imprensa</h4>
+  </div>
+    
+
+
 </template>
 
 <style scoped>
