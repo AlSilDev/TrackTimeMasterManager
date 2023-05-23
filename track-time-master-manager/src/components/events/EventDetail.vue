@@ -155,6 +155,22 @@ const addVideoLink = async ()=>{
       console.error(error)
     })
 }
+
+const deleteVideoLink = async (video)=>{
+  await axios.delete(`videos/${video.id}`)
+    .then((response)=>{
+      //console.log(response.data)
+      toast.success(`O vídeo foi eliminado com sucesso.`)
+      console.log('index: ' + videoLinks.value.indexOf(video))
+      videoLinks.value.splice(videoLinks.value.indexOf(video), 1)
+      //console.log(pressFiles.value)
+    })
+    .catch((error)=>{
+      toast.error('Ocorreu um erro no servidor')
+      console.error(error)
+    })  
+}
+
 /* */
 
 onMounted(()=>{
@@ -412,6 +428,7 @@ onMounted(()=>{
             <td class="align-middle">{{ video.video_url }}</td>
             <td class="align-middle">{{ formatDate(video.created_at) }}</td>
             <td class="align-middle">{{ formatDate(video.updated_at) }}</td>
+            <td class="align-middle"><button class="btn btn-danger" @click="deleteVideoLink(video)"><BIconTrash/></button></td>
             <td class="align-middle"><a class="btn btn-info" :href="video.video_url" target="_blank"><BIconArrowRight/></a></td>
           </tr>
         </tbody>
