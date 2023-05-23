@@ -41,7 +41,7 @@ const driverTitle = computed(() => {
   if (!editingDriver.value){
     return ""
   }
-  return props.operationType == "insert" ? "Novo Conccorrene" : "Concorrente #" + editingDriver.value.id;
+  return props.operationType == "insert" ? "Novo Concorrente" : "Concorrente #" + editingDriver.value.id;
 })
 
 const save = () => {
