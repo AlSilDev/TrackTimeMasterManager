@@ -208,7 +208,16 @@ const addRegulationFile = async ()=>{
 }
 /* */
 
-
+const eventCategories = ref([])
+const loadEventCategoriesArray = (async () => {
+  await axios.get('eventCategories')
+      .then((response) => {
+        eventCategories.value = response.data
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+})
 
 onMounted(()=>{
   setTimeout(()=>{
@@ -231,6 +240,7 @@ onMounted(()=>{
       loadRegulationFiles()
     }
   }, 1000)
+  loadEventCategoriesArray()
 })
 
 </script>
@@ -330,12 +340,19 @@ onMounted(()=>{
           </div>
         </div>
 
-        <div class="mb-3 px-1">
+        <!--div class="mb-3 px-1">
           <label for="inputCategory" class="form-label">Categoria: </label>
           <select id="inputCategory" v-model="editingEvent.category_id">
             <option value="1">Rally em Sprint</option>
             <option value="2">Rampa</option>
-            <!--Fazer fetch dos dados da BD, tabela event_categories-->
+            <Fazer fetch dos dados da BD, tabela event_categories>
+          </select>
+        </div-->
+
+        <div class="mb-3 px-1">
+          <label for="inputCategory" class="form-label">Categoria: </label>
+          <select id="inputCategory" v-model="editingEvent.category_id">
+              <option v-for="eventCategory in eventCategories" v-bind:value="eventCategory.id">{{eventCategory.name}}</option>
           </select>
         </div>
 
