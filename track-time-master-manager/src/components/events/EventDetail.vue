@@ -173,6 +173,41 @@ const deleteVideoLink = async (video)=>{
 
 /* */
 
+/* Regulations methods */
+const regulationName = ref('')
+const regulation_file_input = ref('')
+const regulationFiles = ref([])
+const loadRegulationFiles = async ()=>{
+  await axios.get(`events/${editingEvent.value.id}/regulations`)
+    .then((response)=>{
+      console.log(response.data)
+      regulationFiles.value = response.data
+    })
+    .catch((error)=>{
+      console.error(error)
+    })
+}
+
+const addRegulationFile = async ()=>{
+  const formData = new FormData()
+  formData.append('regulation_file', regulation_file_input.value.files[0])
+  formData.append('name', regulationName.value)
+  await axios.post(`events/${editingEvent.value.id}/regulations`, formData, { headers: { 'Content-Type': 'multipart/form-data' }})
+    .then((response)=>{
+      //console.log(response.data)
+      regulation_file_input.value.files.splice(0, 1)
+      regulationName.value = ''
+      toast.success(`O ficheiro ${pressName.value} foi adicionado com sucesso.`)
+      regulationFiles.value.push(response.data)
+      //console.log(pressFiles.value)
+    })
+    .catch((error)=>{
+      toast.error('Ocorreu um erro no servidor')
+      console.error(error)
+    })
+}
+/* */
+
 const eventCategories = ref([])
 const loadEventCategoriesArray = (async () => {
   await axios.get('eventCategories')
@@ -202,6 +237,7 @@ onMounted(()=>{
     {
       loadPressFiles()
       loadVideoLinks()
+      loadRegulationFiles()
     }
   }, 1000)
   loadEventCategoriesArray()
@@ -383,7 +419,7 @@ onMounted(()=>{
             </div>
           </div>
         </div>
-        <div class="col-sm"><button type="button" class="btn btn-dark" :disabled="!pressName.length && !press_file_input.length" @click="addPressFile()">Adicionar Ficheiro</button></div>
+        <div class="col-sm"><button type="button" class="btn btn-dark" :disabled="!pressName.length && !press_file_input.files" @click="addPressFile()">Adicionar Ficheiro</button></div>
       </form>
       
       <br>
@@ -456,7 +492,58 @@ onMounted(()=>{
       <h4 v-if="!videoLinks.length">Ainda não há vídeos</h4>
   </div>
     
+  <hr>
+  <div>
+    <h3>Regulamentos</h3>
 
+    <form class="row g-3 needs-validation" novalidate @submit.prevent="addRegulationsFile">
+      <!-- Press files -->
+      <div class="d-flex flex-wrap justify-content-center">
+          <div class="w-75 pe-4">
+            <div class="mb-3">
+              <label for="inputNameRegulation" class="form-label">Nome</label>
+              <input
+                type="text"
+                class="form-control"
+                id="inputNameRegulation"
+                placeholder="Nome"
+                required
+                v-model="regulationName"
+              />
+            </div>
+          </div>
+          <div class="w-25">
+            <div class="mb-3">
+              <label class="form-label">Ficheiro</label>
+              <input type="file" ref="regulation_file_input" class="form-control" name="regulation"/>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm"><button type="button" class="btn btn-dark" :disabled="!regulationName.length && !regulation_file_input.files" @click="addRegulationFile()">Adicionar Ficheiro</button></div>
+      </form>
+      
+      <br>
+      <table class="table table-hover table-striped" v-if="regulationFiles.length">
+        <thead class="table-dark" style="cursor: pointer">
+          <tr>
+            <th class="align-middle">Nome</th>
+            <th class="align-middle">Data de Criação</th>
+            <th class="align-middle">Data de Atualização</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="regulation in regulationFiles" :key="regulation.id">
+            <td class="align-middle">{{ regulation.name }}</td>
+            <td class="align-middle">{{ formatDate(regulation.created_at) }}</td>
+            <td class="align-middle">{{ formatDate(regulation.updated_at) }}</td>
+            <td class="align-middle"><a class="btn btn-info" :href="serverBaseUrl + '/storage/regulamentos/' + regulation.file_url" target="_blank"><BIconArrowDown/></a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4 v-if="!regulationFiles.length">Ainda não há ficheiros de regulamentos</h4>
+  </div>
 
 </template>
 
