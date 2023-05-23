@@ -81,7 +81,7 @@ const cancel = () => {
   emit("cancel", editingEvent.value);
 }
 
-const pressFiles = ref()
+const pressFiles = ref([])
 const loadPressFiles = async ()=>{
   await axios.get(`events/${editingEvent.value.id}/press`)
     .then((response)=>{
@@ -138,8 +138,10 @@ onMounted(()=>{
 
     console.log("course: " + editingEvent.value.course_url)
     console.log("course url: " + fileFullUrl.value)
-    
-    loadPressFiles()
+    if (props.operationType == "update")
+    {
+      loadPressFiles()
+    }
   }, 1000)
 })
 
@@ -286,6 +288,7 @@ onMounted(()=>{
   </form>
 
   <hr>
+  <div>
     <h3>Imprensa</h3>
 
     <form class="row g-3 needs-validation" novalidate @submit.prevent="addPressFile">
@@ -311,11 +314,11 @@ onMounted(()=>{
             </div>
           </div>
         </div>
-        <div class="col-sm"><button type="button" class="btn btn-dark" @click="addPressFile()">Adicionar Ficheiro</button></div>
+        <div class="col-sm"><button type="button" class="btn btn-dark" :disabled="!pressName.length && !press_file_input.length" @click="addPressFile()">Adicionar Ficheiro</button></div>
       </form>
       
       <br>
-      <table class="table table-hover table-striped">
+      <table class="table table-hover table-striped" v-if="pressFiles.length">
         <thead class="table-dark" style="cursor: pointer">
           <tr>
             <th class="align-middle">Nome</th>
@@ -333,6 +336,12 @@ onMounted(()=>{
           </tr>
         </tbody>
       </table>
+
+      <h4 v-if="!pressFiles.length">Ainda não há ficheiros de imprensa</h4>
+  </div>
+    
+
+
 </template>
 
 <style scoped>
