@@ -20,8 +20,8 @@
       return {
         id: null,
         model: '',
-        category: 'CL',
-        class: '',
+        class_id: null,
+        category: '',
         license_plate: '',
         year: null,
         engine_capacity: null
