@@ -11,7 +11,11 @@ import Vehicles from "../components/vehicles/Vehicles.vue"
 import Vehicle from "../components/vehicles/Vehicle.vue"
 import Drivers from "../components/drivers/Drivers.vue"
 import Driver from "../components/drivers/Driver.vue"
-import Secretariado from '../components/secretariado/Secretariado.vue'
+import PrivatePage from '../components/privatePage/PrivatePage.vue'
+import Events from "../components/events/Events.vue"
+import Event from "../components/events/Event.vue"
+import EventCategories from "../components/eventCategories/EventCategories.vue"
+import EventCategory from "../components/eventCategories/EventCategory.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -69,15 +73,51 @@ const router = createRouter({
       name: 'NewUser',
       component: User,
     },
-    /*{
-      path: '/secretariado',
-      name: 'Secretariado',
-      component: Secretariado,
-    },*/
+    {
+      path: '/events/categories/new',
+      name: 'NewEventCategory',
+      component: EventCategory,
+    },
+    {
+      path: '/events/new',
+      name: 'NewEvent',
+      component: Event,
+    },
+    {
+      path: '/events',
+      name: 'Events',
+      component: Events,
+    },
+    {
+      path: '/events/categories',
+      name: 'EventCategories',
+      component: EventCategories,
+    },
+    {
+      path: '/privatePage',
+      name: 'PrivatePage',
+      component: PrivatePage,
+    },
     {
       path: '/users/:id',
       name: 'User',
       component: User,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ id: parseInt(route.params.id) })
+    },
+    {
+      path: '/events/:id',
+      name: 'Event',
+      component: Event,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ id: parseInt(route.params.id) })
+    },
+    {
+      path: '/events/category/:id',
+      name: 'EventCategory',
+      component: EventCategory,
       //props: true
       // Replaced with the following line to ensure that id is a number
       props: route => ({ id: parseInt(route.params.id) })
