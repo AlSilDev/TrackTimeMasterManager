@@ -68,7 +68,7 @@
               toast.error('Categoria de evento #' + props.id + ' não atualizada devido a erros de validação!')
               errors.value = error.response.data.errors
             } else {
-              toast.error('Categoria de evento #' + eventCategory.id + ' não atualizada devido a um erro(s) desconhecido para o servidor!')
+              toast.error('Categoria de evento #' + eventCategory.id + ' não atualizada devido a erro(s) desconhecido para o servidor!')
             }
         })
       }
