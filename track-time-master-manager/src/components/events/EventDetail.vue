@@ -2,7 +2,7 @@
 import { ref, watch, computed, inject, onMounted } from "vue";
 import avatarNoneUrl from '@/assets/avatar-none.png'
 import moment from 'moment'
-import { BIconTrash } from "bootstrap-icons-vue";
+import { BIconArrowRight, BIconTrash } from "bootstrap-icons-vue";
 
 const serverBaseUrl = inject("serverBaseUrl");
 const axios = inject('axios')
@@ -100,6 +100,8 @@ const addPressFile = async ()=>{
   await axios.post(`events/${editingEvent.value.id}/press`, formData, { headers: { 'Content-Type': 'multipart/form-data' }})
     .then((response)=>{
       //console.log(response.data)
+      press_file_input.value = ''
+      pressName.value = ''
       toast.success(`O ficheiro ${pressName.value} foi adicionado com sucesso.`)
       pressFiles.value.push(response.data)
       //console.log(pressFiles.value)
@@ -124,6 +126,37 @@ const deletePressFile = async (pressFile)=>{
     })  
 }
 
+/* Video methods */
+const videoLinkToUpload = ref({'video_url': ''})
+
+const videoLinks = ref([])
+const loadVideoLinks = async ()=>{
+  await axios.get(`events/${editingEvent.value.id}/videos`)
+    .then((response)=>{
+      console.log(response.data)
+      videoLinks.value = response.data
+    })
+    .catch((error)=>{
+      console.error(error)
+    })
+}
+
+const addVideoLink = async ()=>{
+  await axios.post(`events/${editingEvent.value.id}/videos`, videoLinkToUpload.value)
+    .then((response)=>{
+      //console.log(response.data)
+      videoLinkToUpload.video_url = ''
+      toast.success(`O vídeo foi adicionado com sucesso.`)
+      videoLinks.value.push(response.data)
+      //console.log(pressFiles.value)
+    })
+    .catch((error)=>{
+      toast.error('Ocorreu um erro no servidor')
+      console.error(error)
+    })
+}
+/* */
+
 onMounted(()=>{
   setTimeout(()=>{
     imageFullUrl.value = editingEvent.value.image_url
@@ -141,6 +174,7 @@ onMounted(()=>{
     if (props.operationType == "update")
     {
       loadPressFiles()
+      loadVideoLinks()
     }
   }, 1000)
 })
@@ -340,6 +374,50 @@ onMounted(()=>{
       </table>
 
       <h4 v-if="!pressFiles.length">Ainda não há ficheiros de imprensa</h4>
+  </div>
+
+  <hr>
+  <div>
+    <h3>Vídeos</h3>
+
+    <form class="row g-3 needs-validation" novalidate @submit.prevent="addVideoLink">
+      <!-- Video links -->
+        <div class="mb-3">
+          <label for="inputVideoLink" class="form-label">URL</label>
+          <input
+            type="text"
+            class="form-control"
+            id="inputVideoLink"
+            placeholder="Nome"
+            required
+            v-model="videoLinkToUpload.video_url"
+          />
+        </div>
+        <div class="col-sm"><button type="button" class="btn btn-dark" :disabled="!videoLinkToUpload.video_url.length" @click="addVideoLink()">Adicionar Vídeo</button></div>
+      </form>
+      
+      <br>
+      <table class="table table-hover table-striped" v-if="videoLinks.length">
+        <thead class="table-dark" style="cursor: pointer">
+          <tr>
+            <th class="align-middle">URL</th>
+            <th class="align-middle">Data de Criação</th>
+            <th class="align-middle">Data de Atualização</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="video in videoLinks" :key="video.id">
+            <td class="align-middle">{{ video.video_url }}</td>
+            <td class="align-middle">{{ formatDate(video.created_at) }}</td>
+            <td class="align-middle">{{ formatDate(video.updated_at) }}</td>
+            <td class="align-middle"><a class="btn btn-info" :href="video.video_url" target="_blank"><BIconArrowRight/></a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4 v-if="!videoLinks.length">Ainda não há vídeos</h4>
   </div>
     
 
