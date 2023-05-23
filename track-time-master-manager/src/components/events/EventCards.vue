@@ -8,6 +8,7 @@ const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
 const axios = inject("axios")
 const router = useRouter()
+const toast = inject('toast')
 
 const props = defineProps({
   showId: {
@@ -82,8 +83,15 @@ const imageFullUrl = (event) => {
     : avatarNoneUrl;
 };
 
-const deleteEvent = async (eventId) => {
-  //TODO
+const deleteEvent = async (event) => {
+  await axios.delete(`/events/${event.id}`)
+    .then((response)=>{
+      toast.success(`A prova ${event.name} foi cancelada com sucesso`)
+      getResultsFiltered()
+    })
+    .catch((error)=>{
+      toast.error("Ocorreu um erro a cancelar a prova")
+    })
 }
 
 const sortByColumn = (column) => {
@@ -130,7 +138,7 @@ onMounted(async ()=>{
       <div class="card-body">
         <h5 class="card-title">{{ event.name }}</h5>
         <button v-if="isAdmin()" @click="editEvent(event)" class="btn btn-primary">Editar</button>
-        <button v-if="isAdmin()" @click="deleteEvent(event)" class="btn btn-primary">Eliminar</button>
+        <button v-if="isAdmin()" @click="deleteEvent(event)" class="btn btn-danger">Cancelar</button>
       </div>
     </div>
   </div>
