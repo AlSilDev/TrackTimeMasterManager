@@ -134,7 +134,7 @@ onMounted(async ()=>{
 
   <div class="row">
     <div class="card" style="width: 18rem; margin: 10px;" v-for="event in laravelData.data" :key="event.id">
-      <img class="card-img-top" :src="imageFullUrl(event)" alt="Imagem do evento">
+      <img class="card-img-top d-flex h-75" :src="imageFullUrl(event)" alt="Imagem do evento">
       <div class="card-body">
         <h5 class="card-title">{{ event.name }}</h5>
         <button v-if="isAdmin()" @click="editEvent(event)" class="btn btn-primary">Editar</button>
