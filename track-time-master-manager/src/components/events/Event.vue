@@ -72,15 +72,15 @@
           axios.post('events', formData, { headers: { 'Content-Type': 'multipart/form-data' }})
             .then((response) => {
               event.value = response.data.data
-              toast.success('Event #' + event.value.id + ' was created successfully.')
+              toast.success('Evento ' + event.value.name + '(#' +event.value.id+ ') criado com sucesso!')
               router.push({name: 'Events'})
             })
             .catch((error) => {
               if (error.response.status == 422) {
-                toast.error('Event was not created due to validation errors!')
+                toast.error('Evento ' + event.value.name + '(#' +event.value.id+ ') não apagada devido a erros de validação!')
                 errors.value = error.response.data.errors
               } else {
-                toast.error('Event was not created due to unknown server error!')
+                toast.error('Evento ' + event.value.name + '(#' +event.value.id+ ') não apagada devido a erro(s) desconhecido para o servidor!')
               }
             })
         }else{
