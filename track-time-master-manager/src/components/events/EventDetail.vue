@@ -325,6 +325,7 @@ onMounted(()=>{
             <th class="align-middle">Data de Criação</th>
             <th class="align-middle">Data de Atualização</th>
             <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -333,6 +334,7 @@ onMounted(()=>{
             <td class="align-middle">{{ formatDate(press.created_at) }}</td>
             <td class="align-middle">{{ formatDate(press.updated_at) }}</td>
             <td class="align-middle"><button class="btn btn-danger" @click="deletePressFile(press)"><BIconTrash/></button></td>
+            <td class="align-middle"><a class="btn btn-info" :href="serverBaseUrl + '/storage/imprensa/' + press.file_url" target="_blank"><BIconArrowDown/></a></td>
           </tr>
         </tbody>
       </table>
