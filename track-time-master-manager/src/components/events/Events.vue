@@ -37,7 +37,6 @@
   
   <event-cards
     :showId="false"
-    @edit="editEvent"
   ></event-cards>
 </template>
 
