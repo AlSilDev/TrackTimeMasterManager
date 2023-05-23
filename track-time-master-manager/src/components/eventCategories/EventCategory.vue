@@ -45,15 +45,15 @@
         axios.post('eventCategories', eventCategory.value)
           .then((response) => {
             eventCategory.value = response.data.data
-            toast.success('Categoria de evento #' + eventCategory.value.id + ' criada com sucesso!')
+            toast.success('Categoria ' + eventCategory.value.name + '(#' +eventCategory.value.id+ ') criada com sucesso!')
             router.push({name: 'EventCategories'})
           })
           .catch((error) => {
             if (error.response.status == 422) {
-              toast.error('Categoria de evento não criada devido a erros de validação!')
+              toast.error('Categoria ' + eventCategory.value.name + '(#' +eventCategory.value.id+ ') não apagada devido a erros de validação!')
               errors.value = error.response.data.errors
             } else {
-              toast.error('Categoria de evento Categoria de evento não criada devido a um erro(s) desconhecido para o servidor!')
+              toast.error('Categoria ' + eventCategory.value.name + '(#' +eventCategory.value.id+ ') não apagada devido a erro(s) desconhecido para o servidor!')
             }
           })
       }else{
