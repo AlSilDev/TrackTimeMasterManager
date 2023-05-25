@@ -20,12 +20,12 @@
       return {
         id: null,
         model: '',
-        category: 'CL',
-        class: '',
+        class_id: null,
+        category: '',
         license_plate: '',
         year: null,
         engine_capacity: null
-      }
+    }
   }
 
   let originalValueStr = ''
@@ -66,7 +66,7 @@
             }
           })
       }else{
-        axios.put('vehicles/' + props.id, user.value)
+        axios.put('vehicles/' + props.id, vehicle.value)
         .then((response) => {
           vehicle.value = response.data.data
           originalValueStr = dataAsString()

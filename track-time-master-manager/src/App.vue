@@ -3,7 +3,7 @@ import { useRouter, RouterLink, RouterView } from "vue-router";
 import { ref, inject, onMounted } from "vue";
 import { useUserStore } from './stores/user.js'
 import Login from './components/auth/Login.vue'
-import Secretariado from './components/secretariado/Secretariado.vue'
+import PrivatePage from './components/privatePage/PrivatePage.vue'
 
 
 const router = useRouter()
@@ -15,10 +15,9 @@ const buttonSidebarExpand = ref(null)
 const logout = async () => {
   if (await userStore.logout()) {
     toast.success('User has logged out of the application.')
-    router.push({name: 'home'})
     clickMenuOption()
-  }
-  else {
+    router.push({name: 'home'})
+  } else {
     toast.error('There was a problem logging out of the application!')
   }
 }
@@ -82,18 +81,18 @@ onMounted(()=>{
                   :to="{ name: 'User', params: { id: userStore.userId } }"
                   @click="clickMenuOption"
                 >
-                  <i class="bi bi-person-square"></i>Profile
+                  <i class="bi bi-person-square"></i>Perfil
                 </router-link>
               </li>
               <li>
                 <router-link
                   class="dropdown-item"
-                  :class="{ active: $route.name === 'ChangePassword' }"
-                  :to="{ name: 'ChangePassword' }"
+                  :class="{ active: $route.name == 'ChangePassword' && $route.params.id == userStore.userId }"
+                  :to="{ name: 'ChangePassword', params: { id: userStore.userId } }"
                   @click="clickMenuOption"
                 >
                   <i class="bi bi-key-fill"></i>
-                  Change password
+                  Mudar password
                 </router-link>
               </li>
               <li>
@@ -113,7 +112,7 @@ onMounted(()=>{
 
 
   <div class="container-fluid" v-if="userStore.user">
-    <Secretariado :clickMenuOption="clickMenuOption"></Secretariado>
+    <PrivatePage :clickMenuOption="clickMenuOption"></PrivatePage>
   </div>
   <div v-else>
     <router-view></router-view>

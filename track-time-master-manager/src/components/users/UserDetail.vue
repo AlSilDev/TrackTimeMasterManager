@@ -137,11 +137,6 @@ const userTitle = computed(() => {
     <hr />
     <div class="d-flex flex-wrap justify-content-between">
       <div class="w-75 pe-4">
-        <div class="mb-3" v-if="props.operationType == 'update'">
-          <label class="bg-warning" v-if="editingUser.type == 'A'">ADMINISTRADOR</label>
-          <label class="bg-success" v-if="editingUser.type == 'S'">SECRETARIADO</label>
-        </div>
-
         <div class="mb-3">
           <label for="inputName" class="form-label">Nome</label>
           <input
@@ -168,8 +163,18 @@ const userTitle = computed(() => {
           <field-error-message :errors="errors" fieldName="email"></field-error-message>
         </div>
 
-        <div class="mb-3 px-1" v-if="props.operationType == 'insert'">
+        <div class="mb-3 px-1" v-if="props.operationType == 'insert' && user.id == props.id">
           <label for="inputTipo" class="form-label">Tipo</label>
+          <br>
+          <select name="type" v-model="editingUser.type">
+              <option value="A">Administrador</option>
+              <option value="S">Secretariado</option>
+          </select>
+          <field-error-message :errors="errors" fieldName="type"></field-error-message>
+        </div>
+
+        <div class="mb-3 px-1">
+          <label for="inputType" class="form-label">Tipo</label>
           <br>
           <select name="type" v-model="editingUser.type">
               <option value="A">Administrador</option>

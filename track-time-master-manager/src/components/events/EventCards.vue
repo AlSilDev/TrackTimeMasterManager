@@ -1,11 +1,14 @@
 <script setup>
 import { inject, ref, onMounted } from "vue";
 import { useUserStore } from "../../stores/user.js"
+import {useRouter} from 'vue-router'
 import avatarNoneUrl from '@/assets/avatar-none.png'
 
 const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
 const axios = inject("axios")
+const router = useRouter()
+const toast = inject('toast')
 
 const props = defineProps({
   showId: {
@@ -38,12 +41,6 @@ const props = defineProps({
   },
 });
 
-const photoFullUrl = (user) => {
-  return user.photo_url
-    ? serverBaseUrl + "/storage/fotos/" + user.photo_url
-    : avatarNoneUrl;
-};
-
 const laravelData = ref({})
 const currentPage = ref()
 const filteredPages = ref([])
@@ -52,20 +49,22 @@ const order = ref('asc')
 const attribute = ref()
 const search = ref()
 
-const editDrivers = (driver) => {
-  router.push({ name: 'Driver', params: { id: driver.id } })
+const editEvent = (event) => {
+  router.push({ name: 'Event', params: { id: event.id } })
 }
 
-const canViewUserDetail = (userId) => {
+const isAdmin = () => {
   if (!userStore.user) {
     return false
   }
-  return userStore.user.type == 'A' || userStore.user.id == userId
+  return userStore.user.type == 'A'
 }
 
 const getResultsFiltered = async (page = 1) => {
-  console.log('endpoint: ', `drivers?page=${page}&column=${sortedColumn.value}&order=${order.value}&attribute=${attribute.value.value}&search=${search.value.value}`)
-  await axios.get(`drivers?page=${page}&column=${sortedColumn.value}&order=${order.value}&attribute=${attribute.value.value}&search=${search.value.value}`)
+  sortedColumn.value = 'id'
+  order.value = 'asc'
+  console.log('endpoint: ', `events?page=${page}&column=${sortedColumn.value}&order=${order.value}&attribute=${attribute.value.value}&search=${search.value.value}`)
+  await axios.get(`events?page=${page}&column=${sortedColumn.value}&order=${order.value}&attribute=${attribute.value.value}&search=${search.value.value}`)
     .then((response) => {
       laravelData.value = response.data
       currentPage.value = page
@@ -75,6 +74,23 @@ const getResultsFiltered = async (page = 1) => {
     })
     .catch((error)=>{
       console.error(error)
+    })
+}
+
+const imageFullUrl = (event) => {
+  return event.image_url
+    ? serverBaseUrl + "/storage/fotos/eventos/" + event.image_url
+    : avatarNoneUrl;
+};
+
+const deleteEvent = async (event) => {
+  await axios.delete(`/events/${event.id}`)
+    .then((response)=>{
+      toast.success(`A prova ${event.name} foi cancelada com sucesso`)
+      getResultsFiltered()
+    })
+    .catch((error)=>{
+      toast.error("Ocorreu um erro a cancelar a prova")
     })
 }
 
@@ -108,38 +124,26 @@ onMounted(async ()=>{
       <select class="form-select" id="inputGroupSelect01" ref="attribute">
         <option value="" selected>Escolher Atributo...</option>
         <option value="name">Nome</option>
-        <option value="email">Email</option>
-        <option value="license_num">Nº de licença</option>
-        <option value="phone_num">Nº de telemóvel</option>
-        <option value="affiliate_num">Nº de sócio</option>
+        <option value="year">Ano</option>
+        <option value="event_categories.name">Categoria</option>
       </select>
       <button class="btn btn-outline-secondary" type="button" @click="getResultsFiltered()">Procurar</button>
       <button class="btn btn-outline-secondary" type="button" @click="restartSearch()">Reiniciar</button>
     </div>
   </div>
 
-  <table class="table table-hover table-striped">
-    <thead class="table-dark" style="cursor: pointer">
-      <tr>
-        <th class="align-middle" @click="sortByColumn('name')">Nome <span v-if="sortedColumn == 'name'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('email')">Email <span v-if="sortedColumn == 'email'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('license_num')">Nº de Licença <span v-if="sortedColumn == 'license_num'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('license_expiry')">Validade da Licença <span v-if="sortedColumn == 'license_expiry'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('phone_num')">Nº de Telemóvel <span v-if="sortedColumn == 'phone_num'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('affiliate_num')">Nº de Sócio <span v-if="sortedColumn == 'affiliate_num'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="user in laravelData.data" :key="user.id">
-        <td class="align-middle">{{ user.name }}</td>
-        <td class="align-middle">{{ user.email }}</td>
-        <td class="align-middle">{{ user.license_num }}</td>
-        <td class="align-middle">{{ user.license_expiry }}</td>
-        <td class="align-middle">{{ user.phone_num }}</td>
-        <td class="align-middle">{{ user.affiliate_num }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="row">
+    <div class="card" style="width: 18rem; margin: 10px;" v-for="event in laravelData.data" :key="event.id">
+      <img class="card-img-top d-flex h-75" :src="imageFullUrl(event)" alt="Imagem do evento">
+      <div class="card-body">
+        <h5 class="card-title">{{ event.name }}</h5>
+        <button v-if="isAdmin()" @click="editEvent(event)" class="btn btn-primary">Editar</button>
+        <button v-if="isAdmin()" @click="deleteEvent(event)" class="btn btn-danger">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <br>
 
   <div>
     <ul class="pagination" style="cursor: pointer">

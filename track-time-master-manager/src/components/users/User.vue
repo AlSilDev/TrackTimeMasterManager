@@ -31,7 +31,7 @@
   }
 
   let originalValueStr = ''
-  const loadUser = (id) => {    
+  const loadUser = (id) => { 
     originalValueStr = ''
       errors.value = null
       if (!id || (id < 0)) {
@@ -82,6 +82,7 @@
       console.log('FormData:' + formData.values())
 
       if (operation.value == "insert"){
+        console.log("POST Method")
         axios.post('users', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
           .then((response) => {
             user.value = response.data.data
@@ -90,7 +91,6 @@
             console.log(editingUserValue.name)
             toast.success('User ' +  editingUserValue.name + ' was created successfully.')
             router.push({name: 'Users'})
-            //emit("save", editingUser.value);
           })
           .catch((error) => {
             if (error.response.status == 422) {
@@ -101,22 +101,28 @@
             }
           })
       }else{
-        console.log("Put method not implemented yet!")
-        /*axios.put('vehicles/' + props.id, user.value)
+        console.log("PUT Method")
+        formData.append('_method', 'put')
+        console.log("Nome: " + formData.get("name"))
+        console.log("Email: " + formData.get("email"))
+        console.log("Photo_file: " + formData.get("photo_file"))
+        console.log("_Method: " + formData.get("_method"))
+        axios.post('users/' + props.id, formData)
         .then((response) => {
-          vehicle.value = response.data.data
+          user.value = response.data.data
           originalValueStr = dataAsString()
-          toast.success('Vehicle #' + vehicle.value.id + ' was updated successfully.')
-          router.push({name: 'Vehicles'})
+          toast.success('User #' + user.value.id + ' was updated successfully.')
+          //router.push({name: 'Users'})
+          router.back()
         })
         .catch((error) => {
           if (error.response.status == 422) {
-              toast.error('Vehicle #' + props.id + ' was not updated due to validation errors!')
+              toast.error('User #' + props.id + ' was not updated due to validation errors!')
               errors.value = error.response.data.errors
             } else {
-              toast.error('Vehicle #' + props.id + ' was not updated due to unknown server error!')
+              toast.error('User #' + props.id + ' was not updated due to unknown server error!')
             }
-        })*/
+        })
       }
   }
 

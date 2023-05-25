@@ -10,7 +10,12 @@ import UserCreate from "../components/users/UserCreate.vue"
 import Vehicles from "../components/vehicles/Vehicles.vue"
 import Vehicle from "../components/vehicles/Vehicle.vue"
 import Drivers from "../components/drivers/Drivers.vue"
-import Secretariado from '../components/secretariado/Secretariado.vue'
+import Driver from "../components/drivers/Driver.vue"
+import PrivatePage from '../components/privatePage/PrivatePage.vue'
+import Events from "../components/events/Events.vue"
+import Event from "../components/events/Event.vue"
+import EventCategories from "../components/eventCategories/EventCategories.vue"
+import EventCategory from "../components/eventCategories/EventCategory.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,9 +37,11 @@ const router = createRouter({
       component: Login
     },
     {
-      path: '/password',
+      path: '/secretariado/users/:id/password',
+      //path: '/secretariado/users/user/password',
       name: 'ChangePassword',
-      component: ChangePassword
+      component: ChangePassword,
+      props: route => ({ id: parseInt(route.params.id) })
     },
     {
       path: '/secretariado/users',
@@ -57,19 +64,60 @@ const router = createRouter({
       component: Drivers,
     },
     {
+      path: '/secretariado/drivers/new',
+      name: 'NewDriver',
+      component: Driver,
+    },
+    {
       path: '/secretariado/users/new',
       name: 'NewUser',
       component: User,
     },
-    /*{
-      path: '/secretariado',
-      name: 'Secretariado',
-      component: Secretariado,
-    },*/
+    {
+      path: '/events/categories/new',
+      name: 'NewEventCategory',
+      component: EventCategory,
+    },
+    {
+      path: '/events/new',
+      name: 'NewEvent',
+      component: Event,
+    },
+    {
+      path: '/events',
+      name: 'Events',
+      component: Events,
+    },
+    {
+      path: '/events/categories',
+      name: 'EventCategories',
+      component: EventCategories,
+    },
+    {
+      path: '/privatePage',
+      name: 'PrivatePage',
+      component: PrivatePage,
+    },
     {
       path: '/users/:id',
       name: 'User',
       component: User,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ id: parseInt(route.params.id) })
+    },
+    {
+      path: '/events/:id',
+      name: 'Event',
+      component: Event,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ id: parseInt(route.params.id) })
+    },
+    {
+      path: '/events/category/:id',
+      name: 'EventCategory',
+      component: EventCategory,
       //props: true
       // Replaced with the following line to ensure that id is a number
       props: route => ({ id: parseInt(route.params.id) })
