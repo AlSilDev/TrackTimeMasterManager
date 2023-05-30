@@ -16,6 +16,7 @@ import Events from "../components/events/Events.vue"
 import Event from "../components/events/Event.vue"
 import EventCategories from "../components/eventCategories/EventCategories.vue"
 import EventCategory from "../components/eventCategories/EventCategory.vue"
+import Enrollments from "../components/enrollments/Enrollments.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -110,6 +111,14 @@ const router = createRouter({
       path: '/events/:id',
       name: 'Event',
       component: Event,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ id: parseInt(route.params.id) })
+    },
+    {
+      path: '/events/:id/enrollments',
+      name: 'Enrollments',
+      component: Enrollments,
       //props: true
       // Replaced with the following line to ensure that id is a number
       props: route => ({ id: parseInt(route.params.id) })
