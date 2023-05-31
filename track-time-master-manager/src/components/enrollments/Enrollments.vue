@@ -118,6 +118,8 @@ const enroll = async ()=>{
             vehicle_model: selected_vehicle.value.model,
             vehicle_license_plate: selected_vehicle.value.license_plate
         })
+        restartDriversSearch()
+        restartVehiclesSearch()
         //console.log('enrollments after push: ', enrollments.value)
         //loadEnrollments()
     })
