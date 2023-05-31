@@ -57,7 +57,7 @@ const isAdmin = () => {
   if (!userStore.user) {
     return false
   }
-  return userStore.user.type == 'A'
+  return userStore.user.type_id == 1
 }
 
 const getResultsFiltered = async (page = 1) => {
