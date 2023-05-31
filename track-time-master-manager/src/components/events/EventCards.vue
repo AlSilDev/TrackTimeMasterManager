@@ -137,6 +137,7 @@ onMounted(async ()=>{
       <img class="card-img-top d-flex h-75" :src="imageFullUrl(event)" alt="Imagem do evento">
       <div class="card-body">
         <h5 class="card-title">{{ event.name }}</h5>
+        <button v-if="isAdmin()" @click="router.push({ name: 'Enrollments', params: { id: event.id } })" class="btn btn-primary">Inscrições</button>
         <button v-if="isAdmin()" @click="editEvent(event)" class="btn btn-primary">Editar</button>
         <button v-if="isAdmin()" @click="deleteEvent(event)" class="btn btn-danger">Cancelar</button>
       </div>
