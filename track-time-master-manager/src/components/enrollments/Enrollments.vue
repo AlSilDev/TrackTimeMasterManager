@@ -108,11 +108,11 @@ const enroll = async ()=>{
     //console.log(enrollment.value)
     await axios.post(`enrollments`, enrollment.value)
     .then((response)=>{
-        //console.log('enroll', response.data)
+        console.log('enroll', response.data)
         //enrollments.value.push(response.data)
         enrollments.value.push({
-            id: response.data.id,
-            event_id: response.data.event_id,
+            id: response.data.data.id,
+            event_id: response.data.data.event_id,
             first_driver_name: selected_first_driver.value.name,
             second_driver_name: selected_second_driver.value.name,
             vehicle_model: selected_vehicle.value.model,
@@ -120,7 +120,7 @@ const enroll = async ()=>{
         })
         restartDriversSearch()
         restartVehiclesSearch()
-        //console.log('enrollments after push: ', enrollments.value)
+        console.log('enrollments after push: ', enrollments.value)
         //loadEnrollments()
     })
     .catch((error)=>{
@@ -141,7 +141,19 @@ const loadEnrollments = async ()=>{
     })
 }
 
-
+const cancelEnrollment = async (enrollmentId)=>{
+    await axios.delete(`enrollments/${enrollmentId}`)
+    .then((response)=>{
+        const index = enrollments.value.findIndex(element => element.id == enrollmentId)
+        enrollments.value.splice(index, 1)
+        toast.success(`A inscrição #${enrollmentId} foi cancelada com sucesso.`)
+        restartDriversSearch()
+        restartVehiclesSearch()
+    })
+    .catch((error)=>{
+        console.error(error)
+    })
+}
 
 onMounted(async ()=>{
     await loadEvent()
@@ -246,6 +258,7 @@ onMounted(async ()=>{
                 <th class="align-middle">2º Condutor</th>
                 <th class="align-middle">Modelo</th>
                 <th class="align-middle">Matrícula</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -254,6 +267,7 @@ onMounted(async ()=>{
                 <td class="align-middle">{{ enrollment.second_driver_name }}</td>
                 <td class="align-middle">{{ enrollment.vehicle_model }}</td>
                 <td class="align-middle">{{ enrollment.vehicle_license_plate }}</td>
+                <td class="align-middle"><button class="btn btn-danger" @click="cancelEnrollment(enrollment.id)"><BIconTrash/></button></td>
             </tr>
         </tbody>
     </table>
