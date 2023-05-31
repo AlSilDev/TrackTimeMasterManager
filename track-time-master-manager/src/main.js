@@ -14,7 +14,8 @@ import router from './router'
 
 const app = createApp(App)
 
-const apiDomain = import.meta.env.VITE_API_DOMAIN
+const apiDomain = 'http://tracktimemastermanagerapi.test'
+//const apiDomain = import.meta.env.VITE_API_DOMAIN
 const wsConnection = import.meta.env.VITE_WS_CONNECTION
 
 app.provide('axios', axios.create({
