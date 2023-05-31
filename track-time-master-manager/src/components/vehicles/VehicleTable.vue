@@ -112,8 +112,8 @@ onMounted(async ()=>{
       <select class="form-select" id="inputGroupSelect01" ref="attribute">
         <option value="" selected>Escolher Atributo...</option>
         <option value="model">Modelo</option>
-        <option value="category">Categoria</option>
-        <option value="class">Classe</option>
+        <option value="vehicle_categories.name">Categoria</option>
+        <option value="vehicle_classes.name">Classe</option>
         <option value="license_plate">Matrícula</option>
         <option value="year">Ano</option>
       </select>
