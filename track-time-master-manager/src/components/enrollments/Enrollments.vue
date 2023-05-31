@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, inject } from 'vue'
 import {useRouter} from 'vue-router'
 import { useUserStore } from '../../stores/user';
+import { BIconBack } from 'bootstrap-icons-vue';
 
 const router = useRouter()
 const axios = inject('axios')
@@ -243,7 +244,7 @@ onMounted(async ()=>{
                             </tbody>
                         </table>
                     </div>
-                    <button class="btn btn-dark" @click="enroll()">Efetuar Inscrição</button>
+                    <button class="btn btn-dark" @click="enroll()" :disabled="!selected_first_driver || !selected_second_driver || !selected_vehicle">Efetuar Inscrição</button>
                 </div>
             </div>
         </div>
