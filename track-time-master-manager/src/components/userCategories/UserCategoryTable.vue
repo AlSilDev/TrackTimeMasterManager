@@ -142,6 +142,7 @@ const updateArrayValues = (array1, array2) => {
         <th class="align-middle w-50">Sigla</th>
         <th class="align-middle w-50">Descrição</th>
         <th class="align-middle w-auto"></th>
+        <th class="align-middle w-auto"></th>
       </tr>
     </thead>
     <tbody>
@@ -153,6 +154,7 @@ const updateArrayValues = (array1, array2) => {
         <td class="align-middle text-danger text-decoration-line-through font-weight-bold" v-if="isTrashed()">{{ userCategory.description }}</td>
         <td class="align-middle" v-else>{{ userCategory.description }}</td>
         <td><button v-if="isAdmin() && !isTrashed()" @click="editClick(userCategory)" class="btn btn-dark" title="Editar"><BIconPencil/></button></td>
+        <td><button v-if="isAdmin() && !isTrashed()" @click="deleteClick(userCategory)" class="btn btn-danger" title="Apagar"><BIconTrash/></button></td>
         
       </tr>
     </tbody>
