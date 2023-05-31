@@ -105,6 +105,17 @@ const restartVehiclesSearch = ()=>{
     vehicles.value=[]
 }
 
+const restartSelected = ()=>{
+    enrollment.value.first_driver_id = -1
+    enrollment.value.second_driver_id = -1
+    enrollment.value.vehicle_id = -1
+    restartDriversSearch()
+    restartVehiclesSearch()
+    selected_first_driver.value = null
+    selected_second_driver.value = null
+    selected_vehicle.value = null
+}
+
 const enroll = async ()=>{
     //console.log(enrollment.value)
     await axios.post(`enrollments`, enrollment.value)
@@ -245,6 +256,7 @@ onMounted(async ()=>{
                         </table>
                     </div>
                     <button class="btn btn-dark" @click="enroll()" :disabled="!selected_first_driver || !selected_second_driver || !selected_vehicle">Efetuar Inscrição</button>
+                    <button class="btn btn-dark" @click="restartSelected()" :disabled="!selected_first_driver && !selected_second_driver && !selected_vehicle"><BIconArrowCounterclockwise/></button>
                 </div>
             </div>
         </div>
