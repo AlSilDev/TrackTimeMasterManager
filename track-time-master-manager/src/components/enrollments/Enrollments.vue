@@ -19,13 +19,18 @@ const event = ref()
 const enrollOpen = ref(false)
 
 const loadEvent = async ()=>{
-    console.log(props)
-    axios.get(`events/${props.id}`)
+    //console.log(props)
+    await axios.get(`events/${props.id}`)
     .then((response)=>{
-        event.value = response.data
+        event.value = response.data.data
+        /*
         console.log(event.value)
-        enrollOpen.value = Date.parse(event.date_start_enrollments).valueOf() < Date.now() && Date.parse(event.date_end_enrollments).valueOf() > Date.now()
-        console.log('enrollments open: ', enrollOpen.value)
+        console.log('date_start_enrollments: ', Date.parse(event.value.date_start_enrollments).valueOf())
+        console.log('date_now: ', Date.now())
+        console.log('date_end_enrollments: ', Date.parse(event.value.date_end_enrollments).valueOf())
+        */
+        enrollOpen.value = Date.parse(event.value.date_start_enrollments).valueOf() < Date.now() && Date.parse(event.value.date_end_enrollments).valueOf() > Date.now()
+        //console.log('enrollments open: ', enrollOpen.value)
     })
     .catch((error)=>{
         console.error(error)
@@ -35,14 +40,13 @@ const loadEvent = async ()=>{
 
 const driverName = ref('')
 const drivers = ref([])
-const selectedDriver = ref()
 
 const loadDriversByName = async ()=>{
-    console.log('driver name: ' + driverName.value.value)
-    axios.get(`drivers/byName/${driverName.value.value}`)
+    //console.log('driver name: ' + driverName.value.value)
+    await axios.get(`drivers/byName/${driverName.value.value}`)
     .then((response)=>{
         drivers.value = response.data
-        console.log(drivers.value)
+        //console.log(drivers.value)
     })
     .catch((error)=>{
         console.error(error)
@@ -53,10 +57,10 @@ const loadDriversByName = async ()=>{
 const licensePlate = ref('')
 const vehicles = ref('')
 const loadVehiclesByLicensePlate = async ()=>{
-    axios.get(`vehicles/byLicensePlate/${licensePlate.value.value}`)
+    await axios.get(`vehicles/byLicensePlate/${licensePlate.value.value}`)
     .then((response)=>{
         vehicles.value = response.data
-        console.log(vehicles.value)
+        //console.log(vehicles.value)
     })
     .catch((error)=>{
         console.error(error)
@@ -72,13 +76,52 @@ const enrollment = ref({
     enrolled_by_id: userId
 })
 
+const selected_first_driver = ref()
+const selectFirstDriver = (driver)=>{
+    enrollment.value.first_driver_id=driver.id
+    selected_first_driver.value = driver
+}
+
+const selected_second_driver = ref()
+const selectSecondDriver = (driver)=>{
+    enrollment.value.second_driver_id=driver.id
+    selected_second_driver.value = driver
+}
+
+const selected_vehicle = ref()
+const selectVehicle = (vehicle)=>{
+    enrollment.value.vehicle_id=vehicle.id
+    selected_vehicle.value = vehicle
+}
+
+const restartDriversSearch = ()=>{
+    driverName.value.value=''
+    drivers.value=[]
+}
+
+const restartVehiclesSearch = ()=>{
+    licensePlate.value.value=''
+    vehicles.value=[]
+}
+
 const enroll = async ()=>{
-    console.log(enrollment.value)
+    //console.log(enrollment.value)
     await axios.post(`enrollments`, enrollment.value)
     .then((response)=>{
-        console.log(response.data)
+        //console.log('enroll', response.data)
         //enrollments.value.push(response.data)
-        loadEnrollments()
+        enrollments.value.push({
+            id: response.data.id,
+            event_id: response.data.event_id,
+            first_driver_name: selected_first_driver.value.name,
+            second_driver_name: selected_second_driver.value.name,
+            vehicle_model: selected_vehicle.value.model,
+            vehicle_license_plate: selected_vehicle.value.license_plate
+        })
+        restartDriversSearch()
+        restartVehiclesSearch()
+        //console.log('enrollments after push: ', enrollments.value)
+        //loadEnrollments()
     })
     .catch((error)=>{
         console.error(error)
@@ -90,13 +133,15 @@ const enrollments = ref([])
 const loadEnrollments = async ()=>{
     await axios.get('enrollments')
     .then((response)=>{
-        console.log(response.data)
+        //console.log('enrollments: ', response.data)
         enrollments.value = response.data
     })
     .catch((error)=>{
         console.error(error)
     })
 }
+
+
 
 onMounted(async ()=>{
     await loadEvent()
@@ -120,7 +165,7 @@ onMounted(async ()=>{
                             <span class="input-group-text"><BIconSearch/></span>
                             <input placeholder="Nome do condutor..." type="string" id="driverName" class="form-control" ref="driverName" />
                             <button class="btn btn-outline-secondary" type="button" @click="loadDriversByName()">Procurar</button>
-                            <button class="btn btn-outline-secondary" type="button" @click="driverName.value=''">Reiniciar</button>
+                            <button class="btn btn-outline-secondary" type="button" @click="restartDriversSearch()">Reiniciar</button>
                             </div>
                         </div>
                         
@@ -145,8 +190,8 @@ onMounted(async ()=>{
                                     <td class="align-middle">{{ driver.license_expiry }}</td>
                                     <td class="align-middle">{{ driver.phone_num }}</td>
                                     <td class="align-middle">{{ driver.affiliate_num }}</td>
-                                    <td><button class="btn btn-dark" @click="enrollment.first_driver_id=driver.id" v-if="driver.id != enrollment.first_driver_id">1º</button></td>
-                                    <td><button class="btn btn-dark" @click="enrollment.second_driver_id=driver.id" v-if="driver.id != enrollment.second_driver_id">2º</button></td>
+                                    <td><button class="btn btn-dark" @click="selectFirstDriver(driver)" v-if="driver.id != enrollment.first_driver_id">1º</button></td>
+                                    <td><button class="btn btn-dark" @click="selectSecondDriver(driver)" v-if="driver.id != enrollment.second_driver_id">2º</button></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -157,7 +202,7 @@ onMounted(async ()=>{
                             <span class="input-group-text"><BIconSearch/></span>
                             <input placeholder="Matrícula..." type="string" id="licensePlate" class="form-control" ref="licensePlate" />
                             <button class="btn btn-outline-secondary" type="button" @click="loadVehiclesByLicensePlate()">Procurar</button>
-                            <button class="btn btn-outline-secondary" type="button" @click="licensePlate.value=''">Reiniciar</button>
+                            <button class="btn btn-outline-secondary" type="button" @click="restartVehiclesSearch()">Reiniciar</button>
                             </div>
                         </div>
 
@@ -181,7 +226,7 @@ onMounted(async ()=>{
                                     <td class="align-middle">{{ vehicle.engine_capacity }}</td>
                                     <td class="align-middle">{{ vehicle.class }}</td>
                                     <td class="align-middle">{{ vehicle.category }}</td>
-                                    <td><button class="btn btn-dark" @click="enrollment.vehicle_id=vehicle.id"></button></td>
+                                    <td><button class="btn btn-dark" @click="selectVehicle(vehicle)"></button></td>
                                 </tr>
                             </tbody>
                         </table>
