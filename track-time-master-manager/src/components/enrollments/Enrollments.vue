@@ -16,6 +16,7 @@ const props = defineProps({
 const userId = useUserStore().userId
 
 const event = ref()
+const enrollOpen = ref(false)
 
 const loadEvent = async ()=>{
     console.log(props)
@@ -23,6 +24,8 @@ const loadEvent = async ()=>{
     .then((response)=>{
         event.value = response.data
         console.log(event.value)
+        enrollOpen.value = Date.parse(event.date_start_enrollments).valueOf() < Date.now() && Date.parse(event.date_end_enrollments).valueOf() > Date.now()
+        console.log('enrollments open: ', enrollOpen.value)
     })
     .catch((error)=>{
         console.error(error)
@@ -71,9 +74,11 @@ const enrollment = ref({
 
 const enroll = async ()=>{
     console.log(enrollment.value)
-    axios.post(`enrollments`, enrollment.value)
+    await axios.post(`enrollments`, enrollment.value)
     .then((response)=>{
         console.log(response.data)
+        //enrollments.value.push(response.data)
+        loadEnrollments()
     })
     .catch((error)=>{
         console.error(error)
@@ -83,7 +88,7 @@ const enroll = async ()=>{
 const enrollments = ref([])
 
 const loadEnrollments = async ()=>{
-    axios.get('enrollments')
+    await axios.get('enrollments')
     .then((response)=>{
         console.log(response.data)
         enrollments.value = response.data
@@ -100,7 +105,7 @@ onMounted(async ()=>{
 </script>
 <template>
     <br>
-    <div class="accordion" id="accordionExample">
+    <div class="accordion" id="accordionExample" v-if="enrollOpen">
         <div class="accordion-item">
             <h2 class="accordion-header">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
