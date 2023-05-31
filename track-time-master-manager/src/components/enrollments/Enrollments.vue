@@ -94,6 +94,16 @@ const selectVehicle = (vehicle)=>{
     selected_vehicle.value = vehicle
 }
 
+const restartDriversSearch = ()=>{
+    driverName.value.value=''
+    drivers.value=[]
+}
+
+const restartVehiclesSearch = ()=>{
+    licensePlate.value.value=''
+    vehicles.value=[]
+}
+
 const enroll = async ()=>{
     //console.log(enrollment.value)
     await axios.post(`enrollments`, enrollment.value)
@@ -129,6 +139,8 @@ const loadEnrollments = async ()=>{
     })
 }
 
+
+
 onMounted(async ()=>{
     await loadEvent()
     await loadEnrollments()
@@ -151,7 +163,7 @@ onMounted(async ()=>{
                             <span class="input-group-text"><BIconSearch/></span>
                             <input placeholder="Nome do condutor..." type="string" id="driverName" class="form-control" ref="driverName" />
                             <button class="btn btn-outline-secondary" type="button" @click="loadDriversByName()">Procurar</button>
-                            <button class="btn btn-outline-secondary" type="button" @click="driverName.value=''">Reiniciar</button>
+                            <button class="btn btn-outline-secondary" type="button" @click="restartDriversSearch()">Reiniciar</button>
                             </div>
                         </div>
                         
@@ -188,7 +200,7 @@ onMounted(async ()=>{
                             <span class="input-group-text"><BIconSearch/></span>
                             <input placeholder="Matrícula..." type="string" id="licensePlate" class="form-control" ref="licensePlate" />
                             <button class="btn btn-outline-secondary" type="button" @click="loadVehiclesByLicensePlate()">Procurar</button>
-                            <button class="btn btn-outline-secondary" type="button" @click="licensePlate.value=''">Reiniciar</button>
+                            <button class="btn btn-outline-secondary" type="button" @click="restartVehiclesSearch()">Reiniciar</button>
                             </div>
                         </div>
 
