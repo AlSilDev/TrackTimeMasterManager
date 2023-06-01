@@ -39,15 +39,15 @@ const clickMenuOption = () => {
 }
 
 const isBackendPage = () =>  {
-  console.log("Route: ", router.currentRoute.value)
+  //console.log("Route: ", router.currentRoute.value)
   const myArray = router.currentRoute.value.fullPath.split('/')
-  console.log("Route path trim: ", myArray)
-  console.log("Route path 1: ", myArray[1])
+  //console.log("Route path trim: ", myArray)
+  //console.log("Route path 1: ", myArray[1])
   if (myArray[1] == "backend"){
-    console.log("True")
+    //console.log("True")
     return true;
   }
-  console.log("False")
+  //console.log("False")
   return false;
 }
 
