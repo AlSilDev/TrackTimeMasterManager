@@ -166,6 +166,7 @@ const loadEventParticipants = async ()=>{
     .catch((error)=>{
         console.error(error)
     })
+}
     
 const cancelEnrollment = async (enrollmentId)=>{
     await axios.delete(`enrollments/${enrollmentId}`)
@@ -218,8 +219,7 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
 </script>
 <template>
     <br>
-    <!--div class="accordion" id="accordionExample" v-if="enrollOpen"></div-->
-    <div class="accordion" id="accordionExample">
+    <div class="accordion" id="accordionExample" v-if="enrollOpen">
         <div class="accordion-item">
             <h2 class="accordion-header">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -329,7 +329,7 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
                     <td class="align-middle">{{ eventEnrollment.vehicle_model }}</td>
                     <td class="align-middle">{{ eventEnrollment.vehicle_license_plate }}</td>
                     <td class="align-middle"><button class="btn btn-success" title="Check in" v-if="havePermissionsVT()" @click="checkInEnroll(eventEnrollment)"><BIconBuildingCheck/></button></td>
-                    <td class="align-middle"><button class="btn btn-danger" @click="cancelEnrollment(enrollment.id)"><BIconTrash/></button></td>
+                    <td class="align-middle"><button class="btn btn-danger" @click="cancelEnrollment(eventEnrollment.id)"><BIconTrash/></button></td>
                 </tr>
             </tbody>
         </table>
