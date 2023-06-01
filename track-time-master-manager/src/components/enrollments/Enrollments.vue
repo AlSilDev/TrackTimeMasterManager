@@ -285,7 +285,7 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
 
     <br>
 
-    <div v-if="eventEnrollments.length != 0">
+    <div v-if="enrollments.length != 0">
         <h2>Inscritos</h2>
         <table class="table table-hover table-striped">
             <thead class="table-dark" style="cursor: pointer">
