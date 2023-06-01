@@ -20,6 +20,8 @@ const userId = useUserStore().userId
 
 const event = ref()
 const enrollOpen = ref(false)
+const eventStarted = ref(false)
+const eventEnded = ref(false)
 
 const loadEvent = async ()=>{
     //console.log(props)
@@ -34,6 +36,8 @@ const loadEvent = async ()=>{
         */
         enrollOpen.value = Date.parse(event.value.date_start_enrollments).valueOf() < Date.now() && Date.parse(event.value.date_end_enrollments).valueOf() > Date.now()
         //console.log('enrollments open: ', enrollOpen.value)
+        eventStarted.value = Date.parse(event.value.date_start_event).valueOf() < Date.now()
+        eventEnded.value = Date.parse(event.value.date_end_event).valueOf() > Date.now()
     })
     .catch((error)=>{
         console.error(error)
@@ -132,8 +136,9 @@ const enroll = async ()=>{
             vehicle_model: selected_vehicle.value.model,
             vehicle_license_plate: selected_vehicle.value.license_plate
         })
-        restartDriversSearch()
-        restartVehiclesSearch()
+        /*restartDriversSearch()
+        restartVehiclesSearch()*/
+        restartSelected()
         console.log('enrollments after push: ', enrollments.value)
         //loadEnrollments()
     })
@@ -202,7 +207,8 @@ const checkInEnroll = async(enrollment) => {
     await axios.patch('enrollments/' + enrollment.id + '/checkIn', checkInValue)
     //remover de eventEnrollment
     removeObjectWithId(enrollment.id)
-    addObject(eventParticipants)
+    //addObject(eventParticipants)
+    eventParticipants.value.push(enrollment)
 }
 
 const removeObjectWithId = (id) => {
@@ -336,11 +342,13 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
     </div>
     <div v-else>
         <h2>Inscritos</h2>
-        <h6>Sem inscritos para fazer check in</h6>
+        <h6 v-if="eventStarted && !eventEnded">Sem inscritos para fazer check in</h6>
+        <h6 v-if="!eventStarted">Sem inscritos</h6>
     </div>
 
     <br>
 
+    <!--div v-if="eventParticipants.length != 0 && eventStarted"-->
     <div v-if="eventParticipants.length != 0">
         <h2>Participantes</h2>
         <table class="table table-hover table-striped" v-if="eventParticipants.length != 0">
@@ -362,6 +370,7 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
             </tbody>
         </table>
     </div>
+    <!--div v-if="eventStarted"-->
     <div v-else>
         <h2>Participantes</h2>
         <h6>Sem Participantes</h6>
