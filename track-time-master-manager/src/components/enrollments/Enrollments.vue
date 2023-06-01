@@ -1,10 +1,12 @@
 <script setup>
 import { ref, computed, onMounted, inject } from 'vue'
+import { useUserStore } from "../../stores/user.js"
 import {useRouter} from 'vue-router'
-import { useUserStore } from '../../stores/user';
+import { BIconBuildingCheck } from 'bootstrap-icons-vue';
 import { BIconBack } from 'bootstrap-icons-vue';
 
 const router = useRouter()
+const userStore = useUserStore()
 const axios = inject('axios')
 const toast = inject('toast')
 
@@ -141,11 +143,11 @@ const enroll = async ()=>{
 }
 
 const enrollments = ref([])
-
-const loadEnrollments = async ()=>{
-    await axios.get('enrollments')
+const loadEventEnrollments = async ()=>{
+    console.log("Event id: " + props.id)
+    await axios.get('event/' + props.id+ '/enrollments')
     .then((response)=>{
-        //console.log('enrollments: ', response.data)
+        console.log(response.data)
         enrollments.value = response.data
     })
     .catch((error)=>{
@@ -153,6 +155,18 @@ const loadEnrollments = async ()=>{
     })
 }
 
+const eventParticipants = ref([])
+const loadEventParticipants = async ()=>{
+    console.log("Event id: " + props.id)
+    await axios.get('event/' + props.id + '/participants')
+    .then((response)=>{
+        //console.log(response.data)
+        eventParticipants.value = response.data
+    })
+    .catch((error)=>{
+        console.error(error)
+    })
+    
 const cancelEnrollment = async (enrollmentId)=>{
     await axios.delete(`enrollments/${enrollmentId}`)
     .then((response)=>{
@@ -169,12 +183,43 @@ const cancelEnrollment = async (enrollmentId)=>{
 
 onMounted(async ()=>{
     await loadEvent()
-    await loadEnrollments()
+    await loadEventEnrollments()
+    await loadEventParticipants()
 })
+
+const havePermissionsVT = () => {
+  if (!userStore.user) {
+    return false
+  }
+  //Verificações tecnicas - id=3
+  return userStore.user.type_id == 3 || userStore.user.type_id == 1
+}
+
+const checkInEnroll = async(enrollment) => {
+    console.log("Check in done!")
+    var checkInValue = {"check_in": 1};
+    await axios.patch('enrollments/' + enrollment.id + '/checkIn', checkInValue)
+    //remover de eventEnrollment
+    removeObjectWithId(enrollment.id)
+    addObject(eventParticipants)
+}
+
+const removeObjectWithId = (id) => {
+  const objWithIdIndex = enrollments.value.findIndex((obj) => obj.id === id);
+  if (objWithIdIndex > -1){
+    enrollments.value.splice(objWithIdIndex, 1);
+  }
+}
+
+const addObject = (enrollmentToAdd, arrayToUpdated) => {
+  arrayToUpdated.push(enrollmentToAdd);
+}
+
 </script>
 <template>
     <br>
-    <div class="accordion" id="accordionExample" v-if="enrollOpen">
+    <!--div class="accordion" id="accordionExample" v-if="enrollOpen"></div-->
+    <div class="accordion" id="accordionExample">
         <div class="accordion-item">
             <h2 class="accordion-header">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -264,24 +309,61 @@ onMounted(async ()=>{
 
     <br>
 
-    <table class="table table-hover table-striped" v-if="enrollments.length != 0">
-        <thead class="table-dark" style="cursor: pointer">
-            <tr>
-                <th class="align-middle">1º Condutor</th>
-                <th class="align-middle">2º Condutor</th>
-                <th class="align-middle">Modelo</th>
-                <th class="align-middle">Matrícula</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="enrollment in enrollments" :key="enrollment.id">
-                <td class="align-middle">{{ enrollment.first_driver_name }}</td>
-                <td class="align-middle">{{ enrollment.second_driver_name }}</td>
-                <td class="align-middle">{{ enrollment.vehicle_model }}</td>
-                <td class="align-middle">{{ enrollment.vehicle_license_plate }}</td>
-                <td class="align-middle"><button class="btn btn-danger" @click="cancelEnrollment(enrollment.id)"><BIconTrash/></button></td>
-            </tr>
-        </tbody>
-    </table>
+    <div v-if="enrollments.length != 0">
+        <h2>Inscritos</h2>
+        <table class="table table-hover table-striped">
+            <thead class="table-dark" style="cursor: pointer">
+                <tr>
+                    <th class="align-middle">1º Condutor</th>
+                    <th class="align-middle">2º Condutor</th>
+                    <th class="align-middle">Modelo</th>
+                    <th class="align-middle">Matrícula</th>
+                    <th class="align-middle" v-if="havePermissionsVT()"></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="eventEnrollment in enrollments" :key="eventEnrollment.id">
+                    <td class="align-middle">{{ eventEnrollment.first_driver_name }}</td>
+                    <td class="align-middle">{{ eventEnrollment.second_driver_name }}</td>
+                    <td class="align-middle">{{ eventEnrollment.vehicle_model }}</td>
+                    <td class="align-middle">{{ eventEnrollment.vehicle_license_plate }}</td>
+                    <td class="align-middle"><button class="btn btn-success" title="Check in" v-if="havePermissionsVT()" @click="checkInEnroll(eventEnrollment)"><BIconBuildingCheck/></button></td>
+                    <td class="align-middle"><button class="btn btn-danger" @click="cancelEnrollment(enrollment.id)"><BIconTrash/></button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div v-else>
+        <h2>Inscritos</h2>
+        <h6>Sem inscritos para fazer check in</h6>
+    </div>
+
+    <br>
+
+    <div v-if="eventParticipants.length != 0">
+        <h2>Participantes</h2>
+        <table class="table table-hover table-striped" v-if="eventParticipants.length != 0">
+            <thead class="table-dark" style="cursor: pointer">
+                <tr>
+                    <th class="align-middle">1º Condutor</th>
+                    <th class="align-middle">2º Condutor</th>
+                    <th class="align-middle">Modelo</th>
+                    <th class="align-middle">Matrícula</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="eventParticipant in eventParticipants" :key="eventParticipant.id">
+                    <td class="align-middle">{{ eventParticipant.first_driver_name }}</td>
+                    <td class="align-middle">{{ eventParticipant.second_driver_name }}</td>
+                    <td class="align-middle">{{ eventParticipant.vehicle_model }}</td>
+                    <td class="align-middle">{{ eventParticipant.vehicle_license_plate }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div v-else>
+        <h2>Participantes</h2>
+        <h6>Sem Participantes</h6>
+    </div>
 </template>
