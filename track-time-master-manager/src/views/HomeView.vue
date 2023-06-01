@@ -1,9 +1,9 @@
 <script setup>
-import TheWelcome from '../components/TheWelcome.vue'
+import PublicPage from '../components/publicPage/PublicPage.vue'
 </script>
 
 <template>
   <main>
-    <TheWelcome />
+    <PublicPage />
   </main>
 </template>

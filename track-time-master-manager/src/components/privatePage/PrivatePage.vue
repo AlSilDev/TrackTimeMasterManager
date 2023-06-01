@@ -26,7 +26,12 @@ const clickMenuOption = () => {
       id="sidebarMenu"
       class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
     >
-      <div class="position-sticky pt-3">
+      <div class="position-relative pt-3">
+        <ul class="nav flex-column bg-info text-white">
+          <li class="nav flex-column">
+            <h6 class="text-center">Secretariado</h6>
+          </li>
+        </ul>
         <ul class="nav flex-column">
           <li class="nav flex-column">
             <router-link
@@ -61,12 +66,34 @@ const clickMenuOption = () => {
               Utilizadores
             </router-link>
           </li>
-        </ul> 
+        </ul>
+        <ul class="nav flex-column bg-success text-white">
+          <li class="nav flex-column">
+            <br>
+          </li>
+        </ul>
+        <ul class="nav flex-column bg-success text-white">
+          <li class="nav flex-column">
+            <h6 class="text-center">Events</h6>
+          </li>
+        </ul>
+        <ul class="nav flex-column">
+          <li class="nav flex-column">
+            <router-link
+              class="nav-link w-100 me-3"
+              :class="{ active: $route.name === 'Events' }"
+              :to="{ name: 'Events' }"
+              @click="clickMenuOption"
+            >
+              <i class="bi bi-list-check"></i>
+              Provas
+            </router-link>
+          </li>
+        </ul>
       </div>
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <!--h3>(Secretariado)</h3-->
       <router-view></router-view>
     </main>
   </div>
