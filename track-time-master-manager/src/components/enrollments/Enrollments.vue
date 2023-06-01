@@ -3,6 +3,7 @@ import { ref, computed, onMounted, inject } from 'vue'
 import { useUserStore } from "../../stores/user.js"
 import {useRouter} from 'vue-router'
 import { BIconBuildingCheck } from 'bootstrap-icons-vue';
+import { BIconBack } from 'bootstrap-icons-vue';
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -106,15 +107,26 @@ const restartVehiclesSearch = ()=>{
     vehicles.value=[]
 }
 
+const restartSelected = ()=>{
+    enrollment.value.first_driver_id = -1
+    enrollment.value.second_driver_id = -1
+    enrollment.value.vehicle_id = -1
+    restartDriversSearch()
+    restartVehiclesSearch()
+    selected_first_driver.value = null
+    selected_second_driver.value = null
+    selected_vehicle.value = null
+}
+
 const enroll = async ()=>{
     //console.log(enrollment.value)
     await axios.post(`enrollments`, enrollment.value)
     .then((response)=>{
-        //console.log('enroll', response.data)
+        console.log('enroll', response.data)
         //enrollments.value.push(response.data)
         enrollments.value.push({
-            id: response.data.id,
-            event_id: response.data.event_id,
+            id: response.data.data.id,
+            event_id: response.data.data.event_id,
             first_driver_name: selected_first_driver.value.name,
             second_driver_name: selected_second_driver.value.name,
             vehicle_model: selected_vehicle.value.model,
@@ -122,7 +134,7 @@ const enroll = async ()=>{
         })
         restartDriversSearch()
         restartVehiclesSearch()
-        //console.log('enrollments after push: ', enrollments.value)
+        console.log('enrollments after push: ', enrollments.value)
         //loadEnrollments()
     })
     .catch((error)=>{
@@ -154,9 +166,20 @@ const loadEventParticipants = async ()=>{
     .catch((error)=>{
         console.error(error)
     })
+    
+const cancelEnrollment = async (enrollmentId)=>{
+    await axios.delete(`enrollments/${enrollmentId}`)
+    .then((response)=>{
+        const index = enrollments.value.findIndex(element => element.id == enrollmentId)
+        enrollments.value.splice(index, 1)
+        toast.success(`A inscrição #${enrollmentId} foi cancelada com sucesso.`)
+        restartDriversSearch()
+        restartVehiclesSearch()
+    })
+    .catch((error)=>{
+        console.error(error)
+    })
 }
-
-
 
 onMounted(async ()=>{
     await loadEvent()
@@ -277,7 +300,8 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
                             </tbody>
                         </table>
                     </div>
-                    <button class="btn btn-dark" @click="enroll()">Efetuar Inscrição</button>
+                    <button class="btn btn-dark" @click="enroll()" :disabled="!selected_first_driver || !selected_second_driver || !selected_vehicle">Efetuar Inscrição</button>
+                    <button class="btn btn-dark" @click="restartSelected()" :disabled="!selected_first_driver && !selected_second_driver && !selected_vehicle"><BIconArrowCounterclockwise/></button>
                 </div>
             </div>
         </div>
@@ -295,6 +319,7 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
                     <th class="align-middle">Modelo</th>
                     <th class="align-middle">Matrícula</th>
                     <th class="align-middle" v-if="havePermissionsVT()"></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -304,6 +329,7 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
                     <td class="align-middle">{{ eventEnrollment.vehicle_model }}</td>
                     <td class="align-middle">{{ eventEnrollment.vehicle_license_plate }}</td>
                     <td class="align-middle"><button class="btn btn-success" title="Check in" v-if="havePermissionsVT()" @click="checkInEnroll(eventEnrollment)"><BIconBuildingCheck/></button></td>
+                    <td class="align-middle"><button class="btn btn-danger" @click="cancelEnrollment(enrollment.id)"><BIconTrash/></button></td>
                 </tr>
             </tbody>
         </table>
@@ -340,5 +366,4 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
         <h2>Participantes</h2>
         <h6>Sem Participantes</h6>
     </div>
-    
 </template>
