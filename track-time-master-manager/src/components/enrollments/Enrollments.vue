@@ -3,6 +3,7 @@ import { ref, computed, onMounted, inject } from 'vue'
 import { useUserStore } from "../../stores/user.js"
 import {useRouter} from 'vue-router'
 import { BIconBuildingCheck } from 'bootstrap-icons-vue';
+import { BIconBack } from 'bootstrap-icons-vue';
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -19,6 +20,8 @@ const userId = useUserStore().userId
 
 const event = ref()
 const enrollOpen = ref(false)
+const eventStarted = ref(false)
+const eventEnded = ref(false)
 
 const loadEvent = async ()=>{
     //console.log(props)
@@ -33,6 +36,8 @@ const loadEvent = async ()=>{
         */
         enrollOpen.value = Date.parse(event.value.date_start_enrollments).valueOf() < Date.now() && Date.parse(event.value.date_end_enrollments).valueOf() > Date.now()
         //console.log('enrollments open: ', enrollOpen.value)
+        eventStarted.value = Date.parse(event.value.date_start_event).valueOf() < Date.now()
+        eventEnded.value = Date.parse(event.value.date_end_event).valueOf() > Date.now()
     })
     .catch((error)=>{
         console.error(error)
@@ -106,23 +111,35 @@ const restartVehiclesSearch = ()=>{
     vehicles.value=[]
 }
 
+const restartSelected = ()=>{
+    enrollment.value.first_driver_id = -1
+    enrollment.value.second_driver_id = -1
+    enrollment.value.vehicle_id = -1
+    restartDriversSearch()
+    restartVehiclesSearch()
+    selected_first_driver.value = null
+    selected_second_driver.value = null
+    selected_vehicle.value = null
+}
+
 const enroll = async ()=>{
     //console.log(enrollment.value)
     await axios.post(`enrollments`, enrollment.value)
     .then((response)=>{
-        //console.log('enroll', response.data)
+        console.log('enroll', response.data)
         //enrollments.value.push(response.data)
         enrollments.value.push({
-            id: response.data.id,
-            event_id: response.data.event_id,
+            id: response.data.data.id,
+            event_id: response.data.data.event_id,
             first_driver_name: selected_first_driver.value.name,
             second_driver_name: selected_second_driver.value.name,
             vehicle_model: selected_vehicle.value.model,
             vehicle_license_plate: selected_vehicle.value.license_plate
         })
-        restartDriversSearch()
-        restartVehiclesSearch()
-        //console.log('enrollments after push: ', enrollments.value)
+        /*restartDriversSearch()
+        restartVehiclesSearch()*/
+        restartSelected()
+        console.log('enrollments after push: ', enrollments.value)
         //loadEnrollments()
     })
     .catch((error)=>{
@@ -155,8 +172,20 @@ const loadEventParticipants = async ()=>{
         console.error(error)
     })
 }
-
-
+    
+const cancelEnrollment = async (enrollmentId)=>{
+    await axios.delete(`enrollments/${enrollmentId}`)
+    .then((response)=>{
+        const index = enrollments.value.findIndex(element => element.id == enrollmentId)
+        enrollments.value.splice(index, 1)
+        toast.success(`A inscrição #${enrollmentId} foi cancelada com sucesso.`)
+        restartDriversSearch()
+        restartVehiclesSearch()
+    })
+    .catch((error)=>{
+        console.error(error)
+    })
+}
 
 onMounted(async ()=>{
     await loadEvent()
@@ -178,7 +207,8 @@ const checkInEnroll = async(enrollment) => {
     await axios.patch('enrollments/' + enrollment.id + '/checkIn', checkInValue)
     //remover de eventEnrollment
     removeObjectWithId(enrollment.id)
-    addObject(eventParticipants)
+    //addObject(eventParticipants)
+    eventParticipants.value.push(enrollment)
 }
 
 const removeObjectWithId = (id) => {
@@ -195,8 +225,7 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
 </script>
 <template>
     <br>
-    <!--div class="accordion" id="accordionExample" v-if="enrollOpen"></div-->
-    <div class="accordion" id="accordionExample">
+    <div class="accordion" id="accordionExample" v-if="enrollOpen">
         <div class="accordion-item">
             <h2 class="accordion-header">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -277,7 +306,8 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
                             </tbody>
                         </table>
                     </div>
-                    <button class="btn btn-dark" @click="enroll()">Efetuar Inscrição</button>
+                    <button class="btn btn-dark" @click="enroll()" :disabled="!selected_first_driver || !selected_second_driver || !selected_vehicle">Efetuar Inscrição</button>
+                    <button class="btn btn-dark" @click="restartSelected()" :disabled="!selected_first_driver && !selected_second_driver && !selected_vehicle"><BIconArrowCounterclockwise/></button>
                 </div>
             </div>
         </div>
@@ -285,7 +315,7 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
 
     <br>
 
-    <div v-if="eventEnrollments.length != 0">
+    <div v-if="enrollments.length != 0">
         <h2>Inscritos</h2>
         <table class="table table-hover table-striped">
             <thead class="table-dark" style="cursor: pointer">
@@ -295,6 +325,7 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
                     <th class="align-middle">Modelo</th>
                     <th class="align-middle">Matrícula</th>
                     <th class="align-middle" v-if="havePermissionsVT()"></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -304,17 +335,20 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
                     <td class="align-middle">{{ eventEnrollment.vehicle_model }}</td>
                     <td class="align-middle">{{ eventEnrollment.vehicle_license_plate }}</td>
                     <td class="align-middle"><button class="btn btn-success" title="Check in" v-if="havePermissionsVT()" @click="checkInEnroll(eventEnrollment)"><BIconBuildingCheck/></button></td>
+                    <td class="align-middle"><button class="btn btn-danger" @click="cancelEnrollment(eventEnrollment.id)"><BIconTrash/></button></td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div v-else>
         <h2>Inscritos</h2>
-        <h6>Sem inscritos para fazer check in</h6>
+        <h6 v-if="eventStarted && !eventEnded">Sem inscritos para fazer check in</h6>
+        <h6 v-if="!eventStarted">Sem inscritos</h6>
     </div>
 
     <br>
 
+    <!--div v-if="eventParticipants.length != 0 && eventStarted"-->
     <div v-if="eventParticipants.length != 0">
         <h2>Participantes</h2>
         <table class="table table-hover table-striped" v-if="eventParticipants.length != 0">
@@ -336,9 +370,9 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
             </tbody>
         </table>
     </div>
+    <!--div v-if="eventStarted"-->
     <div v-else>
         <h2>Participantes</h2>
         <h6>Sem Participantes</h6>
     </div>
-    
 </template>
