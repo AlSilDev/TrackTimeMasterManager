@@ -67,6 +67,12 @@ const router = createRouter({
       component: Drivers,
     },
     {
+      path: '/backend/drivers/:id',
+      name: 'Driver',
+      component: Driver,
+      props: route => ({ id: parseInt(route.params.id) })
+    },
+    {
       path: '/backend/drivers/new',
       name: 'NewDriver',
       component: Driver,
