@@ -1,6 +1,6 @@
 <script setup>
-  import { ref, watch, inject } from 'vue'
-  import UserDetail from "./VehicleDetail.vue"
+  import { ref, watch, computed, inject } from 'vue'
+  import VehicleDetail from "./VehicleDetail.vue"
   import { useRouter, onBeforeRouteLeave } from 'vue-router'  
   
   const router = useRouter()  
@@ -14,27 +14,33 @@
       }
   })
 
-  const newUser = () => {
+  const operation = computed( () => (!props.id || props.id < 0) ? 'insert' : 'update')
+
+  const newVehicle = () => {
       return {
         id: null,
-        name: '',
-        email: '',
-        gender: 'M',
-        photo_url: null
-      }
+        model: '',
+        class_id: null,
+        class: {
+          category_id: null
+        },
+        license_plate: '',
+        year: null,
+        engine_capacity: null
+    }
   }
 
   let originalValueStr = ''
-  const loadUser = (id) => {    
+  const loadVehicle = (id) => {    
     originalValueStr = ''
       errors.value = null
       if (!id || (id < 0)) {
-        user.value = newUser()
+        vehicle.value = newVehicle()
         originalValueStr = dataAsString()
       } else {
-        axios.get('users/' + id)
+        axios.get('vehicles/' + id)
           .then((response) => {
-            user.value = response.data.data
+            vehicle.value = response.data.data
             originalValueStr = dataAsString()
           })
           .catch((error) => {
@@ -45,30 +51,48 @@
 
   const save = () => {
       errors.value = null
-      axios.put('users/' + props.id, user.value)
+      if (operation.value == "insert"){
+        axios.post('vehicles', vehicle.value)
+          .then((response) => {
+            vehicle.value = response.data.data
+            originalValueStr = dataAsString()
+            toast.success('Veículo #' + vehicle.value.id + ' criado com sucesso')
+            router.push({name: 'Vehicles'})
+          })
+          .catch((error) => {
+            if (error.response.status == 422) {
+              toast.error('Veículo não criado devido a erros de validação')
+              errors.value = error.response.data.errors
+            } else {
+              toast.error('Veículo não criado devido a erro de servidor desconhecido')
+            }
+          })
+      }else{
+        axios.put('vehicles/' + props.id, vehicle.value)
         .then((response) => {
-          user.value = response.data.data
+          vehicle.value = response.data.data
           originalValueStr = dataAsString()
-          toast.success('User #' + user.value.id + ' was updated successfully.')
-          router.back()
+          toast.success('Veículo #' + vehicle.value.id + ' atualizado com sucesso')
+          router.push({name: 'Vehicles'})
         })
         .catch((error) => {
           if (error.response.status == 422) {
-              toast.error('User #' + props.id + ' was not updated due to validation errors!')
+              toast.error('Veículo #' + props.id + ' não atualizado devido a erros de validação')
               errors.value = error.response.data.errors
             } else {
-              toast.error('User #' + props.id + ' was not updated due to unknown server error!')
+              toast.error('Vehicle #' + props.id + ' was not updated due to unknown server error!')
             }
         })
+      }
   }
 
   const cancel = () => {
     originalValueStr = dataAsString()
-    router.back()
+    router.push({name: 'Vehicles'})
   }
 
   const dataAsString = () => {
-      return JSON.stringify(user.value)
+      return JSON.stringify(vehicle.value)
   }
 
   let nextCallBack = null
@@ -83,20 +107,18 @@
     let newValueStr = dataAsString()
     if (originalValueStr != newValueStr) {
       nextCallBack = next
-      confirmationLeaveDialog.value.show()
     } else {
       next()
     }
   })  
 
-  const user = ref(newUser())
+  const vehicle = ref(newVehicle())
   const errors = ref(null)
-  const confirmationLeaveDialog = ref(null)
 
   watch(
     () => props.id,
     (newValue) => {
-        loadUser(newValue)
+      loadVehicle(newValue)
       },
     {immediate: true}  
     )
@@ -104,18 +126,11 @@
 </script>
 
 <template>
-  <confirmation-dialog
-    ref="confirmationLeaveDialog"
-    confirmationBtn="Discard changes and leave"
-    msg="Do you really want to leave? You have unsaved changes!"
-    @confirmed="leaveConfirmed"
-  >
-  </confirmation-dialog>  
-
-  <user-detail
-    :user="user"
+  <vehicle-detail
+    :operationType="operation"
+    :vehicle="vehicle"
     :errors="errors"
     @save="save"
     @cancel="cancel"
-  ></user-detail>
+  ></vehicle-detail>
 </template>

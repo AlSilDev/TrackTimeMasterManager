@@ -6,10 +6,19 @@ import Login from '../components/auth/Login.vue'
 import ChangePassword from "../components/auth/ChangePassword.vue"
 import Users from "../components/users/Users.vue"
 import User from "../components/users/User.vue"
-import UserCreate from "../components/users/UserCreate.vue"
 import Vehicles from "../components/vehicles/Vehicles.vue"
+import Vehicle from "../components/vehicles/Vehicle.vue"
 import Drivers from "../components/drivers/Drivers.vue"
-import Secretariado from '../components/secretariado/Secretariado.vue'
+import Driver from "../components/drivers/Driver.vue"
+import PrivatePage from '../components/privatePage/PrivatePage.vue'
+import Events from "../components/events/Events.vue"
+import Event from "../components/events/Event.vue"
+import EventCategories from "../components/eventCategories/EventCategories.vue"
+import EventCategory from "../components/eventCategories/EventCategory.vue"
+import Enrollments from "../components/enrollments/Enrollments.vue"
+import UserCategories from "../components/userCategories/UserCategories.vue"
+import UserCategory from "../components/userCategories/UserCategory.vue"
+import PublicPage from '../components/publicPage/PublicPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,7 +26,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: PublicPage
     },
     {
       path: '/redirect/:redirectTo',
@@ -31,39 +40,120 @@ const router = createRouter({
       component: Login
     },
     {
-      path: '/password',
+      path: '/backend/users/:id/password',
+      //path: '/secretariado/users/user/password',
       name: 'ChangePassword',
-      component: ChangePassword
+      component: ChangePassword,
+      props: route => ({ id: parseInt(route.params.id) })
     },
     {
-      path: '/secretariado/users',
+      path: '/backend/users',
       name: 'Users',
       component: Users,
     },
     {
-      path: '/secretariado/vehicles',
+      path: '/backend/vehicles',
       name: 'Vehicles',
       component: Vehicles,
     },
     {
-      path: '/secretariado/drivers',
+      path: '/backend/vehicles/new',
+      name: 'NewVehicle',
+      component: Vehicle,
+    },
+    {
+      path: '/backend/vehicles/:id',
+      name: 'Vehicle',
+      component: Vehicle,
+      props: route => ({ id: parseInt(route.params.id) })
+    },
+    {
+      path: '/backend/drivers',
       name: 'Drivers',
       component: Drivers,
     },
     {
-      path: '/users/create',
-      name: 'UserCreate',
-      component: UserCreate
+      path: '/backend/drivers/:id',
+      name: 'Driver',
+      component: Driver,
+      props: route => ({ id: parseInt(route.params.id) })
     },
-    /*{
-      path: '/secretariado',
-      name: 'Secretariado',
-      component: Secretariado,
-    },*/
     {
-      path: '/users/:id',
+      path: '/backend/drivers/new',
+      name: 'NewDriver',
+      component: Driver,
+    },
+    {
+      path: '/backend/users/new',
+      name: 'NewUser',
+      component: User,
+    },
+    {
+      path: '/backend/events/categories/new',
+      name: 'NewEventCategory',
+      component: EventCategory,
+    },
+    {
+      path: '/backend/users/categories/new',
+      name: 'NewUserCategory',
+      component: UserCategory,
+    },
+    {
+      path: '/backend/events/new',
+      name: 'NewEvent',
+      component: Event,
+    },
+    {
+      path: '/backend/events',
+      name: 'Events',
+      component: Events,
+    },
+    {
+      path: '/backend/events/categories',
+      name: 'EventCategories',
+      component: EventCategories,
+    },
+    {
+      path: '/backend/users/categories',
+      name: 'UserCategories',
+      component: UserCategories,
+    },
+    {
+      path: '/backend/users/:id',
       name: 'User',
       component: User,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ id: parseInt(route.params.id) })
+    },
+    {
+      path: '/backend/events/:id',
+      name: 'Event',
+      component: Event,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ id: parseInt(route.params.id) })
+    },
+    {
+      path: '/backend/events/:id/enrollments',
+      name: 'Enrollments',
+      component: Enrollments,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ id: parseInt(route.params.id) })
+    },
+    {
+      path: '/backend/events/category/:id',
+      name: 'EventCategory',
+      component: EventCategory,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ id: parseInt(route.params.id) })
+    },
+    {
+      path: '/backend/users/category/:id',
+      name: 'UserCategory',
+      component: UserCategory,
       //props: true
       // Replaced with the following line to ensure that id is a number
       props: route => ({ id: parseInt(route.params.id) })
@@ -95,12 +185,12 @@ router.beforeEach((to, from, next) => {
     next()
     return
   }
-  if (!userStore.user && to.name != 'home') {
+  if (!userStore.user && to.name != 's') {
     next({ name: 'Login' })
     return
   }
   if (to.name == 'User') {
-    if ((userStore.user.type == 'A') || (userStore.user.id == to.params.id)) {
+    if ((userStore.user.type_id == 1) || (userStore.user.id == to.params.id)) {
       next()
       return
     }

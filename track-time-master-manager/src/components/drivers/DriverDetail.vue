@@ -5,7 +5,7 @@ import avatarNoneUrl from '@/assets/avatar-none.png'
 const serverBaseUrl = inject("serverBaseUrl");
 
 const props = defineProps({
-  user: {
+  driver: {
     type: Object,
     required: true,
   },
@@ -13,50 +13,61 @@ const props = defineProps({
     type: Object,
     required: false
   },
+  operationType: {
+    type: String,
+    default: "insert", // insert / update
+  },
 })
 
 const emit = defineEmits(["save", "cancel"]);
 
-const editingUser = ref(props.user)
+const editingDriver = ref(props.driver)
 
 watch(
-  () => props.user,
-  (newUser) => {
-    editingUser.value = newUser
+  () => props.driver,
+  (newDriver) => {
+    editingDriver.value = newDriver
   },
   { immediate: true }
 )
 
-const photoFullUrl = computed(() => {
+/*const photoFullUrl = computed(() => {
   return editingUser.value.photo_url
     ? serverBaseUrl + "/storage/fotos/" + editingUser.value.photo_url
     : avatarNoneUrl
+})*/
+
+const driverTitle = computed(() => {
+  if (!editingDriver.value){
+    return ""
+  }
+  return props.operationType == "insert" ? "Novo Concorrente" : "Concorrente #" + editingDriver.value.id;
 })
 
 const save = () => {
-  emit("save", editingUser.value);
+  emit("save", editingDriver.value);
 }
 
 const cancel = () => {
-  emit("cancel", editingUser.value);
+  emit("cancel", editingDriver.value);
 }
 </script>
 
 <template>
   <form class="row g-3 needs-validation" novalidate @submit.prevent="save">
-    <h3 class="mt-5 mb-3">User #{{ editingUser.id }}</h3>
+    <h3 class="mt-5 mb-3">{{ driverTitle }}</h3>
     <hr />
-    <div class="d-flex flex-wrap justify-content-between">
+    <div class="d-flex flex-wrap justify-content-center">
       <div class="w-75 pe-4">
         <div class="mb-3">
-          <label for="inputName" class="form-label">Name</label>
+          <label for="inputName" class="form-label">Nome</label>
           <input
             type="text"
             class="form-control"
             id="inputName"
-            placeholder="User Name"
+            placeholder="Nome"
             required
-            v-model="editingUser.name"
+            v-model="editingDriver.name"
           />
           <field-error-message :errors="errors" fieldName="name"></field-error-message>
         </div>
@@ -69,73 +80,72 @@ const cancel = () => {
             id="inputEmail"
             placeholder="Email"
             required
-            v-model="editingUser.email"
+            v-model="editingDriver.email"
           />
           <field-error-message :errors="errors" fieldName="email"></field-error-message>
         </div>
-        <div class="d-flex ms-1 mt-4 flex-wrap justify-content-between">
-          <div class="mb-3 me-3 flex-grow-1">
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                true-value="A"
-                false-value="M"
-                v-model="editingUser.type"
-                id="inputType"
-              />
-              <label class="form-check-label" for="inputType">
-                User is Administrator
-              </label>
-              <field-error-message :errors="errors" fieldName="type"></field-error-message>
-            </div>
-          </div>
-          <div class="mb-3 ms-xs-3 flex-grow-1">
-            <div class="form-check form-check-inline">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="radioGender"
-                value="M"
-                required
-                v-model="editingUser.gender"
-                id="inputGenderM"
-              />
-              <label class="form-check-label" for="inputGenderM">Masculino</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="radioGender"
-                value="F"
-                v-model="editingUser.gender"
-                id="inputGenderF"
-              />
-              <label class="form-check-label" for="inputGenderF">Feminino</label>
-            </div>
-            <field-error-message :errors="errors" fieldName="gender"></field-error-message>
-          </div>
+
+        <div class="mb-3 px-1">
+          <label for="inputLicenseNum" class="form-label">Nr. Licença</label>
+          <input
+            type="number"
+            class="form-control"
+            id="inputLicenseNum"
+            placeholder="Numero de Licença"
+            required
+            v-model="editingDriver.license_num"
+          />
+          <field-error-message :errors="errors" fieldName="license_num"></field-error-message>
         </div>
-      </div>
-      <div class="w-25">
-        <div class="mb-3">
-          <label class="form-label">Photo</label>
-          <div class="form-control text-center">
-            <img :src="photoFullUrl" class="w-100" />
-          </div>
+
+        <div class="mb-3 px-1">
+          <label for="inputLicenseExpiry" class="form-label">Validade da Licença</label>
+          <input
+            type="date"
+            name="trip-start"
+            class="form-control"
+            id="inputLicenseExpiry"
+            placeholder="Validade da Licença"
+            required
+            v-model="editingDriver.license_expiry"
+          />
+          <field-error-message :errors="errors" fieldName="license_expiry"></field-error-message>
+        </div>
+
+        <div class="mb-3 px-1">
+          <label for="inputPhoneNum" class="form-label">Nr. Telemóvel</label>
+          <input
+            type="tel"
+            class="form-control"
+            id="inputPhoneNum"
+            placeholder="Numero de Telemovel"
+            required
+            v-model="editingDriver.phone_num"
+          />
+          <field-error-message :errors="errors" fieldName="phone_num"></field-error-message>
+        </div>
+
+        <div class="mb-3 px-1">
+          <label for="inputAffiliateNum" class="form-label">Nr. Afiliação</label>
+          <input
+            type="number"
+            class="form-control"
+            id="inputAffiliateNum"
+            placeholder="Numero de Afiliacao"
+            required
+            v-model="editingDriver.affiliate_num"
+          />
+          <field-error-message :errors="errors" fieldName="affiliate_num"></field-error-message>
         </div>
       </div>
     </div>
-    <div class="mb-3 d-flex justify-content-end">
-      <button type="button" class="btn btn-primary px-5" @click="save">Save</button>
-      <button type="button" class="btn btn-light px-5" @click="cancel">Cancel</button>
+    <div class="mb-3 d-flex justify-content-center">
+      <button type="button" class="btn btn-dark px-5" @click="save">Guardar</button>
+      <button type="button" class="btn btn-light px-5" @click="cancel">Cancelar</button>
     </div>
   </form>
 </template>
 
 <style scoped>
-.total_hours {
-  width: 26rem;
-}
+
 </style>
