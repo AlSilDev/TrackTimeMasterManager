@@ -2,8 +2,7 @@
 import { ref, computed, onMounted, inject } from 'vue'
 import { useUserStore } from "../../stores/user.js"
 import {useRouter} from 'vue-router'
-import { BIconBuildingCheck } from 'bootstrap-icons-vue';
-import { BIconBack } from 'bootstrap-icons-vue';
+import { BIconArrowUp, BIconArrowDown, BIconBuildingCheck, BIconSearch, BIconArrowCounterclockwise, BIconTrash } from 'bootstrap-icons-vue';
 
 const router = useRouter()
 const userStore = useUserStore()

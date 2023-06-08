@@ -2,7 +2,7 @@
 import { ref, watch, computed, inject, onMounted } from "vue";
 import avatarNoneUrl from '@/assets/avatar-none.png'
 import moment from 'moment'
-import { BIconArrowRight, BIconTrash } from "bootstrap-icons-vue";
+import { BIconArrowRight, BIconArrowDown, BIconTrash } from "bootstrap-icons-vue";
 
 const serverBaseUrl = inject("serverBaseUrl");
 const axios = inject('axios')

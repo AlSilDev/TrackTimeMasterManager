@@ -3,6 +3,7 @@
   import {useRouter} from 'vue-router'
   import { useUserStore } from "../../stores/user.js"
   import UserTable from "./UserTable.vue"
+  import { BIconPlus, BIconTable } from 'bootstrap-icons-vue'
   
   const router = useRouter()
   const userStore = useUserStore()

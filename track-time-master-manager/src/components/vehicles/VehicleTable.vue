@@ -3,7 +3,7 @@ import { ref, inject, onMounted } from "vue";
 import { useUserStore } from "../../stores/user.js"
 import { useRouter } from "vue-router";
 import avatarNoneUrl from '@/assets/avatar-none.png'
-import { BIconArrowLeft } from "bootstrap-icons-vue";
+import { BIconArrowUp, BIconArrowDown, BIconSearch, BIconPencil } from "bootstrap-icons-vue";
 
 const axios = inject('axios')
 const serverBaseUrl = inject("serverBaseUrl");

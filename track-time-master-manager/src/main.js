@@ -5,7 +5,7 @@ import Toaster from "@meforma/vue-toaster";
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap'
-import { BootstrapIconsPlugin } from 'bootstrap-icons-vue';
+//import { BootstrapIconsPlugin } from 'bootstrap-icons-vue';
 
 import 'mdb-vue-ui-kit/css/mdb.min.css';
 
@@ -39,6 +39,6 @@ app.provide('toast', app.config.globalProperties.$toast);
 
 app.use(createPinia())
 app.use(router)
-app.use(BootstrapIconsPlugin)
+//app.use(BootstrapIconsPlugin)
 
 app.mount('#app')
