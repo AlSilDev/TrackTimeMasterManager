@@ -1,7 +1,8 @@
 <script setup>
-import { ref, watch, computed, inject } from "vue";
+import { ref, watch, computed, inject, onMounted } from "vue";
 import avatarNoneUrl from '@/assets/avatar-none.png'
 
+const axios = inject('axios')
 const serverBaseUrl = inject("serverBaseUrl");
 
 const props = defineProps({
@@ -44,6 +45,21 @@ const driverTitle = computed(() => {
   return props.operationType == "insert" ? "Novo Concorrente" : "Concorrente #" + editingDriver.value.id;
 })
 
+const countries = ref([])
+const loadCountries = async ()=>{
+  await axios.get('https://restcountries.com/v3.1/all?fields=name,translations')
+  .then((response)=>{
+    countries.value = response.data
+    countries.value.sort((a, b)=>{
+      return a.name.common.localeCompare(b.name.common);
+    })
+    console.log(countries.value)
+  })
+  .catch((error)=>{
+    console.error(error)
+  })
+}
+
 const save = () => {
   emit("save", editingDriver.value);
 }
@@ -51,6 +67,10 @@ const save = () => {
 const cancel = () => {
   emit("cancel", editingDriver.value);
 }
+
+onMounted(async ()=>{
+  await loadCountries()
+})
 </script>
 
 <template>
@@ -136,6 +156,13 @@ const cancel = () => {
             v-model="editingDriver.affiliate_num"
           />
           <field-error-message :errors="errors" fieldName="affiliate_num"></field-error-message>
+        </div>
+
+        <div class="mb-3 px-1">
+          <label for="inputCategory" class="form-label">País: </label>
+          <select class="form-select" id="inputCategory" v-model="editingDriver.country">
+              <option v-for="country in countries" v-bind:value="country.name.common">{{country.name.common}}</option>
+          </select>
         </div>
       </div>
     </div>

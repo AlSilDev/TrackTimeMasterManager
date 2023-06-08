@@ -81,7 +81,7 @@ const getResultsFiltered = async (page = 1) => {
 }
 
 const flag = (country)=>{
-  return 'flag flag-' + country.split('(')[0].trim().replaceAll(' ', '-')
+  return 'flag flag-' + country.toLowerCase().split('(')[0].trim().replaceAll(' ', '-')
 }
 
 const sortByColumn = (column) => {
