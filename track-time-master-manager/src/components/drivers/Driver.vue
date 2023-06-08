@@ -24,7 +24,8 @@
         license_num: null,
         license_expiry: Date,
         phone_num: null,
-        affiliate_num: null
+        affiliate_num: null,
+        country: ''
       }
   }
 
@@ -70,6 +71,7 @@
         .then((response) => {
           driver.value = response.data.data
           originalValueStr = dataAsString()
+          console.log('new driver', driver.value)
           toast.success('Driver #' + driver.value.id + ' was updated successfully.')
           router.push({name: 'Drivers'})
         })
