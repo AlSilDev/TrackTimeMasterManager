@@ -7,6 +7,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap'
 import { BootstrapIconsPlugin } from 'bootstrap-icons-vue';
 
+import 'mdb-vue-ui-kit/css/mdb.min.css';
+
 import App from './App.vue'
 import router from './router'
 

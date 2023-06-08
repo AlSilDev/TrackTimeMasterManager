@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, onMounted } from "vue";
+import { inject, ref, onMounted, computed } from "vue";
 import {useRouter} from 'vue-router'
 import { useUserStore } from "../../stores/user.js"
 import avatarNoneUrl from '@/assets/avatar-none.png'
@@ -80,6 +80,10 @@ const getResultsFiltered = async (page = 1) => {
     })
 }
 
+const flag = (country)=>{
+  return 'flag flag-' + country.split('(')[0].trim().replaceAll(' ', '-')
+}
+
 const sortByColumn = (column) => {
     if (column === sortedColumn.value) {
       order.value = (order.value === 'asc') ? 'desc' : 'asc'
@@ -123,6 +127,7 @@ onMounted(async ()=>{
   <table class="table table-hover table-striped">
     <thead class="table-dark" style="cursor: pointer">
       <tr>
+        <th></th>
         <th class="align-middle" @click="sortByColumn('name')">Nome <span v-if="sortedColumn == 'name'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
         <th class="align-middle" @click="sortByColumn('email')">Email <span v-if="sortedColumn == 'email'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
         <th class="align-middle" @click="sortByColumn('license_num')">Nº de Licença <span v-if="sortedColumn == 'license_num'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
@@ -134,6 +139,7 @@ onMounted(async ()=>{
     </thead>
     <tbody>
       <tr v-for="driver in laravelData.data" :key="driver.id">
+        <td><i :class="flag(driver.country)"></i></td>
         <td class="align-middle">{{ driver.name }}</td>
         <td class="align-middle">{{ driver.email }}</td>
         <td class="align-middle">{{ driver.license_num }}</td>
