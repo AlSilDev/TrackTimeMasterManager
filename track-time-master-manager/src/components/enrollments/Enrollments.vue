@@ -263,6 +263,23 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
   arrayToUpdated.push(enrollmentToAdd);
 }
 
+const updateRunOrder = ()=>{
+    const updatedValues = []
+    enrollments.value.forEach(enrollment => {
+        updatedValues.push({'id': enrollment.id, 'run_order': enrollment.run_order})
+    })
+
+    axios.put(`enrollments/${props.id}/run_order`, updatedValues)
+    .then((response)=>{
+        console.log('put', response.data)
+    })
+    .catch((error)=>{
+        console.error(error)
+    })
+        
+    console.log('updated:', updatedValues)
+}
+
 </script>
 <template>
     <br>
@@ -386,6 +403,7 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
                 </tr>
             </tbody>
         </table>
+        <button v-if="!enrollOpen && !eventStarted" class="btn btn-primary" @click="updateRunOrder">Guardar Alterações</button>
     </div>
     <div v-else>
         <h2>Inscritos</h2>
