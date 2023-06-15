@@ -186,6 +186,48 @@ const cancelEnrollment = async (enrollmentId)=>{
     })
 }
 
+const sortRunOrder = (type, id) => {
+    let selected = null
+    let aux = null
+    switch(type){
+        case 'up':
+            console.log('up')
+            selected = enrollments.value.findIndex((element) => {return element.id == id})
+            console.log('selected', enrollments.value[selected])
+            const up = enrollments.value.findIndex((element) => {return element.run_order == enrollments.value[selected].run_order-1})
+            console.log('up', enrollments.value[up])
+
+            enrollments.value[selected].run_order--
+            enrollments.value[up].run_order++
+
+            aux = enrollments.value[up]
+            enrollments.value[up] = enrollments.value[selected]
+            enrollments.value[selected] = aux
+
+            console.log('new enrollments', enrollments.value)
+            break
+        case 'down':
+            console.log('down')
+            selected = enrollments.value.findIndex((element) => {return element.id == id})
+            console.log('selected', enrollments.value[selected])
+            const down = enrollments.value.findIndex((element) => {return element.run_order == enrollments.value[selected].run_order+1})
+            console.log('down', enrollments.value[down])
+
+            enrollments.value[selected].run_order++
+            enrollments.value[down].run_order--
+
+            aux = enrollments.value[down]
+            enrollments.value[down] = enrollments.value[selected]
+            enrollments.value[selected] = aux
+
+            console.log('new enrollments', enrollments.value)
+            break
+        default:
+            console.log('invalid sort type', type)
+    }
+
+}
+
 onMounted(async ()=>{
     await loadEvent()
     await loadEventEnrollments()
@@ -219,6 +261,23 @@ const removeObjectWithId = (id) => {
 
 const addObject = (enrollmentToAdd, arrayToUpdated) => {
   arrayToUpdated.push(enrollmentToAdd);
+}
+
+const updateRunOrder = ()=>{
+    const updatedValues = []
+    enrollments.value.forEach(enrollment => {
+        updatedValues.push({'id': enrollment.id, 'run_order': enrollment.run_order})
+    })
+
+    axios.put(`enrollments/${props.id}/run_order`, updatedValues)
+    .then((response)=>{
+        console.log('put', response.data)
+    })
+    .catch((error)=>{
+        console.error(error)
+    })
+        
+    console.log('updated:', updatedValues)
 }
 
 </script>
@@ -319,6 +378,9 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
         <table class="table table-hover table-striped">
             <thead class="table-dark" style="cursor: pointer">
                 <tr>
+                    <th v-if="!enrollOpen && !eventStarted" class="align-middle"></th>
+                    <th v-if="!enrollOpen && !eventStarted" class="align-middle"># Porta</th>
+                    <th class="align-middle"># Inscrição</th>
                     <th class="align-middle">1º Condutor</th>
                     <th class="align-middle">2º Condutor</th>
                     <th class="align-middle">Modelo</th>
@@ -329,6 +391,9 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
             </thead>
             <tbody>
                 <tr v-for="eventEnrollment in enrollments" :key="eventEnrollment.id">
+                    <td v-if="!enrollOpen && !eventStarted" class="align-middle"><button class="btn btn-link" :disabled="eventEnrollment.run_order==1" @click="sortRunOrder('up', eventEnrollment.id)"><BIconArrowUp/></button><button class="btn btn-link" :disabled="eventEnrollment.run_order==enrollments.length" @click="sortRunOrder('down', eventEnrollment.id)"><BIconArrowDown/></button></td>
+                    <td v-if="!enrollOpen && !eventStarted" class="align-middle">{{ eventEnrollment.run_order }}</td>
+                    <td class="align-middle"> {{ eventEnrollment.enroll_order }}</td>
                     <td class="align-middle">{{ eventEnrollment.first_driver_name }}</td>
                     <td class="align-middle">{{ eventEnrollment.second_driver_name }}</td>
                     <td class="align-middle">{{ eventEnrollment.vehicle_model }}</td>
@@ -338,6 +403,7 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
                 </tr>
             </tbody>
         </table>
+        <button v-if="!enrollOpen && !eventStarted" class="btn btn-primary" @click="updateRunOrder">Guardar Alterações</button>
     </div>
     <div v-else>
         <h2>Inscritos</h2>
