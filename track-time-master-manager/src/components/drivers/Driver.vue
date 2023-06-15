@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, watch, computed, inject } from 'vue'
+  import { ref, watch, computed, inject, onMounted } from 'vue'
   import DriverDetail from "./DriverDetail.vue"
   import { useRouter, onBeforeRouteLeave } from 'vue-router'  
   
@@ -27,6 +27,15 @@
         affiliate_num: null,
         country: ''
       }
+  }
+
+  const countries = ref([])
+  const loadCountries = async ()=>{
+    await axios.get('https://restcountries.com/v3.1/all?fields=name,translations')
+    .then((response)=>{
+      console.log(response.data)
+      countries.value = response.data
+    })
   }
 
   let originalValueStr = ''
@@ -107,7 +116,6 @@
     let newValueStr = dataAsString()
     if (originalValueStr != newValueStr) {
       nextCallBack = next
-      confirmationLeaveDialog.value.show()
     } else {
       next()
     }
@@ -115,7 +123,6 @@
 
   const driver = ref(newDriver())
   const errors = ref(null)
-  const confirmationLeaveDialog = ref(null)
 
   watch(
     () => props.id,
@@ -125,20 +132,17 @@
     {immediate: true}  
     )
 
+  onMounted(async ()=>{
+    await loadCountries()
+  })
+
 </script>
 
 <template>
-  <confirmation-dialog
-    ref="confirmationLeaveDialog"
-    confirmationBtn="Discard changes and leave"
-    msg="Do you really want to leave? You have unsaved changes!"
-    @confirmed="leaveConfirmed"
-  >
-  </confirmation-dialog>  
-
   <driver-detail
     :driver="driver"
     :errors="errors"
+    :countries="countries"
     @save="save"
     @cancel="cancel"
   ></driver-detail>
