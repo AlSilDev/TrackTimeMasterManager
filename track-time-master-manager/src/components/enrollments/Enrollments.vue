@@ -2,12 +2,15 @@
 import { ref, computed, onMounted, inject, VueElement} from 'vue'
 import { useUserStore } from "../../stores/user.js"
 import {useRouter} from 'vue-router'
-import { BIconArrowUp, BIconArrowDown, BIconBuildingCheck, BIconSearch, BIconArrowCounterclockwise, BIconTrash, BIconBuildingFillSlash, BIconBuildingX, BIconCheck, BIconX, BIconXLg, BIconCheck2, BIconCheckLg } from 'bootstrap-icons-vue';
+import { BIconArrowUp, BIconArrowDown, BIconBuildingCheck, BIconSearch, BIconArrowCounterclockwise, BIconTrash } from 'bootstrap-icons-vue';
+//import { html2pdf } from 'html2pdf.js';
+
 
 const router = useRouter()
 const userStore = useUserStore()
 const axios = inject('axios')
 const toast = inject('toast')
+const html2pdf = inject('html2pdf')
 
 const props = defineProps({
   id: {
@@ -380,6 +383,26 @@ const updateRunOrder = ()=>{
     console.log('updated:', updatedValues)
 }
 
+const exportList = async (listName)=>{
+    const date = new Date()
+    var element = document.getElementById(`pdf-${listName}`);
+    var opt = {
+        margin:       2,
+        filename:     `INSCRITOS_${event.value.name}_${date.getFullYear()}${date.getMonth()+1}${date.getDate()}${date.getHours()}${date.getMinutes()}.pdf`,
+        image:        { type: 'png' },
+        html2canvas:  { scale: 4, letterRendering: true },
+        //html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'cm', format: 'a4', orientation: 'landscape' }
+    };
+    element.hidden = false
+    await html2pdf().set(opt).from(element).save();
+    element.hidden = true
+}
+
+const flag = (country)=>{
+  return 'flag flag-' + country.toLowerCase().split('(')[0].trim().replaceAll(' ', '-')
+}
+
 </script>
 <template>
     <br>
@@ -488,6 +511,57 @@ const updateRunOrder = ()=>{
                         <th class="align-middle">Modelo</th>
                         <th class="align-middle">Matrícula</th>
                         <th class="align-middle" v-if="havePermissionsS() && enrollOpen"></th>
+        <h2>Inscritos</h2>
+        <table class="table table-hover table-striped">
+            <thead class="table-dark" style="cursor: pointer">
+                <tr>
+                    <th v-if="!enrollOpen && !eventStarted" class="align-middle"></th>
+                    <th v-if="!enrollOpen && !eventStarted" class="align-middle"># Porta</th>
+                    <th class="align-middle"># Inscrição</th>
+                    <th class="align-middle">1º Condutor</th>
+                    <th class="align-middle">Lic. Nº</th>
+                    <th class="align-middle">2º Condutor</th>
+                    <th class="align-middle">Lic. Nº</th>
+                    <th class="align-middle">Modelo</th>
+                    <th class="align-middle">Categoria</th>
+                    <th class="align-middle">Classe</th>
+                    <th class="align-middle">Matrícula</th>
+                    <th class="align-middle">Nº</th>
+                    <th class="align-middle" v-if="havePermissionsVT()"></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="eventEnrollment in enrollments" :key="eventEnrollment.id">
+                    <td v-if="!enrollOpen && !eventStarted" class="align-middle"><button class="btn btn-link" :disabled="eventEnrollment.run_order==1" @click="sortRunOrder('up', eventEnrollment.id)"><BIconArrowUp/></button><button class="btn btn-link" :disabled="eventEnrollment.run_order==enrollments.length" @click="sortRunOrder('down', eventEnrollment.id)"><BIconArrowDown/></button></td>
+                    <td v-if="!enrollOpen && !eventStarted" class="align-middle">{{ eventEnrollment.run_order }}</td>
+                    <td class="align-middle"> {{ eventEnrollment.enroll_order }}</td>
+                    <td class="align-middle">{{ eventEnrollment.first_driver_name }}</td>
+                    <td class="align-middle">{{ eventEnrollment.second_driver_name }}</td>
+                    <td class="align-middle">{{ eventEnrollment.vehicle_model }}</td>
+                    <td class="align-middle">{{ eventEnrollment.vehicle_license_plate }}</td>
+                    <td class="align-middle"><button class="btn btn-success" title="Check in" v-if="havePermissionsVT()" @click="checkInEnroll(eventEnrollment)"><BIconBuildingCheck/></button></td>
+                    <td class="align-middle"><button class="btn btn-danger" @click="cancelEnrollment(eventEnrollment.id)"><BIconTrash/></button></td>
+                </tr>
+            </tbody>
+        </table>
+        <button v-if="!enrollOpen && !eventStarted" class="btn btn-primary" @click="updateRunOrder">Guardar Alterações</button>
+
+        
+        <div id="pdf-enrollments" hidden>
+            <h2>Lista de Inscritos</h2>
+            <br>
+            <table class="table table-hover table-striped" style="font-size: 8pt;">
+                <thead class="table-dark" style="cursor: pointer">
+                    <tr>
+                        <th class="align-middle">Nº</th>
+                        <th class="align-middle">1º Condutor</th>
+                        <th class="align-middle">Lic. Nº</th>
+                        <th class="align-middle">2º Condutor</th>
+                        <th class="align-middle">Lic. Nº</th>
+                        <th class="align-middle">Modelo</th>
+                        <th class="align-middle">Categoria</th>
+                        <th class="align-middle">Classe</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -496,15 +570,20 @@ const updateRunOrder = ()=>{
                         <td v-if="!enrollOpen && !eventStarted" class="align-middle"><button class="btn btn-link" :disabled="eventEnrollment.run_order==enrollments.length" @click="sortRunOrder('down', eventEnrollment.id)"><BIconArrowDown/></button></td>
                         <td v-if="!enrollOpen && !eventStarted" class="align-middle">{{ eventEnrollment.run_order }}</td>
                         <td class="align-middle"> {{ eventEnrollment.enroll_order }}</td>
+                        <td class="align-middle">{{ eventEnrollment.run_order }}</td>
                         <td class="align-middle">{{ eventEnrollment.first_driver_name }}</td>
+                        <td class="align-middle">{{ eventEnrollment.first_driver_license }}</td>
                         <td class="align-middle">{{ eventEnrollment.second_driver_name }}</td>
+                        <td class="align-middle">{{ eventEnrollment.second_driver_license }}</td>
                         <td class="align-middle">{{ eventEnrollment.vehicle_model }}</td>
-                        <td class="align-middle">{{ eventEnrollment.vehicle_license_plate }}</td>
+                        <td class="align-middle">{{ eventEnrollment.vehicle_category }}</td>
+                        <td class="align-middle">{{ eventEnrollment.vehicle_class }}</td>
                         <td class="align-middle" v-if="havePermissionsS() && enrollOpen"><button class="btn btn-danger"  title="Eliminar" @click="cancelEnrollment(eventEnrollment.id)"><BIconTrash/></button></td>
                     </tr>
                 </tbody>
             </table>
             <button v-if="!enrollOpen && !eventStarted" class="btn btn-primary" @click="updateRunOrder">Guardar Alterações</button>
+            <button class="btn btn-primary" @click="exportList('enrollments')">Exportar Lista de Inscritos</button>
         </div>
     </div>
     <div v-else>
