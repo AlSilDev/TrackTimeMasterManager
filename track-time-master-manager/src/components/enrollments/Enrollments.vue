@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, inject, VueElement} from 'vue'
 import { useUserStore } from "../../stores/user.js"
 import {useRouter} from 'vue-router'
-import { BIconArrowUp, BIconArrowDown, BIconBuildingCheck, BIconSearch, BIconArrowCounterclockwise, BIconTrash } from 'bootstrap-icons-vue';
+import { BIconArrowUp, BIconArrowDown, BIconBuildingCheck, BIconSearch, BIconArrowCounterclockwise, BIconTrash, BIconCheckLg, BIconXLg } from 'bootstrap-icons-vue';
 //import { html2pdf } from 'html2pdf.js';
 
 
@@ -52,7 +52,7 @@ const drivers = ref([])
 
 const loadDriversByName = async ()=>{
     //console.log('driver name: ' + driverName.value.value)
-    await axios.get(`drivers/byName/${driverName.value.value}`)
+    await axios.get(`drivers/canDrive/byName/${props.id}/${driverName.value.value}`)
     .then((response)=>{
         drivers.value = response.data
         //console.log(drivers.value)
@@ -66,14 +66,14 @@ const loadDriversByName = async ()=>{
 const licensePlate = ref('')
 const vehicles = ref('')
 const loadVehiclesByLicensePlate = async ()=>{
-    await axios.get(`vehicles/byLicensePlate/${licensePlate.value.value}`)
+    await axios.get(`vehicles/canRun/byLicensePlate/${props.id}/${licensePlate.value.value}`)
     .then((response)=>{
         vehicles.value = response.data
         //console.log(vehicles.value)
     })
     .catch((error)=>{
         console.error(error)
-        toast.error('Ocorreu um erro ao procurar os condutores.')
+        toast.error('Ocorreu um erro ao procurar os veiculos.')
     })
 }
 
@@ -306,8 +306,9 @@ const enrollApproved = async(enroll, boolApproved) => {
         else{
             adminVerification.value.notes = messageNotes.value
         }
-        //console.log(adminVerification.value)
+        console.log(adminVerification.value)
         //removeObjectWithId(enroll.id, enrollmentsWithoutVA);
+        //addObject(enroll, enrollmentsWithoutVT)
         await axios.post(`adminVerifications`, adminVerification.value)
         .then((response)=>{
             console.log('adminVerification', response.data)
@@ -328,19 +329,17 @@ const enrollApproved = async(enroll, boolApproved) => {
         }else{
             adminVerification.value.verified = boolApproved
             adminVerification.value.notes = messageNotes.value
-            //console.log(adminVerification.value)
+            console.log(adminVerification.value)
             //removeObjectWithId(enroll.id, enrollmentsWithoutVA);
             await axios.post(`adminVerifications`, adminVerification.value)
             .then((response)=>{
                 console.log('adminVerification', response.data)
                 removeObjectWithId(enroll.id, enrollmentsWithoutVA);
-                addObject(enroll, enrollmentsWithoutVT)
                 toast.success("Inscrição " + enroll.enroll_order + " verificada e reprovada com sucesso!")
             })
             .catch((error)=>{
                 toast.error("Problemas ao reprovar! Contacte o admin")
             })
-            removeObjectWithId(enroll.id, enrollments);
         }
     }
 }
@@ -363,7 +362,7 @@ const removeObjectWithId = (id, array) => {
 }
 
 const addObject = (enrollmentToAdd, arrayToUpdated) => {
-  arrayToUpdated.push(enrollmentToAdd);
+  arrayToUpdated.value.push(enrollmentToAdd);
 }
 
 const updateRunOrder = ()=>{
@@ -496,13 +495,12 @@ const flag = (country)=>{
 
     <br>
 
-    <div v-if="enrollments.length != 0">
-        <div v-if="!eventStarted">
+    <div v-if="enrollments.length != 0 && !eventStarted">
+        <div>
             <h2 v-if="havePermissionsS()">Inscritos</h2>
             <table class="table table-hover table-striped">
                 <thead class="table-dark" style="cursor: pointer">
                     <tr>
-                        <th v-if="!enrollOpen && !eventStarted" class="align-middle"></th>
                         <th v-if="!enrollOpen && !eventStarted" class="align-middle"></th>
                         <th v-if="!enrollOpen && !eventStarted" class="align-middle"># Porta</th>
                         <th class="align-middle"># Inscrição</th>
@@ -511,41 +509,23 @@ const flag = (country)=>{
                         <th class="align-middle">Modelo</th>
                         <th class="align-middle">Matrícula</th>
                         <th class="align-middle" v-if="havePermissionsS() && enrollOpen"></th>
-        <h2>Inscritos</h2>
-        <table class="table table-hover table-striped">
-            <thead class="table-dark" style="cursor: pointer">
-                <tr>
-                    <th v-if="!enrollOpen && !eventStarted" class="align-middle"></th>
-                    <th v-if="!enrollOpen && !eventStarted" class="align-middle"># Porta</th>
-                    <th class="align-middle"># Inscrição</th>
-                    <th class="align-middle">1º Condutor</th>
-                    <th class="align-middle">Lic. Nº</th>
-                    <th class="align-middle">2º Condutor</th>
-                    <th class="align-middle">Lic. Nº</th>
-                    <th class="align-middle">Modelo</th>
-                    <th class="align-middle">Categoria</th>
-                    <th class="align-middle">Classe</th>
-                    <th class="align-middle">Matrícula</th>
-                    <th class="align-middle">Nº</th>
-                    <th class="align-middle" v-if="havePermissionsVT()"></th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="eventEnrollment in enrollments" :key="eventEnrollment.id">
-                    <td v-if="!enrollOpen && !eventStarted" class="align-middle"><button class="btn btn-link" :disabled="eventEnrollment.run_order==1" @click="sortRunOrder('up', eventEnrollment.id)"><BIconArrowUp/></button><button class="btn btn-link" :disabled="eventEnrollment.run_order==enrollments.length" @click="sortRunOrder('down', eventEnrollment.id)"><BIconArrowDown/></button></td>
-                    <td v-if="!enrollOpen && !eventStarted" class="align-middle">{{ eventEnrollment.run_order }}</td>
-                    <td class="align-middle"> {{ eventEnrollment.enroll_order }}</td>
-                    <td class="align-middle">{{ eventEnrollment.first_driver_name }}</td>
-                    <td class="align-middle">{{ eventEnrollment.second_driver_name }}</td>
-                    <td class="align-middle">{{ eventEnrollment.vehicle_model }}</td>
-                    <td class="align-middle">{{ eventEnrollment.vehicle_license_plate }}</td>
-                    <td class="align-middle"><button class="btn btn-success" title="Check in" v-if="havePermissionsVT()" @click="checkInEnroll(eventEnrollment)"><BIconBuildingCheck/></button></td>
-                    <td class="align-middle"><button class="btn btn-danger" @click="cancelEnrollment(eventEnrollment.id)"><BIconTrash/></button></td>
-                </tr>
-            </tbody>
-        </table>
-        <button v-if="!enrollOpen && !eventStarted" class="btn btn-primary" @click="updateRunOrder">Guardar Alterações</button>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="eventEnrollment in enrollments" :key="eventEnrollment.id">
+                        <td v-if="!enrollOpen && !eventStarted" class="align-middle"><button class="btn btn-link" :disabled="eventEnrollment.run_order==1" @click="sortRunOrder('up', eventEnrollment.id)"><BIconArrowUp/></button><button class="btn btn-link" :disabled="eventEnrollment.run_order==enrollments.length" @click="sortRunOrder('down', eventEnrollment.id)"><BIconArrowDown/></button></td>
+                        <td v-if="!enrollOpen && !eventStarted" class="align-middle">{{ eventEnrollment.run_order }}</td>
+                        <td class="align-middle"> {{ eventEnrollment.enroll_order }}</td>
+                        <td class="align-middle">{{ eventEnrollment.first_driver_name }}</td>
+                        <td class="align-middle">{{ eventEnrollment.second_driver_name }}</td>
+                        <td class="align-middle">{{ eventEnrollment.vehicle_model }}</td>
+                        <td class="align-middle">{{ eventEnrollment.vehicle_license_plate }}</td>
+                        <td class="align-middle" v-if="havePermissionsS() && enrollOpen"><button class="btn btn-danger" @click="cancelEnrollment(eventEnrollment.id)"><BIconTrash/></button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button v-if="!enrollOpen && !eventStarted" class="btn btn-primary" @click="updateRunOrder">Guardar Alterações</button>
+        </div>
 
         
         <div id="pdf-enrollments" hidden>
@@ -566,10 +546,6 @@ const flag = (country)=>{
                 </thead>
                 <tbody>
                     <tr v-for="eventEnrollment in enrollments" :key="eventEnrollment.id">
-                        <td v-if="!enrollOpen && !eventStarted" class="align-middle"><button class="btn btn-link" :disabled="eventEnrollment.run_order==1" @click="sortRunOrder('up', eventEnrollment.id)"><BIconArrowUp/></button></td>
-                        <td v-if="!enrollOpen && !eventStarted" class="align-middle"><button class="btn btn-link" :disabled="eventEnrollment.run_order==enrollments.length" @click="sortRunOrder('down', eventEnrollment.id)"><BIconArrowDown/></button></td>
-                        <td v-if="!enrollOpen && !eventStarted" class="align-middle">{{ eventEnrollment.run_order }}</td>
-                        <td class="align-middle"> {{ eventEnrollment.enroll_order }}</td>
                         <td class="align-middle">{{ eventEnrollment.run_order }}</td>
                         <td class="align-middle">{{ eventEnrollment.first_driver_name }}</td>
                         <td class="align-middle">{{ eventEnrollment.first_driver_license }}</td>
@@ -578,15 +554,13 @@ const flag = (country)=>{
                         <td class="align-middle">{{ eventEnrollment.vehicle_model }}</td>
                         <td class="align-middle">{{ eventEnrollment.vehicle_category }}</td>
                         <td class="align-middle">{{ eventEnrollment.vehicle_class }}</td>
-                        <td class="align-middle" v-if="havePermissionsS() && enrollOpen"><button class="btn btn-danger"  title="Eliminar" @click="cancelEnrollment(eventEnrollment.id)"><BIconTrash/></button></td>
                     </tr>
                 </tbody>
             </table>
-            <button v-if="!enrollOpen && !eventStarted" class="btn btn-primary" @click="updateRunOrder">Guardar Alterações</button>
-            <button class="btn btn-primary" @click="exportList('enrollments')">Exportar Lista de Inscritos</button>
         </div>
+        <button class="btn btn-primary" @click="exportList('enrollments')">Exportar Lista de Inscritos</button>
     </div>
-    <div v-else>
+    <div v-else-if="!eventStarted">
         <h2>Inscritos</h2>
         <h6 v-if="eventStarted && !eventEnded">Sem inscritos para fazer check in</h6>
         <h6 v-if="!eventStarted">Sem inscritos</h6>
