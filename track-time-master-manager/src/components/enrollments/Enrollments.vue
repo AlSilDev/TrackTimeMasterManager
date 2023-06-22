@@ -490,6 +490,39 @@ const flag = (country)=>{
                 </tr>
             </tbody>
         </table>
+
+        <div id="pdf-participants" hidden>
+            <h2>Lista de Participantes</h2>
+            <br>
+            <table class="table table-hover table-striped" style="font-size: 8pt;">
+                <thead class="table-dark" style="cursor: pointer">
+                    <tr>
+                        <th class="align-middle">Nº</th>
+                        <th class="align-middle">1º Condutor</th>
+                        <th class="align-middle">Lic. Nº</th>
+                        <th class="align-middle">2º Condutor</th>
+                        <th class="align-middle">Lic. Nº</th>
+                        <th class="align-middle">Modelo</th>
+                        <th class="align-middle">Categoria</th>
+                        <th class="align-middle">Classe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="eventParticipant in participants" :key="eventParticipant.id">
+                        <td class="align-middle">{{ eventParticipant.run_order }}</td>
+                        <td class="align-middle">{{ eventParticipant.first_driver_name }}</td>
+                        <td class="align-middle">{{ eventParticipant.first_driver_license }}</td>
+                        <td class="align-middle">{{ eventParticipant.second_driver_name }}</td>
+                        <td class="align-middle">{{ eventParticipant.second_driver_license }}</td>
+                        <td class="align-middle">{{ eventParticipant.vehicle_model }}</td>
+                        <td class="align-middle">{{ eventParticipant.vehicle_category }}</td>
+                        <td class="align-middle">{{ eventParticipant.vehicle_class }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <button class="btn btn-primary" @click="exportList('participants')">Exportar Lista de Participantes</button>
     </div>
     <!--div v-if="eventStarted"-->
     <div v-else>
