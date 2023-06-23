@@ -2,6 +2,7 @@
 import { inject, ref, onMounted } from "vue";
 import { useUserStore } from "../../stores/user.js"
 import avatarNoneUrl from '@/assets/avatar-none.png'
+import { BIconSearch, BIconArrowUp, BIconArrowDown } from 'bootstrap-icons-vue'
 
 const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()

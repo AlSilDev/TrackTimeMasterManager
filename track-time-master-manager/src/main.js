@@ -2,10 +2,13 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import axios from 'axios'
 import Toaster from "@meforma/vue-toaster";
+import html2pdf from 'html2pdf.js';
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap'
-import { BootstrapIconsPlugin } from 'bootstrap-icons-vue';
+//import { BootstrapIconsPlugin } from 'bootstrap-icons-vue';
+
+import 'mdb-vue-ui-kit/css/mdb.min.css';
 
 import App from './App.vue'
 import router from './router'
@@ -37,6 +40,7 @@ app.provide('toast', app.config.globalProperties.$toast);
 
 app.use(createPinia())
 app.use(router)
-app.use(BootstrapIconsPlugin)
+app.provide('html2pdf', html2pdf)
+//app.use(BootstrapIconsPlugin)
 
 app.mount('#app')

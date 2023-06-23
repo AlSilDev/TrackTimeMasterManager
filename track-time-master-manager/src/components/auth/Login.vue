@@ -70,9 +70,8 @@ const login = async () => {
           </div>
           <div class="mb-3 d-flex justify-content-center">
             <button
-              type="button"
+              type="submit"
               class="btn btn-light px-5"
-              @click="login"
             >Login</button>
           </div>
           </form>
