@@ -649,7 +649,6 @@ const flag = (country)=>{
                 </tbody>
             </table>
         </div>
-        <button class="btn btn-primary" @click="exportList('enrollments')">Exportar Lista de Inscritos</button>
     </div>
     <div v-else-if="!eventStarted">
         <h2>Inscritos</h2>
