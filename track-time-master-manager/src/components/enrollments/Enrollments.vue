@@ -288,6 +288,21 @@ const adminVerification = ref({
     verified_by: userId,
 })
 
+const technicalVerification = ref({
+    event_id: -1,
+    enrollment_id: -1,
+    enrollment_order: -1,
+    verified: -1,
+    notes: '',
+    verified_by: userId,
+})
+
+const participant = ref({
+    enrollment_id: -1,
+    first_driver_id: -1,
+    second_driver_id: -1,
+    vehicle_id: -1,
+})
 
 const messageNotesVA = ref('');
 const enrollApprovedVA = async(enroll, boolApproved) => {
@@ -346,6 +361,84 @@ const enrollApprovedVA = async(enroll, boolApproved) => {
 }
 
 
+
+const messageNotesVT = ref('');
+const enrollApprovedVT = async(enroll, boolApproved) => {
+    //console.log(enroll)
+    technicalVerification.value.enrollment_id = enroll.id
+    technicalVerification.value.event_id = enroll.event_id
+    technicalVerification.value.enrollment_order = enroll.enroll_order
+    if(boolApproved)//==1
+    {
+        //approved
+        messageNotesVT.value = prompt("Notas: ")
+        technicalVerification.value.verified = boolApproved
+        if(messageNotesVT.value == "" || messageNotesVT.value == null)
+        {
+            technicalVerification.value.notes = "----"
+        }
+        else{
+            technicalVerification.value.notes = messageNotesVT.value
+        }
+        console.log(technicalVerification.value)
+
+        removeObjectWithId(enroll.id, enrollmentsWithoutVT);
+        createParticipant(enroll)
+
+        //create technical verification with enroll data verified successfully
+        /*await axios.post(`technicalVerifications`, technicalVerification.value)
+        .then((response)=>{
+            console.log('technicalVerification', response.data)
+            removeObjectWithId(enroll.id, enrollmentsWithoutVT);
+            toast.success("Inscrição " + enroll.enroll_order + " verificada e aprovada com sucesso!")
+            createParticipant(enroll)
+        })
+        .catch((error)=>{
+            console.log(error)
+            toast.error("Problemas ao aprovar! Contacte o admin")
+        })*/
+        
+    }else{
+        //repproved
+        messageNotesVT.value = prompt("Notas: ")
+        if(messageNotesVT.value == "" || messageNotesVT.value == null)
+        {
+            toast.error("Erro - tem de mencionar o motivo de não aprovar o inscrito")
+        }else{
+            technicalVerification.value.verified = boolApproved
+            technicalVerification.value.notes = messageNotesVT.value
+            console.log(technicalVerification.value)
+            //removeObjectWithId(enroll.id, enrollmentsWithoutVT);
+            await axios.post(`technicalVerifications`, technicalVerification.value)
+            .then((response)=>{
+                console.log('technicalVerification', response.data)
+                removeObjectWithId(enroll.id, enrollmentsWithoutVT);
+                toast.success("Inscrição " + enroll.enroll_order + " verificada e reprovada com sucesso!")
+            })
+            .catch((error)=>{
+                toast.error("Problemas ao reprovar! Contacte o admin")
+            })
+        }
+    }
+}
+
+const createParticipant = async(enroll) => {
+    participant.value.enrollment_id = enroll.id
+    participant.value.first_driver_id = enroll.first_driver_id
+    participant.value.second_driver_id = enroll.second_driver_id
+    participant.value.vehicle_id = enroll.vehicle_id
+
+    console.log(participant.value)
+    addObject(enroll, eventParticipants)
+    //create participant with enroll data
+    /*await axios.post(`participants`, participant.value)
+    .then((response)=>{
+        console.log('participant', response.data)
+        addObject(enroll, eventParticipants)
+    })
+    .catch((error)=>{
+        console.log(error)
+    })*/
 }
 
 const removeObjectWithId = (id, array) => {
