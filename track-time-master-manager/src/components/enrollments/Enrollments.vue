@@ -616,7 +616,6 @@ const flag = (country)=>{
                 <button class="btn btn-warning" @click="exportList('enrollments')">Exportar Lista de Inscritos <BIconDownload/></button>
             </div>
         </div>
-
         
         <div id="pdf-enrollments" hidden>
             <h2>Lista de Inscritos</h2>
@@ -648,6 +647,7 @@ const flag = (country)=>{
                 </tbody>
             </table>
         </div>
+        <button class="btn btn-primary" @click="exportList('enrollments')">Exportar Lista de Inscritos</button>
     </div>
     <div v-else-if="!eventStarted">
         <h2>Inscritos</h2>
@@ -695,7 +695,7 @@ const flag = (country)=>{
 
     <div v-if="enrollmentsWithoutVT.length != 0 && eventStarted">
         <div v-if="!enrollOpen && eventStarted">
-            <h2 v-if="havePermissionsS()">Inscritos - Verificações Técnias</h2>
+            <h2 v-if="havePermissionsS()">Inscritos - Verificações Técnicas</h2>
             <table class="table table-hover table-striped">
                 <thead class="table-dark" style="cursor: pointer">
                     <tr>
@@ -725,7 +725,7 @@ const flag = (country)=>{
         </div>
     </div>
     <div v-else-if="eventStarted">
-        <h2>Inscritos - Verificações Técnias</h2>
+        <h2>Inscritos - Verificações Técnicas</h2>
         <h6>Sem inscritos para fazer verificações técnicas</h6>
     </div>
 
@@ -756,6 +756,39 @@ const flag = (country)=>{
                 </tr>
             </tbody>
         </table>
+
+        <div id="pdf-participants" hidden>
+            <h2>Lista de Participantes</h2>
+            <br>
+            <table class="table table-hover table-striped" style="font-size: 8pt;">
+                <thead class="table-dark" style="cursor: pointer">
+                    <tr>
+                        <th class="align-middle">Nº</th>
+                        <th class="align-middle">1º Condutor</th>
+                        <th class="align-middle">Lic. Nº</th>
+                        <th class="align-middle">2º Condutor</th>
+                        <th class="align-middle">Lic. Nº</th>
+                        <th class="align-middle">Modelo</th>
+                        <th class="align-middle">Categoria</th>
+                        <th class="align-middle">Classe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="eventParticipant in participants" :key="eventParticipant.id">
+                        <td class="align-middle">{{ eventParticipant.run_order }}</td>
+                        <td class="align-middle">{{ eventParticipant.first_driver_name }}</td>
+                        <td class="align-middle">{{ eventParticipant.first_driver_license }}</td>
+                        <td class="align-middle">{{ eventParticipant.second_driver_name }}</td>
+                        <td class="align-middle">{{ eventParticipant.second_driver_license }}</td>
+                        <td class="align-middle">{{ eventParticipant.vehicle_model }}</td>
+                        <td class="align-middle">{{ eventParticipant.vehicle_category }}</td>
+                        <td class="align-middle">{{ eventParticipant.vehicle_class }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <button class="btn btn-primary" @click="exportList('participants')">Exportar Lista de Participantes</button>
     </div>
     <!--div v-if="eventStarted"-->
     <div v-else-if="eventStarted">
