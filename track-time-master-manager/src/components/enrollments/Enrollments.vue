@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, inject, VueElement} from 'vue'
 import { useUserStore } from "../../stores/user.js"
 import {useRouter} from 'vue-router'
-import { BIconArrowUp, BIconArrowDown, BIconBuildingCheck, BIconSearch, BIconArrowCounterclockwise, BIconTrash } from 'bootstrap-icons-vue';
+import { BIconArrowUp, BIconArrowDown, BIconBuildingCheck, BIconSearch, BIconArrowCounterclockwise, BIconTrash, BIconCheckLg, BIconXLg, BIconFileArrowDown, BIconDownload, BIconArrowLeftRight } from 'bootstrap-icons-vue';
 //import { html2pdf } from 'html2pdf.js';
 
 
@@ -52,7 +52,7 @@ const drivers = ref([])
 
 const loadDriversByName = async ()=>{
     //console.log('driver name: ' + driverName.value.value)
-    await axios.get(`drivers/byName/${driverName.value.value}`)
+    await axios.get(`drivers/canDrive/byName/${props.id}/${driverName.value.value}`)
     .then((response)=>{
         drivers.value = response.data
         //console.log(drivers.value)
@@ -66,14 +66,14 @@ const loadDriversByName = async ()=>{
 const licensePlate = ref('')
 const vehicles = ref('')
 const loadVehiclesByLicensePlate = async ()=>{
-    await axios.get(`vehicles/byLicensePlate/${licensePlate.value.value}`)
+    await axios.get(`vehicles/canRun/byLicensePlate/${props.id}/${licensePlate.value.value}`)
     .then((response)=>{
         vehicles.value = response.data
         //console.log(vehicles.value)
     })
     .catch((error)=>{
         console.error(error)
-        toast.error('Ocorreu um erro ao procurar os condutores.')
+        toast.error('Ocorreu um erro ao procurar os veiculos.')
     })
 }
 
@@ -288,8 +288,24 @@ const adminVerification = ref({
     verified_by: userId,
 })
 
-const messageNotes = ref('');
-const enrollApproved = async(enroll, boolApproved) => {
+const technicalVerification = ref({
+    event_id: -1,
+    enrollment_id: -1,
+    enrollment_order: -1,
+    verified: -1,
+    notes: '',
+    verified_by: userId,
+})
+
+const participant = ref({
+    enrollment_id: -1,
+    first_driver_id: -1,
+    second_driver_id: -1,
+    vehicle_id: -1,
+})
+
+const messageNotesVA = ref('');
+const enrollApprovedVA = async(enroll, boolApproved) => {
     //console.log(enroll)
     adminVerification.value.enrollment_id = enroll.id
     adminVerification.value.event_id = enroll.event_id
@@ -297,17 +313,18 @@ const enrollApproved = async(enroll, boolApproved) => {
     if(boolApproved)//==1
     {
         //approved
-        messageNotes.value = prompt("Notas: ")
+        messageNotesVA.value = prompt("Notas: ")
         adminVerification.value.verified = boolApproved
-        if(messageNotes.value == "" || messageNotes.value == null)
+        if(messageNotesVA.value == "" || messageNotesVA.value == null)
         {
             adminVerification.value.notes = "----"
         }
         else{
-            adminVerification.value.notes = messageNotes.value
+            adminVerification.value.notes = messageNotesVA.value
         }
-        //console.log(adminVerification.value)
+        console.log(adminVerification.value)
         //removeObjectWithId(enroll.id, enrollmentsWithoutVA);
+        //addObject(enroll, enrollmentsWithoutVT)
         await axios.post(`adminVerifications`, adminVerification.value)
         .then((response)=>{
             console.log('adminVerification', response.data)
@@ -321,38 +338,107 @@ const enrollApproved = async(enroll, boolApproved) => {
         })
     }else{
         //repproved
-        messageNotes.value = prompt("Notas: ")
-        if(messageNotes.value == "" || messageNotes.value == null)
+        messageNotesVA.value = prompt("Notas: ")
+        if(messageNotesVA.value == "" || messageNotesVA.value == null)
         {
             toast.error("Erro - tem de mencionar o motivo de não aprovar o inscrito")
         }else{
             adminVerification.value.verified = boolApproved
-            adminVerification.value.notes = messageNotes.value
-            //console.log(adminVerification.value)
+            adminVerification.value.notes = messageNotesVA.value
+            console.log(adminVerification.value)
             //removeObjectWithId(enroll.id, enrollmentsWithoutVA);
             await axios.post(`adminVerifications`, adminVerification.value)
             .then((response)=>{
                 console.log('adminVerification', response.data)
                 removeObjectWithId(enroll.id, enrollmentsWithoutVA);
-                addObject(enroll, enrollmentsWithoutVT)
                 toast.success("Inscrição " + enroll.enroll_order + " verificada e reprovada com sucesso!")
             })
             .catch((error)=>{
                 toast.error("Problemas ao reprovar! Contacte o admin")
             })
-            removeObjectWithId(enroll.id, enrollments);
         }
     }
 }
 
-const checkInEnroll = async(enrollment) => {
-    console.log("Check in done!")
-    var checkInValue = {"check_in": 1};
-    await axios.patch('enrollments/' + enrollment.id + '/checkIn', checkInValue)
-    //remover de eventEnrollment
-    removeObjectWithId(enrollment.id, enrollments)
-    //addObject(eventParticipants)
-    eventParticipants.value.push(enrollment)
+
+
+const messageNotesVT = ref('');
+const enrollApprovedVT = async(enroll, boolApproved) => {
+    //console.log(enroll)
+    technicalVerification.value.enrollment_id = enroll.id
+    technicalVerification.value.event_id = enroll.event_id
+    technicalVerification.value.enrollment_order = enroll.enroll_order
+    if(boolApproved)//==1
+    {
+        //approved
+        messageNotesVT.value = prompt("Notas: ")
+        technicalVerification.value.verified = boolApproved
+        if(messageNotesVT.value == "" || messageNotesVT.value == null)
+        {
+            technicalVerification.value.notes = "----"
+        }
+        else{
+            technicalVerification.value.notes = messageNotesVT.value
+        }
+        console.log(technicalVerification.value)
+
+        removeObjectWithId(enroll.id, enrollmentsWithoutVT);
+        createParticipant(enroll)
+
+        //create technical verification with enroll data verified successfully
+        /*await axios.post(`technicalVerifications`, technicalVerification.value)
+        .then((response)=>{
+            console.log('technicalVerification', response.data)
+            removeObjectWithId(enroll.id, enrollmentsWithoutVT);
+            toast.success("Inscrição " + enroll.enroll_order + " verificada e aprovada com sucesso!")
+            createParticipant(enroll)
+        })
+        .catch((error)=>{
+            console.log(error)
+            toast.error("Problemas ao aprovar! Contacte o admin")
+        })*/
+        
+    }else{
+        //repproved
+        messageNotesVT.value = prompt("Notas: ")
+        if(messageNotesVT.value == "" || messageNotesVT.value == null)
+        {
+            toast.error("Erro - tem de mencionar o motivo de não aprovar o inscrito")
+        }else{
+            technicalVerification.value.verified = boolApproved
+            technicalVerification.value.notes = messageNotesVT.value
+            console.log(technicalVerification.value)
+            //removeObjectWithId(enroll.id, enrollmentsWithoutVT);
+            await axios.post(`technicalVerifications`, technicalVerification.value)
+            .then((response)=>{
+                console.log('technicalVerification', response.data)
+                removeObjectWithId(enroll.id, enrollmentsWithoutVT);
+                toast.success("Inscrição " + enroll.enroll_order + " verificada e reprovada com sucesso!")
+            })
+            .catch((error)=>{
+                toast.error("Problemas ao reprovar! Contacte o admin")
+            })
+        }
+    }
+}
+
+const createParticipant = async(enroll) => {
+    participant.value.enrollment_id = enroll.id
+    participant.value.first_driver_id = enroll.first_driver_id
+    participant.value.second_driver_id = enroll.second_driver_id
+    participant.value.vehicle_id = enroll.vehicle_id
+
+    console.log(participant.value)
+    addObject(enroll, eventParticipants)
+    //create participant with enroll data
+    /*await axios.post(`participants`, participant.value)
+    .then((response)=>{
+        console.log('participant', response.data)
+        addObject(enroll, eventParticipants)
+    })
+    .catch((error)=>{
+        console.log(error)
+    })*/
 }
 
 const removeObjectWithId = (id, array) => {
@@ -363,7 +449,7 @@ const removeObjectWithId = (id, array) => {
 }
 
 const addObject = (enrollmentToAdd, arrayToUpdated) => {
-  arrayToUpdated.push(enrollmentToAdd);
+  arrayToUpdated.value.push(enrollmentToAdd);
 }
 
 const updateRunOrder = ()=>{
@@ -525,7 +611,10 @@ const flag = (country)=>{
                     </tr>
                 </tbody>
             </table>
-            <button v-if="!enrollOpen && !eventStarted" class="btn btn-primary" @click="updateRunOrder">Guardar Alterações</button>
+            <div class="d-grid gap-3">
+                <button v-if="!enrollOpen && !eventStarted" class="btn btn-dark" @click="updateRunOrder">Guardar Alterações <BIconArrowLeftRight/></button>
+                <button class="btn btn-warning" @click="exportList('enrollments')">Exportar Lista de Inscritos <BIconDownload/></button>
+            </div>
         </div>
         
         <div id="pdf-enrollments" hidden>
@@ -590,8 +679,8 @@ const flag = (country)=>{
                         <td class="align-middle">{{ eventEnrollmentsWithoutVA.second_driver_name }}</td>
                         <td class="align-middle">{{ eventEnrollmentsWithoutVA.vehicle_model }}</td>
                         <td class="align-middle">{{ eventEnrollmentsWithoutVA.vehicle_license_plate }}</td>
-                        <td class="align-middle" v-if="havePermissionsS() && !enrollOpen && eventStarted"><button class="btn btn-success" title="Aprovado" @click="enrollApproved(eventEnrollmentsWithoutVA, 1)"><BIconCheckLg/></button></td>
-                        <td class="align-middle" v-if="havePermissionsS() && !enrollOpen && eventStarted"><button class="btn btn-danger" title="Reprovado" @click="enrollApproved(eventEnrollmentsWithoutVA, 0)"><BIconXLg/></button></td>
+                        <td class="align-middle" v-if="havePermissionsS() && !enrollOpen && eventStarted"><button class="btn btn-success" title="Aprovado" @click="enrollApprovedVA(eventEnrollmentsWithoutVA, 1)"><BIconCheckLg/></button></td>
+                        <td class="align-middle" v-if="havePermissionsS() && !enrollOpen && eventStarted"><button class="btn btn-danger" title="Reprovado" @click="enrollApprovedVA(eventEnrollmentsWithoutVA, 0)"><BIconXLg/></button></td>
                     </tr>
                 </tbody>
             </table>
@@ -616,6 +705,8 @@ const flag = (country)=>{
                         <th class="align-middle">2º Condutor</th>
                         <th class="align-middle">Modelo</th>
                         <th class="align-middle">Matrícula</th>
+                        <th class="align-middle" v-if="havePermissionsVT() && eventStarted"></th>
+                        <th class="align-middle" v-if="havePermissionsVT() && eventStarted"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -626,6 +717,8 @@ const flag = (country)=>{
                         <td class="align-middle">{{ eventEnrollmentsWithoutVT.second_driver_name }}</td>
                         <td class="align-middle">{{ eventEnrollmentsWithoutVT.vehicle_model }}</td>
                         <td class="align-middle">{{ eventEnrollmentsWithoutVT.vehicle_license_plate }}</td>
+                        <td class="align-middle" v-if="havePermissionsVT() && !enrollOpen && eventStarted"><button class="btn btn-success" title="Aprovado" @click="enrollApprovedVT(eventEnrollmentsWithoutVT, 1)"><BIconCheckLg/></button></td>
+                        <td class="align-middle" v-if="havePermissionsVT() && !enrollOpen && eventStarted"><button class="btn btn-danger" title="Reprovado" @click="enrollApprovedVT(eventEnrollmentsWithoutVT, 0)"><BIconXLg/></button></td>
                     </tr>
                 </tbody>
             </table>
@@ -644,6 +737,8 @@ const flag = (country)=>{
         <table class="table table-hover table-striped" v-if="eventParticipants.length != 0">
             <thead class="table-dark" style="cursor: pointer">
                 <tr>
+                    <th class="align-middle"># Inscrição</th>
+                    <th class="align-middle"># Porta</th>
                     <th class="align-middle">1º Condutor</th>
                     <th class="align-middle">2º Condutor</th>
                     <th class="align-middle">Modelo</th>
@@ -652,6 +747,8 @@ const flag = (country)=>{
             </thead>
             <tbody>
                 <tr v-for="eventParticipant in eventParticipants" :key="eventParticipant.id">
+                    <td class="align-middle">{{ eventParticipant.enroll_order }}</td>
+                    <td class="align-middle">{{ eventParticipant.run_order }}</td>
                     <td class="align-middle">{{ eventParticipant.first_driver_name }}</td>
                     <td class="align-middle">{{ eventParticipant.second_driver_name }}</td>
                     <td class="align-middle">{{ eventParticipant.vehicle_model }}</td>
@@ -694,7 +791,7 @@ const flag = (country)=>{
         <button class="btn btn-primary" @click="exportList('participants')">Exportar Lista de Participantes</button>
     </div>
     <!--div v-if="eventStarted"-->
-    <div v-else>
+    <div v-else-if="eventStarted">
         <h2>Participantes</h2>
         <h6>Sem Participantes</h6>
     </div>
