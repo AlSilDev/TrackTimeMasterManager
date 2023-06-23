@@ -54,11 +54,29 @@ const editEvent = (event) => {
   router.push({ name: 'Event', params: { id: event.id } })
 }
 
+//Admin -> id=1
+//Secretariado -> id=2
+//Verificações Técnicas -> id=3
+
 const isAdmin = () => {
   if (!userStore.user) {
     return false
   }
   return userStore.user.type_id == 1
+}
+
+const havePermissionsAdminSec = () => {
+  if (!userStore.user) {
+    return false
+  }
+  return userStore.user.type_id == 1 || userStore.user.type_id == 2
+}
+
+const havePermissionsAdminSecVerTec = () => {
+  if (!userStore.user) {
+    return false
+  }
+  return userStore.user.type_id == 1 || userStore.user.type_id == 2 || userStore.user.type_id == 3
 }
 
 const getResultsFiltered = async (page = 1) => {
@@ -140,11 +158,11 @@ onMounted(async ()=>{
         <h5 class="card-title d-flex justify-content-center"><b>{{ event.name }}</b></h5>
         <div class="d-grid gap-3">
           <div class="d-flex justify-content-center">
-            <button v-if="isAdmin()" @click="router.push({ name: 'Enrollments', params: { id: event.id } })" class="btn btn-primary w-100">Inscrições</button>
+            <button v-if="havePermissionsAdminSecVerTec()" @click="router.push({ name: 'Enrollments', params: { id: event.id } })" class="btn btn-primary w-100">Inscrições</button>
           </div>
           <div class="d-flex justify-content-between">
-            <button v-if="isAdmin()" @click="editEvent(event)" class="btn btn-primary d-flex justify-content-start">Editar</button>
-            <button v-if="isAdmin()" @click="deleteEvent(event)" class="btn btn-danger d-flex justify-content-end">Cancelar</button>
+            <button v-if="havePermissionsAdminSec()" @click="editEvent(event)" class="btn btn-primary d-flex justify-content-start">Editar</button>
+            <button v-if="havePermissionsAdminSec()" @click="deleteEvent(event)" class="btn btn-danger d-flex justify-content-end">Cancelar</button>
           </div>
         </div>
       </div>

@@ -382,11 +382,11 @@ const enrollApprovedVT = async(enroll, boolApproved) => {
         }
         console.log(technicalVerification.value)
 
-        removeObjectWithId(enroll.id, enrollmentsWithoutVT);
-        createParticipant(enroll)
+        //removeObjectWithId(enroll.id, enrollmentsWithoutVT);
+        //createParticipant(enroll)
 
         //create technical verification with enroll data verified successfully
-        /*await axios.post(`technicalVerifications`, technicalVerification.value)
+        await axios.post(`technicalVerifications`, technicalVerification.value)
         .then((response)=>{
             console.log('technicalVerification', response.data)
             removeObjectWithId(enroll.id, enrollmentsWithoutVT);
@@ -396,7 +396,7 @@ const enrollApprovedVT = async(enroll, boolApproved) => {
         .catch((error)=>{
             console.log(error)
             toast.error("Problemas ao aprovar! Contacte o admin")
-        })*/
+        })
         
     }else{
         //repproved
@@ -428,17 +428,19 @@ const createParticipant = async(enroll) => {
     participant.value.second_driver_id = enroll.second_driver_id
     participant.value.vehicle_id = enroll.vehicle_id
 
-    console.log(participant.value)
-    addObject(enroll, eventParticipants)
+    console.log("first:", enroll.first_driver_id)
+
+    console.log("Participant: ", participant.value)
+    //addObject(enroll, eventParticipants)
     //create participant with enroll data
-    /*await axios.post(`participants`, participant.value)
+    await axios.post(`participants`, participant.value)
     .then((response)=>{
         console.log('participant', response.data)
         addObject(enroll, eventParticipants)
     })
     .catch((error)=>{
         console.log(error)
-    })*/
+    })
 }
 
 const removeObjectWithId = (id, array) => {
@@ -492,7 +494,7 @@ const flag = (country)=>{
 </script>
 <template>
     <br>
-    <div class="accordion" id="accordionExample" v-if="enrollOpen">
+    <div class="accordion" id="accordionExample" v-if="enrollOpen && havePermissionsS()">
         <div class="accordion-item">
             <h2 class="accordion-header">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -584,11 +586,11 @@ const flag = (country)=>{
 
     <div v-if="enrollments.length != 0 && !eventStarted">
         <div>
-            <h2 v-if="havePermissionsS()">Inscritos</h2>
+            <h2>Inscritos</h2>
             <table class="table table-hover table-striped">
                 <thead class="table-dark" style="cursor: pointer">
                     <tr>
-                        <th v-if="!enrollOpen && !eventStarted" class="align-middle"></th>
+                        <th v-if="!enrollOpen && !eventStarted && havePermissionsS()" class="align-middle"></th>
                         <th v-if="!enrollOpen && !eventStarted" class="align-middle"># Porta</th>
                         <th class="align-middle"># Inscrição</th>
                         <th class="align-middle">1º Condutor</th>
@@ -600,7 +602,7 @@ const flag = (country)=>{
                 </thead>
                 <tbody>
                     <tr v-for="eventEnrollment in enrollments" :key="eventEnrollment.id">
-                        <td v-if="!enrollOpen && !eventStarted" class="align-middle"><button class="btn btn-link" :disabled="eventEnrollment.run_order==1" @click="sortRunOrder('up', eventEnrollment.id)"><BIconArrowUp/></button><button class="btn btn-link" :disabled="eventEnrollment.run_order==enrollments.length" @click="sortRunOrder('down', eventEnrollment.id)"><BIconArrowDown/></button></td>
+                        <td v-if="!enrollOpen && !eventStarted && havePermissionsS()" class="align-middle"><button class="btn btn-link" :disabled="eventEnrollment.run_order==1" @click="sortRunOrder('up', eventEnrollment.id)"><BIconArrowUp/></button><button class="btn btn-link" :disabled="eventEnrollment.run_order==enrollments.length" @click="sortRunOrder('down', eventEnrollment.id)"><BIconArrowDown/></button></td>
                         <td v-if="!enrollOpen && !eventStarted" class="align-middle">{{ eventEnrollment.run_order }}</td>
                         <td class="align-middle"> {{ eventEnrollment.enroll_order }}</td>
                         <td class="align-middle">{{ eventEnrollment.first_driver_name }}</td>
@@ -612,7 +614,7 @@ const flag = (country)=>{
                 </tbody>
             </table>
             <div class="d-grid gap-3">
-                <button v-if="!enrollOpen && !eventStarted" class="btn btn-dark" @click="updateRunOrder">Guardar Alterações <BIconArrowLeftRight/></button>
+                <button v-if="!enrollOpen && !eventStarted && havePermissionsS()" class="btn btn-dark" @click="updateRunOrder">Guardar Alterações <BIconArrowLeftRight/></button>
                 <button class="btn btn-warning" @click="exportList('enrollments')">Exportar Lista de Inscritos <BIconDownload/></button>
             </div>
         </div>
@@ -651,13 +653,12 @@ const flag = (country)=>{
     </div>
     <div v-else-if="!eventStarted">
         <h2>Inscritos</h2>
-        <h6 v-if="eventStarted && !eventEnded">Sem inscritos para fazer check in</h6>
         <h6 v-if="!eventStarted">Sem inscritos</h6>
     </div>
 
-    <div v-if="enrollmentsWithoutVA.length != 0 && eventStarted">
+    <div v-if="enrollmentsWithoutVA.length != 0 && eventStarted && havePermissionsS()">
         <div v-if="!enrollOpen && eventStarted">
-            <h2 v-if="havePermissionsS()">Inscritos - Verificações Administrativas</h2>
+            <h2>Inscritos - Verificações Administrativas</h2>
             <table class="table table-hover table-striped">
                 <thead class="table-dark" style="cursor: pointer">
                     <tr>
@@ -667,8 +668,8 @@ const flag = (country)=>{
                         <th class="align-middle">2º Condutor</th>
                         <th class="align-middle">Modelo</th>
                         <th class="align-middle">Matrícula</th>
-                        <th class="align-middle" v-if="havePermissionsS() && eventStarted"></th>
-                        <th class="align-middle" v-if="havePermissionsS() && eventStarted"></th>
+                        <th class="align-middle" v-if="eventStarted"></th>
+                        <th class="align-middle" v-if="eventStarted"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -679,23 +680,23 @@ const flag = (country)=>{
                         <td class="align-middle">{{ eventEnrollmentsWithoutVA.second_driver_name }}</td>
                         <td class="align-middle">{{ eventEnrollmentsWithoutVA.vehicle_model }}</td>
                         <td class="align-middle">{{ eventEnrollmentsWithoutVA.vehicle_license_plate }}</td>
-                        <td class="align-middle" v-if="havePermissionsS() && !enrollOpen && eventStarted"><button class="btn btn-success" title="Aprovado" @click="enrollApprovedVA(eventEnrollmentsWithoutVA, 1)"><BIconCheckLg/></button></td>
-                        <td class="align-middle" v-if="havePermissionsS() && !enrollOpen && eventStarted"><button class="btn btn-danger" title="Reprovado" @click="enrollApprovedVA(eventEnrollmentsWithoutVA, 0)"><BIconXLg/></button></td>
+                        <td class="align-middle" v-if="!enrollOpen && eventStarted"><button class="btn btn-success" title="Aprovado" @click="enrollApprovedVA(eventEnrollmentsWithoutVA, 1)"><BIconCheckLg/></button></td>
+                        <td class="align-middle" v-if="!enrollOpen && eventStarted"><button class="btn btn-danger" title="Reprovado" @click="enrollApprovedVA(eventEnrollmentsWithoutVA, 0)"><BIconXLg/></button></td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
-    <div v-else-if="eventStarted">
+    <div v-else-if="eventStarted && havePermissionsS()">
         <h2>Inscritos - Verificações Administrativas</h2>
         <h6>Sem inscritos para fazer verificações administrativas</h6>
     </div>
 
     <br>
 
-    <div v-if="enrollmentsWithoutVT.length != 0 && eventStarted">
+    <div v-if="enrollmentsWithoutVT.length != 0 && eventStarted && havePermissionsVT()">
         <div v-if="!enrollOpen && eventStarted">
-            <h2 v-if="havePermissionsS()">Inscritos - Verificações Técnicas</h2>
+            <h2>Inscritos - Verificações Técnias</h2>
             <table class="table table-hover table-striped">
                 <thead class="table-dark" style="cursor: pointer">
                     <tr>
@@ -705,8 +706,8 @@ const flag = (country)=>{
                         <th class="align-middle">2º Condutor</th>
                         <th class="align-middle">Modelo</th>
                         <th class="align-middle">Matrícula</th>
-                        <th class="align-middle" v-if="havePermissionsVT() && eventStarted"></th>
-                        <th class="align-middle" v-if="havePermissionsVT() && eventStarted"></th>
+                        <th class="align-middle" v-if="eventStarted"></th>
+                        <th class="align-middle" v-if="eventStarted"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -717,15 +718,15 @@ const flag = (country)=>{
                         <td class="align-middle">{{ eventEnrollmentsWithoutVT.second_driver_name }}</td>
                         <td class="align-middle">{{ eventEnrollmentsWithoutVT.vehicle_model }}</td>
                         <td class="align-middle">{{ eventEnrollmentsWithoutVT.vehicle_license_plate }}</td>
-                        <td class="align-middle" v-if="havePermissionsVT() && !enrollOpen && eventStarted"><button class="btn btn-success" title="Aprovado" @click="enrollApprovedVT(eventEnrollmentsWithoutVT, 1)"><BIconCheckLg/></button></td>
-                        <td class="align-middle" v-if="havePermissionsVT() && !enrollOpen && eventStarted"><button class="btn btn-danger" title="Reprovado" @click="enrollApprovedVT(eventEnrollmentsWithoutVT, 0)"><BIconXLg/></button></td>
+                        <td class="align-middle" v-if="!enrollOpen && eventStarted"><button class="btn btn-success" title="Aprovado" @click="enrollApprovedVT(eventEnrollmentsWithoutVT, 1)"><BIconCheckLg/></button></td>
+                        <td class="align-middle" v-if="!enrollOpen && eventStarted"><button class="btn btn-danger" title="Reprovado" @click="enrollApprovedVT(eventEnrollmentsWithoutVT, 0)"><BIconXLg/></button></td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
-    <div v-else-if="eventStarted">
-        <h2>Inscritos - Verificações Técnicas</h2>
+    <div v-else-if="eventStarted && havePermissionsVT()">
+        <h2>Inscritos - Verificações Técnias</h2>
         <h6>Sem inscritos para fazer verificações técnicas</h6>
     </div>
 
