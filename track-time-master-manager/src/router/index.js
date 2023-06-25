@@ -19,6 +19,8 @@ import Enrollments from "../components/enrollments/Enrollments.vue"
 import UserCategories from "../components/userCategories/UserCategories.vue"
 import UserCategory from "../components/userCategories/UserCategory.vue"
 import PublicPage from '../components/publicPage/PublicPage.vue'
+import Stages from "../components/stages/Stages.vue"
+import Stage from "../components/stages/Stage.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -107,6 +109,25 @@ const router = createRouter({
       path: '/backend/events',
       name: 'Events',
       component: Events,
+    },
+    {
+      path: '/backend/events/:event_id/stages',
+      name: 'Stages',
+      component: Stages,
+      props: route => ({ event_id: parseInt(route.params.event_id) })
+    },
+    {
+      path: '/backend/events/:event_id/stages/new',
+      name: 'NewStage',
+      component: Stage,
+    },
+    {
+      path: '/backend/events/:event_id/stages/:stage_id',
+      name: 'Stage',
+      component: Stage,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.event_id) })
     },
     {
       path: '/backend/events/categories',
