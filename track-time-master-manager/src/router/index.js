@@ -120,6 +120,7 @@ const router = createRouter({
       path: '/backend/events/:event_id/stages/new',
       name: 'NewStage',
       component: Stage,
+      props: route => ({ event_id: parseInt(route.params.event_id) })
     },
     {
       path: '/backend/events/:event_id/stages/:stage_id',
