@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, inject, VueElement} from 'vue'
 import { useUserStore } from "../../stores/user.js"
 import {useRouter} from 'vue-router'
-import { BIconArrowUp, BIconArrowDown, BIconBuildingCheck, BIconSearch, BIconArrowCounterclockwise, BIconTrash, BIconCheckLg, BIconXLg, BIconFileArrowDown,BIconDownload, BIconArrowLeftRight, BIconCircle, BIconCircleFill, BIconInfoCircle, BIconInfoSquare, BIconInfoLg, BIconXCircleFill, BIconXCircle, BIconX, BIconPencil } from 'bootstrap-icons-vue';
+import { BIconArrowUp, BIconArrowDown, BIconBuildingCheck, BIconSearch, BIconArrowCounterclockwise, BIconTrash, BIconCheckLg, BIconXLg, BIconFileArrowDown,BIconDownload, BIconArrowLeftRight, BIconCircle, BIconCircleFill, BIconInfoCircle, BIconInfoSquare, BIconInfoLg, BIconXCircleFill, BIconXCircle, BIconX, BIconPencil, BIconArrowLeftCircleFill } from 'bootstrap-icons-vue';
 //import { html2pdf } from 'html2pdf.js';
 
 
@@ -152,7 +152,7 @@ const enroll = async ()=>{
 const enrollments = ref([])
 const loadEventEnrollments = async ()=>{
     //console.log("Event id: " + props.id)
-    await axios.get('event/' + props.id+ '/enrollments')
+    await axios.get('events/' + props.id+ '/enrollments')
     .then((response)=>{
         enrollments.value = response.data
     })
@@ -165,7 +165,7 @@ const loadEventEnrollments = async ()=>{
 const enrollmentsAdminVerifications = ref([])
 const loadEventToAdminVerifications = async ()=>{
     //console.log("Event id: " + props.id)
-    await axios.get('events/' + props.id+ '/adminVerifications')
+    await axios.get('events/' + props.id+ '/adminVerifications/canBeVerified')
     .then((response)=>{
         enrollmentsAdminVerifications.value = response.data
         console.log(enrollmentsAdminVerifications.value)
@@ -178,9 +178,10 @@ const loadEventToAdminVerifications = async ()=>{
 const enrollmentsTechnicalVerifications = ref([])
 const loadEventToTechnicalVerifications = async ()=>{
     //console.log("Event id: " + props.id)
-    await axios.get('events/' + props.id+ '/technicalVerifications')
+    await axios.get('events/' + props.id+ '/technicalVerifications/canBeVerified')
     .then((response)=>{
         enrollmentsTechnicalVerifications.value = response.data
+        console.log(enrollmentsTechnicalVerifications.value )
     })
     .catch((error)=>{
         console.log(error)
@@ -191,7 +192,7 @@ const loadEventToTechnicalVerifications = async ()=>{
 const eventParticipants = ref([])
 const loadEventParticipants = async ()=>{
     //console.log("Event id: " + props.id)
-    await axios.get('event/' + props.id + '/participants')
+    await axios.get('events/' + props.id + '/participants/canCompete')
     .then((response)=>{
         //console.log(response.data)
         eventParticipants.value = response.data
@@ -281,25 +282,17 @@ const havePermissionsS = () => {
   return userStore.user.type_id == 2 || userStore.user.type_id == 1
 }
 
-const participant = ref({
-    enrollment_id: -1,
-    first_driver_id: -1,
-    second_driver_id: -1,
-    vehicle_id: -1,
-})
-
 const messageNotesVA = ref('');
 const enrollApprovedVA = async(enrollAdminVerification, boolApproved) => {
     if(boolApproved)//==1
     {
         //approved
-        //removeObjectWithId(enroll.id, enrollmentsWithoutVA);
-        //addObject(enroll, enrollmentsWithoutVT)
         const updatedVerifieds = {'verified': 1, 'verified_by': userId}
         axios.put(`adminVerifications/${enrollAdminVerification.id}/changeVerified`, updatedVerifieds, enrollAdminVerification)
         .then((response)=>{
             removeObjectWithId(enrollAdminVerification.id, enrollmentsAdminVerifications)
-            toast.success("Inscrição com verificação técnica aprovada!")
+            addObject(enrollAdminVerification, enrollmentsTechnicalVerifications)
+            toast.success("Inscrição com verificação administrativa aprovada!")
         })
         .catch((error)=>{
             toast.error("Problemas ao aprovar. Contacte o admin")
@@ -315,13 +308,12 @@ const enrollApprovedVA = async(enrollAdminVerification, boolApproved) => {
             adminVerification.value.verified = boolApproved
             adminVerification.value.notes = messageNotesVA.value
             console.log(adminVerification.value)
-            //removeObjectWithId(enroll.id, enrollmentsWithoutVA);
             const updatedVerifiedsAndNotes = {'verified': boolApproved, 'verified_by': userId, 'notes': messageNotesVA.value}
             removeObjectWithId(enrollAdminVerification.id, enrollmentsAdminVerifications)
             axios.put(`adminVerifications/${enrollAdminVerification.id}/changeVerifiedAndNotes`, updatedVerifiedsAndNotes, enrollAdminVerification)
             .then((response)=>{
                 removeObjectWithId(enrollAdminVerification.id, enrollmentsAdminVerifications)
-                toast.success("Inscrição com verificação técnica não aprovada!")
+                toast.success("Inscrição com verificação administrativa não aprovada!")
             })
             .catch((error)=>{
                 toast.error("Problemas ao aprovar. Contacte o admin")
@@ -333,38 +325,21 @@ const enrollApprovedVA = async(enrollAdminVerification, boolApproved) => {
 
 
 const messageNotesVT = ref('');
-const enrollApprovedVT = async(enroll, boolApproved) => {
-    //console.log(enroll)
-    //technicalVerification.value.enrollment_id = enroll.id
+const enrollApprovedVT = async(enrollTechnicalVerification, boolApproved) => {
     if(boolApproved)//==1
     {
         //approved
-        messageNotesVT.value = prompt("Notas: ")
-        technicalVerification.value.verified = boolApproved
-        if(messageNotesVT.value == "" || messageNotesVT.value == null)
-        {
-            technicalVerification.value.notes = "----"
-        }
-        else{
-            technicalVerification.value.notes = messageNotesVT.value
-        }
-        console.log(technicalVerification.value)
-
-        //removeObjectWithId(enroll.id, enrollmentsWithoutVT);
-        //createParticipant(enroll)
-
-        //create technical verification with enroll data verified successfully
-        /*await axios.post(`technicalVerifications`, technicalVerification.value)
+        const updatedVerifieds = {'verified': 1, 'verified_by': userId}
+        console.log(updatedVerifieds)
+        axios.put(`technicalVerifications/${enrollTechnicalVerification.id}/changeVerified`, updatedVerifieds, enrollTechnicalVerification)
         .then((response)=>{
-            console.log('technicalVerification', response.data)
-            removeObjectWithId(enroll.id, enrollmentsWithoutVT);
-            toast.success("Inscrição " + enroll.enroll_order + " verificada e aprovada com sucesso!")
-            createParticipant(enroll)
+            removeObjectWithId(enrollTechnicalVerification.id, enrollmentsTechnicalVerifications)
+            addObject(enrollTechnicalVerification, eventParticipants)
+            toast.success("Inscrição com verificação técnica aprovada!")
         })
         .catch((error)=>{
-            console.log(error)
-            toast.error("Problemas ao aprovar! Contacte o admin")
-        })*/
+            toast.error("Problemas ao aprovar. Contacte o admin")
+        })
         
     }else{
         //repproved
@@ -376,39 +351,18 @@ const enrollApprovedVT = async(enroll, boolApproved) => {
             technicalVerification.value.verified = boolApproved
             technicalVerification.value.notes = messageNotesVT.value
             console.log(technicalVerification.value)
-            //removeObjectWithId(enroll.id, enrollmentsWithoutVT);
-            /*await axios.post(`technicalVerifications`, technicalVerification.value)
+            const updatedVerifiedsAndNotes = {'verified': boolApproved, 'verified_by': userId, 'notes': messageNotesVT.value}
+            console.log(updatedVerifiedsAndNotes)
+            axios.put(`technicalVerifications/${enrollTechnicalVerification.id}/changeVerifiedAndNotes`, updatedVerifiedsAndNotes, enrollTechnicalVerification)
             .then((response)=>{
-                console.log('technicalVerification', response.data)
-                removeObjectWithId(enroll.id, enrollmentsWithoutVT);
-                toast.success("Inscrição " + enroll.enroll_order + " verificada e reprovada com sucesso!")
+                removeObjectWithId(enrollTechnicalVerification.id, enrollmentsTechnicalVerifications)
+                toast.success("Inscrição com verificação técnica não aprovada!")
             })
             .catch((error)=>{
-                toast.error("Problemas ao reprovar! Contacte o admin")
-            })*/
+                toast.error("Problemas ao aprovar. Contacte o admin")
+            })
         }
     }
-}
-
-const createParticipant = async(enroll) => {
-    participant.value.enrollment_id = enroll.id
-    participant.value.first_driver_id = enroll.first_driver_id
-    participant.value.second_driver_id = enroll.second_driver_id
-    participant.value.vehicle_id = enroll.vehicle_id
-
-    console.log("first:", enroll.first_driver_id)
-
-    console.log("Participant: ", participant.value)
-    //addObject(enroll, eventParticipants)
-    //create participant with enroll data
-    await axios.post(`participants`, participant.value)
-    .then((response)=>{
-        console.log('participant', response.data)
-        addObject(enroll, eventParticipants)
-    })
-    .catch((error)=>{
-        console.log(error)
-    })
 }
 
 const removeObjectWithId = (id, array) => {
@@ -422,16 +376,21 @@ const addObject = (enrollmentToAdd, arrayToUpdated) => {
   arrayToUpdated.value.push(enrollmentToAdd);
 }
 
-const updateRunOrder = (eventId)=>{
+const updateRunOrder = ()=>{
     const updatedValues = []
     enrollments.value.forEach(enrollment => {
         updatedValues.push({'id': enrollment.id, 'run_order': enrollment.run_order});
 
         //Se nao houver enrolls com event_id nas tabelas admin_verifications e technical_verifications
-        if (enrollmentsAdminVerifications.value.length == 0 || enrollmentsTechnicalVerifications.value.length == 0)
+        loadArrayToNeedCreateOrNot()
+        console.log("enrollmentsAdminVerifications length: " + enrollmentsAdminVerifications.value.length)
+        console.log("enrollmentsTechnicalVerifications length: " + enrollmentsTechnicalVerifications.value.length)
+        console.log("eventParticipants length: " + eventParticipants.value.length)
+
+        if (enrollmentsAdminVerifications.value.length == 0)
         {
-            createAdminVerification(enrollment.id)
-            createTechnicalVerification(enrollment.id) 
+            console.log("Entrou")
+            createValuesOfEnrolls(enrollment.id)
         }
     })
 
@@ -444,6 +403,16 @@ const updateRunOrder = (eventId)=>{
     })
         
     console.log('updated:', updatedValues)
+}
+
+const createValuesOfEnrolls = async(enrollment_id) => {
+    await createAdminVerification(enrollment_id)
+    await createTechnicalVerification(enrollment_id)
+    await createParticipant(enrollment_id)
+}
+
+const loadArrayToNeedCreateOrNot = async() => {
+    await loadEventToAdminVerifications()
 }
 
 const adminVerification = ref({
@@ -482,6 +451,22 @@ const createTechnicalVerification = async(enroll_id) => {
         })
 }
 
+const participant = ref({
+    enrollment_id: -1,
+    can_compete: 0,
+})
+
+const createParticipant = async(enroll_id) => {
+    participant.value.enrollment_id = enroll_id
+    await axios.post(`participants`, participant.value)
+        .then((response)=>{
+            console.log('participant', response.data)
+        })
+        .catch((error)=>{
+            console.log("Erro", error)
+        })
+}
+
 
 const exportList = async (listName)=>{
     const date = new Date()
@@ -504,16 +489,24 @@ const flag = (country)=>{
 }
 
 const showNotesVA = (enrollVA) => {
-  console.log("Enroll ID: ", enrollVA.enrollment_id)
-  console.log("AV notes: ", enrollVA.notes)
-  //router.push({ name: 'EnrollmentVA', params: { id: enrollVA.id } })
-  //VANotes.value = enrollVA.notes
   VAInformationModal.value.notes = enrollVA.notes;
   VAInformationModal.value.id = enrollVA.id;
   VAInformationModal.value.enrollment_id = enrollVA.enrollment_id;
 }
 
 const VAInformationModal = ref({
+    id: -1,
+    enrollment_id: -1,
+    notes: '',
+})
+
+const showNotesVT = (enrollVT) => {
+  VTInformationModal.value.notes = enrollVT.notes;
+  VTInformationModal.value.id = enrollVT.id;
+  VTInformationModal.value.enrollment_id = enrollVT.enrollment_id;
+}
+
+const VTInformationModal = ref({
     id: -1,
     enrollment_id: -1,
     notes: '',
@@ -531,6 +524,25 @@ const updateAVNotes = async(VA_Id, VA_Notes) => {
             return element.id == VA_Id
         })
         enrollVAToUpdate.notes = VA_Notes
+        toast.success("Notas atualizadas com sucesso!")
+    })
+    .catch((error)=>{
+        toast.error("Problemas ao atualizar notas. Contacte o admin")
+    })
+}
+
+const updateTVNotes = async(VT_Id, VT_Notes) => {
+    //update verificacao administrativa notes
+    console.log("VA id: ", VT_Id);
+    console.log("VA notes: ", VT_Notes);
+
+    const updatedNotes = {'notes': VT_Notes}
+    axios.put(`technicalVerifications/${VT_Id}/changeNotes`, updatedNotes, VT_Id)
+    .then((response)=>{
+        var enrollVTToUpdate = enrollmentsTechnicalVerifications.value.find((element) => {
+            return element.id == VT_Id
+        })
+        enrollVTToUpdate.notes = VT_Notes
         toast.success("Notas atualizadas com sucesso!")
     })
     .catch((error)=>{
@@ -617,7 +629,7 @@ const updateAVNotes = async(VA_Id, VA_Notes) => {
                                     <td class="align-middle">{{ vehicle.engine_capacity }}</td>
                                     <td class="align-middle">{{ vehicle.class }}</td>
                                     <td class="align-middle">{{ vehicle.category }}</td>
-                                    <td><button class="btn btn-dark" @click="selectVehicle(vehicle)"></button></td>
+                                    <td><button class="btn btn-dark" @click="selectVehicle(vehicle)"><BIconArrowLeftCircleFill/></button></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -649,7 +661,7 @@ const updateAVNotes = async(VA_Id, VA_Notes) => {
                 </thead>
                 <tbody>
                     <tr v-for="eventEnrollment in enrollments" :key="eventEnrollment.id">
-                        <td v-if="!enrollOpen && !eventStarted && havePermissionsS()" class="align-middle"><button class="btn btn-link" :disabled="eventEnrollment.run_order==1" @click="sortRunOrder('up', eventEnrollment.id)"><BIconArrowUp/></button><button class="btn btn-link" :disabled="eventEnrollment.run_order==enrollments.length" @click="sortRunOrder('down', eventEnrollment.id)"><BIconArrowDown/></button></td>
+                        <td v-if="!enrollOpen && !eventStarted && havePermissionsS()" class="align-middle"><button class="btn btn-link" :disabled="eventEnrollment.run_order==1 && enrollments[0].run_order==eventEnrollment.run_order" @click="sortRunOrder('up', eventEnrollment.id)"><BIconArrowUp/></button><button class="btn btn-link" :disabled="eventEnrollment.run_order==enrollments[enrollments.length-1].run_order" @click="sortRunOrder('down', eventEnrollment.id)"><BIconArrowDown/></button></td>
                         <td v-if="!enrollOpen && !eventStarted" class="align-middle">{{ eventEnrollment.run_order }}</td>
                         <td class="align-middle"> {{ eventEnrollment.enroll_order }}</td>
                         <td class="align-middle">{{ eventEnrollment.first_driver_name }}</td>
@@ -729,7 +741,7 @@ const updateAVNotes = async(VA_Id, VA_Notes) => {
                         <td class="align-middle">{{ eventEnrollmentsAdminVerification.vehicle_license_plate }}</td>
                         <td class="align-middle"><button class="btn btn-success" title="Aprovar" @click="enrollApprovedVA(eventEnrollmentsAdminVerification, 1)"><BIconCheckLg/></button></td>
                         <td class="align-middle"><button class="btn btn-danger" title="Reprovar" @click="enrollApprovedVA(eventEnrollmentsAdminVerification, 0)"><BIconXLg/></button></td>
-                        <td class="align-middle"><button class="btn btn-secondary" title="Ver/Editar Notas" @click="showNotesVA(eventEnrollmentsAdminVerification)" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal"><BIconPencil/></button></td>
+                        <td class="align-middle"><button class="btn btn-secondary" title="Ver/Editar Notas" @click="showNotesVA(eventEnrollmentsAdminVerification)" type="button" data-bs-toggle="modal" data-bs-target="#AVModal"><BIconPencil/></button></td>
                     </tr>
                 </tbody>
             </table>
@@ -740,12 +752,12 @@ const updateAVNotes = async(VA_Id, VA_Notes) => {
         <h6>Sem inscritos para fazer verificações administrativas</h6>
     </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- AV Modal -->
+    <div class="modal fade" id="AVModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Verificaçõesao Administrativa #{{ VAInformationModal.id }}</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Verificação Administrativa #{{ VAInformationModal.id }}</h5>
                     <button data-bs-dismiss="modal"><BIconXLg/></button>
                 </div>
                 <div class="modal-body">
@@ -776,20 +788,22 @@ const updateAVNotes = async(VA_Id, VA_Notes) => {
                         <th class="align-middle">2º Condutor</th>
                         <th class="align-middle">Modelo</th>
                         <th class="align-middle">Matrícula</th>
-                        <!--th class="align-middle" v-if="eventStarted"></th>
-                        <th class="align-middle" v-if="eventStarted"></th-->
+                        <th class="align-middle"></th>
+                        <th class="align-middle"></th>
+                        <th class="align-middle"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="eventEnrollmentsTechnicalVerifications in enrollmentsTechnicalVerifications" :key="eventEnrollmentsTechnicalVerifications.id">
-                        <td class="align-middle"> {{ eventEnrollmentsTechnicalVerifications.enroll_order }}</td>
-                        <td class="align-middle"> {{ eventEnrollmentsTechnicalVerifications.run_order }}</td>
-                        <td class="align-middle">{{ eventEnrollmentsTechnicalVerifications.first_driver_name }}</td>
-                        <td class="align-middle">{{ eventEnrollmentsTechnicalVerifications.second_driver_name }}</td>
-                        <td class="align-middle">{{ eventEnrollmentsTechnicalVerifications.vehicle_model }}</td>
-                        <td class="align-middle">{{ eventEnrollmentsTechnicalVerifications.vehicle_license_plate }}</td>
-                        <!--td class="align-middle" v-if="!enrollOpen && eventStarted"><button class="btn btn-success" title="Aprovado" @click="enrollApprovedVT(eventEnrollmentsTechnicalVerifications, 1)"><BIconCheckLg/></button></td>
-                        <td class="align-middle" v-if="!enrollOpen && eventStarted"><button class="btn btn-danger" title="Reprovado" @click="enrollApprovedVT(eventEnrollmentsTechnicalVerifications, 0)"><BIconXLg/></button></td-->
+                    <tr v-for="eventEnrollmentsTechnicalVerification in enrollmentsTechnicalVerifications" :key="eventEnrollmentsTechnicalVerification.id">
+                        <td class="align-middle"> {{ eventEnrollmentsTechnicalVerification.enroll_order }}</td>
+                        <td class="align-middle"> {{ eventEnrollmentsTechnicalVerification.run_order }}</td>
+                        <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.first_driver_name }}</td>
+                        <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.second_driver_name }}</td>
+                        <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.vehicle_model }}</td>
+                        <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.vehicle_license_plate }}</td>
+                        <td class="align-middle"><button class="btn btn-success" title="Aprovar" @click="enrollApprovedVT(eventEnrollmentsTechnicalVerification, 1)"><BIconCheckLg/></button></td>
+                        <td class="align-middle"><button class="btn btn-danger" title="Reprovar" @click="enrollApprovedVT(eventEnrollmentsTechnicalVerification, 0)"><BIconXLg/></button></td>
+                        <td class="align-middle"><button class="btn btn-secondary" title="Ver/Editar Notas" @click="showNotesVT(eventEnrollmentsTechnicalVerification)" type="button" data-bs-toggle="modal" data-bs-target="#TVModal"><BIconPencil/></button></td>
                     </tr>
                 </tbody>
             </table>
@@ -800,12 +814,33 @@ const updateAVNotes = async(VA_Id, VA_Notes) => {
         <h6>Sem inscritos para fazer verificações técnicas</h6>
     </div>
 
+    <!-- AV Modal -->
+    <div class="modal fade" id="TVModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Verificação Técnica #{{ VTInformationModal.id }}</h5>
+                    <button data-bs-dismiss="modal"><BIconXLg/></button>
+                </div>
+                <div class="modal-body">
+                    <h6 class="modal-title" id="exampleModalLabel">(Inscrição #{{ VTInformationModal.enrollment_id }})</h6>
+                    <br>
+                    <h6>Notas:</h6>
+                    <input type="text" class="form-control" placeholder="notas" v-model="VTInformationModal.notes"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal"><u>Close</u></button>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal" @click="updateTVNotes(VTInformationModal.id, VTInformationModal.notes)">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <br>
 
-    <!--div v-if="eventParticipants.length != 0 && eventStarted"-->
     <div v-if="eventParticipants.length != 0 && eventStarted">
         <h2>Participantes</h2>
-        <table class="table table-hover table-striped" v-if="eventParticipants.length != 0">
+        <table class="table table-hover table-striped">
             <thead class="table-dark" style="cursor: pointer">
                 <tr>
                     <th class="align-middle"># Inscrição</th>
@@ -845,7 +880,7 @@ const updateAVNotes = async(VA_Id, VA_Notes) => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="eventParticipant in participants" :key="eventParticipant.id">
+                    <tr v-for="eventParticipant in eventParticipants" :key="eventParticipant.id">
                         <td class="align-middle">{{ eventParticipant.run_order }}</td>
                         <td class="align-middle">{{ eventParticipant.first_driver_name }}</td>
                         <td class="align-middle">{{ eventParticipant.first_driver_license }}</td>
