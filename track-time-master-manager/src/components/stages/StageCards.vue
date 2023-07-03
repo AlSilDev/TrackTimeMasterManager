@@ -114,6 +114,7 @@ onMounted(async ()=>{
             <div :id="`collapseStage${stage.id}`" class="accordion-collapse collapse" :data-bs-parent="`#stage${stage.id}`">
                 <div class="accordion-body">
                   <p>Nome da Etapa: {{ stage.name }}</p>
+                  <p><button class="btn btn-success" @click="editStage(stage)"><BIconPencilSquare></BIconPencilSquare> Editar Etapa</button></p>
                 </div>
             </div>
         </div>
