@@ -2,6 +2,7 @@
 import { ref, watch, computed, inject, onMounted } from "vue";
 import avatarNoneUrl from '@/assets/avatar-none.png'
 import moment from 'moment'
+import { BIconArrowRight, BIconArrowDown, BIconTrash } from "bootstrap-icons-vue";
 
 const serverBaseUrl = inject("serverBaseUrl");
 const axios = inject('axios')
@@ -23,7 +24,7 @@ const emit = defineEmits(["save", "cancel"]);
 //https://stackoverflow.com/questions/46708110/convert-date-format-in-javascript-using-vuejs
 const formatDate = (value)=>{
   if (value) {
-    return moment(String(value)).format('DD/MM/YYYY HH:MM:SS')
+    return moment(String(value)).format('DD/MM/YYYY hh:mm:ss a')
   }
 }
 
@@ -80,7 +81,7 @@ const cancel = () => {
   emit("cancel", editingEvent.value);
 }
 
-const pressFiles = ref()
+const pressFiles = ref([])
 const loadPressFiles = async ()=>{
   await axios.get(`events/${editingEvent.value.id}/press`)
     .then((response)=>{
@@ -99,6 +100,8 @@ const addPressFile = async ()=>{
   await axios.post(`events/${editingEvent.value.id}/press`, formData, { headers: { 'Content-Type': 'multipart/form-data' }})
     .then((response)=>{
       //console.log(response.data)
+      press_file_input.value = ''
+      pressName.value = ''
       toast.success(`O ficheiro ${pressName.value} foi adicionado com sucesso.`)
       pressFiles.value.push(response.data)
       //console.log(pressFiles.value)
@@ -108,6 +111,117 @@ const addPressFile = async ()=>{
       console.error(error)
     })
 }
+const deletePressFile = async (pressFile)=>{
+  await axios.delete(`press/${pressFile.id}`)
+    .then((response)=>{
+      //console.log(response.data)
+      toast.success(`O ficheiro ${pressFile.name} foi eliminado com sucesso.`)
+      console.log('index: ' + pressFiles.value.indexOf(pressFile))
+      pressFiles.value.splice(pressFiles.value.indexOf(pressFile), 1)
+      //console.log(pressFiles.value)
+    })
+    .catch((error)=>{
+      toast.error('Ocorreu um erro no servidor')
+      console.error(error)
+    })  
+}
+
+/* Video methods */
+const videoLinkToUpload = ref({'video_url': ''})
+
+const videoLinks = ref([])
+const loadVideoLinks = async ()=>{
+  await axios.get(`events/${editingEvent.value.id}/videos`)
+    .then((response)=>{
+      console.log(response.data)
+      videoLinks.value = response.data
+    })
+    .catch((error)=>{
+      console.error(error)
+    })
+}
+
+const addVideoLink = async ()=>{
+  await axios.post(`events/${editingEvent.value.id}/videos`, videoLinkToUpload.value)
+    .then((response)=>{
+      //console.log(response.data)
+      videoLinkToUpload.video_url = ''
+      toast.success(`O vídeo foi adicionado com sucesso.`)
+      videoLinks.value.push(response.data)
+      //console.log(pressFiles.value)
+    })
+    .catch((error)=>{
+      toast.error('Ocorreu um erro no servidor')
+      console.error(error)
+    })
+}
+
+const deleteVideoLink = async (video)=>{
+  await axios.delete(`videos/${video.id}`)
+    .then((response)=>{
+      //console.log(response.data)
+      toast.success(`O vídeo foi eliminado com sucesso.`)
+      console.log('index: ' + videoLinks.value.indexOf(video))
+      videoLinks.value.splice(videoLinks.value.indexOf(video), 1)
+      //console.log(pressFiles.value)
+    })
+    .catch((error)=>{
+      toast.error('Ocorreu um erro no servidor')
+      console.error(error)
+    })  
+}
+
+/* */
+
+/* Regulations methods */
+const regulationName = ref('')
+const regulation_file_input = ref('')
+const regulationFiles = ref([])
+const loadRegulationFiles = async ()=>{
+  await axios.get(`events/${editingEvent.value.id}/regulations`)
+    .then((response)=>{
+      console.log(response.data)
+      regulationFiles.value = response.data
+    })
+    .catch((error)=>{
+      console.error(error)
+    })
+}
+
+const addRegulationFile = async ()=>{
+  const formData = new FormData()
+  formData.append('regulation_file', regulation_file_input.value.files[0])
+  formData.append('name', regulationName.value)
+  await axios.post(`events/${editingEvent.value.id}/regulations`, formData, { headers: { 'Content-Type': 'multipart/form-data' }})
+    .then((response)=>{
+      //console.log(response.data)
+      regulation_file_input.value.files.splice(0, 1)
+      regulationName.value = ''
+      toast.success(`O ficheiro ${pressName.value} foi adicionado com sucesso.`)
+      regulationFiles.value.push(response.data)
+      //console.log(pressFiles.value)
+    })
+    .catch((error)=>{
+      toast.error('Ocorreu um erro no servidor')
+      console.error(error)
+    })
+}
+
+const deleteRegulationFile = async (regulation)=>{
+  await axios.delete(`regulations/${regulation.id}`)
+    .then((response)=>{
+      //console.log(response.data)
+      toast.success(`O ficheiro ${regulation.name} foi eliminado com sucesso.`)
+      console.log('index: ' + regulationFiles.value.indexOf(regulation))
+      regulationFiles.value.splice(regulationFiles.value.indexOf(regulation), 1)
+      //console.log(pressFiles.value)
+    })
+    .catch((error)=>{
+      toast.error('Ocorreu um erro no servidor')
+      console.error(error)
+    })  
+}
+/* */
 
 const eventCategories = ref([])
 const loadEventCategoriesArray = (async () => {
@@ -134,8 +248,12 @@ onMounted(()=>{
 
     console.log("course: " + editingEvent.value.course_url)
     console.log("course url: " + fileFullUrl.value)
-    
-    loadPressFiles()
+    if (props.operationType == "update")
+    {
+      loadPressFiles()
+      loadVideoLinks()
+      loadRegulationFiles()
+    }
   }, 1000)
   loadEventCategoriesArray()
 })
@@ -287,42 +405,47 @@ onMounted(()=>{
       <button type="button" class="btn btn-dark px-5" @click="save">Guardar</button>
       <button type="button" class="btn btn-light px-5" @click="cancel">Cancelar</button>
     </div>
+  </form>
 
-    <hr>
+  <hr>
+  <div>
     <h3>Imprensa</h3>
 
-    <!-- Press files -->
-    <div class="d-flex flex-wrap justify-content-center">
-        <div class="w-75 pe-4">
-          <div class="mb-3">
-            <label for="inputNamePress" class="form-label">Nome</label>
-            <input
-              type="text"
-              class="form-control"
-              id="inputNamePress"
-              placeholder="Nome"
-              required
-              v-model="pressName"
-            />
+    <form class="row g-3 needs-validation" novalidate @submit.prevent="addPressFile">
+      <!-- Press files -->
+      <div class="d-flex flex-wrap justify-content-center">
+          <div class="w-75 pe-4">
+            <div class="mb-3">
+              <label for="inputNamePress" class="form-label">Nome</label>
+              <input
+                type="text"
+                class="form-control"
+                id="inputNamePress"
+                placeholder="Nome"
+                required
+                v-model="pressName"
+              />
+            </div>
+          </div>
+          <div class="w-25">
+            <div class="mb-3">
+              <label class="form-label">Ficheiro</label>
+              <input type="file" ref="press_file_input" class="form-control" name="press" v-on:change="uploadPress()"/>
+            </div>
           </div>
         </div>
-        <div class="w-25">
-          <div class="mb-3">
-            <label class="form-label">Ficheiro</label>
-            <input type="file" ref="press_file_input" class="form-control" name="press" v-on:change="uploadPress()"/>
-            
-          </div>
-        </div>
-        
-      </div>
-      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addPressFile()">Adicionar Ficheiro</button></div>
+        <div class="col-sm"><button type="button" class="btn btn-dark" :disabled="!pressName.length && !press_file_input.files" @click="addPressFile()">Adicionar Ficheiro</button></div>
+      </form>
       
-      <table class="table table-hover table-striped">
+      <br>
+      <table class="table table-hover table-striped" v-if="pressFiles.length">
         <thead class="table-dark" style="cursor: pointer">
           <tr>
             <th class="align-middle">Nome</th>
             <th class="align-middle">Data de Criação</th>
             <th class="align-middle">Data de Atualização</th>
+            <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -330,11 +453,115 @@ onMounted(()=>{
             <td class="align-middle">{{ press.name }}</td>
             <td class="align-middle">{{ formatDate(press.created_at) }}</td>
             <td class="align-middle">{{ formatDate(press.updated_at) }}</td>
+            <td class="align-middle"><button class="btn btn-danger" @click="deletePressFile(press)"><BIconTrash/></button></td>
+            <td class="align-middle"><a class="btn btn-info" :href="serverBaseUrl + '/storage/imprensa/' + press.file_url" target="_blank"><BIconArrowDown/></a></td>
           </tr>
         </tbody>
       </table>
 
-  </form>
+      <h4 v-if="!pressFiles.length">Ainda não há ficheiros de imprensa</h4>
+  </div>
+
+  <hr>
+  <div>
+    <h3>Vídeos</h3>
+
+    <form class="row g-3 needs-validation" novalidate @submit.prevent="addVideoLink">
+      <!-- Video links -->
+        <div class="mb-3">
+          <label for="inputVideoLink" class="form-label">URL</label>
+          <input
+            type="text"
+            class="form-control"
+            id="inputVideoLink"
+            placeholder="Nome"
+            required
+            v-model="videoLinkToUpload.video_url"
+          />
+        </div>
+        <div class="col-sm"><button type="button" class="btn btn-dark" :disabled="!videoLinkToUpload.video_url.length" @click="addVideoLink()">Adicionar Vídeo</button></div>
+      </form>
+      
+      <br>
+      <table class="table table-hover table-striped" v-if="videoLinks.length">
+        <thead class="table-dark" style="cursor: pointer">
+          <tr>
+            <th class="align-middle">URL</th>
+            <th class="align-middle">Data de Criação</th>
+            <th class="align-middle">Data de Atualização</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="video in videoLinks" :key="video.id">
+            <td class="align-middle">{{ video.video_url }}</td>
+            <td class="align-middle">{{ formatDate(video.created_at) }}</td>
+            <td class="align-middle">{{ formatDate(video.updated_at) }}</td>
+            <td class="align-middle"><button class="btn btn-danger" @click="deleteVideoLink(video)"><BIconTrash/></button></td>
+            <td class="align-middle"><a class="btn btn-info" :href="video.video_url" target="_blank"><BIconArrowRight/></a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4 v-if="!videoLinks.length">Ainda não há vídeos</h4>
+  </div>
+    
+  <hr>
+  <div>
+    <h3>Regulamentos</h3>
+
+    <form class="row g-3 needs-validation" novalidate @submit.prevent="addRegulationsFile">
+      <!-- Press files -->
+      <div class="d-flex flex-wrap justify-content-center">
+          <div class="w-75 pe-4">
+            <div class="mb-3">
+              <label for="inputNameRegulation" class="form-label">Nome</label>
+              <input
+                type="text"
+                class="form-control"
+                id="inputNameRegulation"
+                placeholder="Nome"
+                required
+                v-model="regulationName"
+              />
+            </div>
+          </div>
+          <div class="w-25">
+            <div class="mb-3">
+              <label class="form-label">Ficheiro</label>
+              <input type="file" ref="regulation_file_input" class="form-control" name="regulation"/>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm"><button type="button" class="btn btn-dark" :disabled="!regulationName.length && !regulation_file_input.files" @click="addRegulationFile()">Adicionar Ficheiro</button></div>
+      </form>
+      
+      <br>
+      <table class="table table-hover table-striped" v-if="regulationFiles.length">
+        <thead class="table-dark" style="cursor: pointer">
+          <tr>
+            <th class="align-middle">Nome</th>
+            <th class="align-middle">Data de Criação</th>
+            <th class="align-middle">Data de Atualização</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="regulation in regulationFiles" :key="regulation.id">
+            <td class="align-middle">{{ regulation.name }}</td>
+            <td class="align-middle">{{ formatDate(regulation.created_at) }}</td>
+            <td class="align-middle">{{ formatDate(regulation.updated_at) }}</td>
+            <td class="align-middle"><button class="btn btn-danger" @click="deleteRegulationFile(regulation)"><BIconTrash/></button></td>
+            <td class="align-middle"><a class="btn btn-info" :href="serverBaseUrl + '/storage/regulamentos/' + regulation.file_url" target="_blank"><BIconArrowDown/></a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4 v-if="!regulationFiles.length">Ainda não há ficheiros de regulamentos</h4>
+  </div>
+
 </template>
 
 <style scoped>

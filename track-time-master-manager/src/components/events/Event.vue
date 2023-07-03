@@ -121,9 +121,15 @@
 </script>
 
 <template>
-  <event-detail
+  <!--event-detail
     :event="event"
     :errors="errors"
+    :operationType="operation"
+    @save="save"
+    @cancel="cancel"
+  ></event-detail-->
+  <event-detail
+    :event="event"
     :operationType="operation"
     @save="save"
     @cancel="cancel"

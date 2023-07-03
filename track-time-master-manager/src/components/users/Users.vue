@@ -3,6 +3,7 @@
   import {useRouter} from 'vue-router'
   import { useUserStore } from "../../stores/user.js"
   import UserTable from "./UserTable.vue"
+  import { BIconPlus, BIconTable } from 'bootstrap-icons-vue'
   
   const router = useRouter()
   const userStore = useUserStore()
@@ -45,6 +46,7 @@
     }*/
 
   const editUser = (user) => {
+    console.log("Chegou " + user.id)
     router.push({ name: 'User', params: { id: user.id } })
   }
 
@@ -55,6 +57,10 @@
   const addUser = () => {
     router.push({ name: 'NewUser' })
   }
+
+  const showCategories = () => {
+    router.push({ name: 'UserCategories' })
+  }
 </script>
 
 <template>
@@ -62,6 +68,7 @@
   <div class="container">
     <div class="d-flex justify-content-between">
       <div class="col-sm"><button type="button" class="btn btn-dark" @click="addUser"><BIconPlus/> Novo Utilizador</button></div>
+      <div class="col-sm"><button type="button" class="btn btn-dark" @click="showCategories"><BIconTable/> Categorias</button></div>
     </div>
   </div>
   <hr>

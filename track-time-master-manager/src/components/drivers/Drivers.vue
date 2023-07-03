@@ -2,6 +2,7 @@
   import { ref, computed, onMounted, inject } from 'vue'
   import {useRouter} from 'vue-router'
   import DriverTable from "./DriverTable.vue"
+  import {BIconPlus} from "bootstrap-icons-vue"
   
   const router = useRouter()
 

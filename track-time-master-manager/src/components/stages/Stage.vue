@@ -1,0 +1,132 @@
+<script setup>
+  import { ref, watch, computed, inject, onMounted } from 'vue'
+  import StageDetail from "./StageDetail.vue"
+  import { useRouter, onBeforeRouteLeave } from 'vue-router'  
+  
+  const router = useRouter()  
+  const axios = inject('axios')
+  const toast = inject('toast')
+
+  const props = defineProps({
+      event_id: {
+        type: Number,
+        default: null
+      },
+      stage_id: {
+        type: Number,
+        default: null
+      }
+  })
+
+  const operation = computed( () => (!props.stage_id || props.stage_id < 0) ? 'insert' : 'update')
+
+  const newStage = () => {
+      return {
+        id: null,
+        name: '',
+        date_start: Date,
+        //num_runs: null,
+        //time_until_next_run_mins: null,
+      }
+  }
+
+  const stage = ref(newStage())
+
+  const loadStage = (stage_id) => {    
+      errors.value = null
+      if (!stage_id || (stage_id < 0)) {
+        stage.value = newStage()
+      } else {
+        axios.get(`stages/${stage_id}`)
+          .then((response) => {
+            stage.value = response.data.data
+            console.log('stage', stage.value)
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      }
+  }
+
+  const save = (editingStageValue) => {
+    console.log('event_id', props.event_id)
+    errors.value = null
+    if (operation.value == "insert")
+    {
+      axios.post(`events/${props.event_id}/stages`, editingStageValue)
+        .then((response) => {
+          stage.value = response.data.data
+          toast.success('Etapa ' + stage.value.name + '(#' +stage.value.id+ ') criada com sucesso!')
+          router.push({name: 'Stages', params: { event_id: props.event_id }})
+        })
+        .catch((error) => {
+          if (error.response.status == 422) {
+            toast.error('Etapa ' + stage.value.name + '(#' +stage.value.id+ ') não criada devido a erros de validação!')
+            errors.value = error.response.data.errors
+          } else {
+            toast.error('Etapa ' + stage.value.name + '(#' +stage.value.id+ ') não criada devido a erro desconhecido!')
+          }
+        })
+    }
+    else
+    {
+      console.log("PUT Method")
+      axios.put(`events/${props.event_id}/stages/${props.stage_id}`, editingStageValue)
+      .then((response) => {
+        stage.value = response.data.data
+        toast.success('Etapa #' + stage.value.id + ' foi atualizada com sucesso!')
+        router.push({name: 'Stages', params: { event_id: props.event_id }})
+      })
+      .catch((error) => {
+        if (error.response.status == 422) {
+            toast.error('Etapa #' + props.id + ' não atualizada devido a erros de validação!')
+            errors.value = error.response.data.errors
+          } else {
+            toast.error('Etapa #' + props.id + ' não atualizada devido a erro desconhecido!')
+          }
+      })
+    }
+  }
+
+  const cancel = () => {
+    router.push({name: 'Stages'})
+  }
+
+  const errors = ref(null)
+  const confirmationLeaveDialog = ref(null)
+
+  watch(
+    () => props.stage_id,
+    (newValue) => {
+        loadStage(newValue)
+      },
+    {immediate: true}  
+    )
+
+  onMounted(()=>{
+    console.log('params', router.currentRoute.value.params)
+    console.log('stage_id', router.currentRoute.value.params['stage_id'])
+    setTimeout(()=>{
+      console.log('props.event_id', props.event_id)
+      console.log('props.stage_id', props.stage_id)
+    }, 1000)
+    
+  })
+
+</script>
+
+<template>
+  <!--stage-detail
+    :stage="stage"
+    :errors="errors"
+    :operationType="operation"
+    @save="save"
+    @cancel="cancel"
+  ></stage-detail-->
+  <stage-detail
+    :stage="stage"
+    :operationType="operation"
+    @save="save"
+    @cancel="cancel"
+  ></stage-detail>
+</template>

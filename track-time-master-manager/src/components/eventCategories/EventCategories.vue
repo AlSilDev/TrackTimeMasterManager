@@ -2,6 +2,7 @@
   import { ref, computed, onMounted, inject } from 'vue'
   import {useRouter} from 'vue-router'
   import EventCategoryTable from "./EventCategoryTable.vue"
+  import { BIconPlus } from 'bootstrap-icons-vue'
   
   const router = useRouter()
 
@@ -66,7 +67,7 @@
   const editEventCategory = (category) => {
     router.push({ name: 'EventCategory', params: { id: category.id } })
   }
-
+  
   const deleteEventCategory = (async(eventCategory) => {
     errors.value = null
     await axios.delete('eventCategories/' + eventCategory.id)

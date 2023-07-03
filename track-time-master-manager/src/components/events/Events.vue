@@ -2,6 +2,7 @@
   import { ref, computed, onMounted, inject } from 'vue'
   import {useRouter} from 'vue-router'
   import EventCards from "./EventCards.vue"
+  import { BIconPlus, BIconTable } from 'bootstrap-icons-vue'
   
   const router = useRouter()
 
@@ -37,7 +38,6 @@
   
   <event-cards
     :showId="false"
-    @edit="editEvent"
   ></event-cards>
 </template>
 

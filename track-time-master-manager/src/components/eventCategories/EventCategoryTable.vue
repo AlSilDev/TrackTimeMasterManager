@@ -2,6 +2,7 @@
 import { inject, computed, ref, onMounted, watch } from "vue";
 import { useUserStore } from "../../stores/user.js"
 import { useRouter } from 'vue-router'  
+import { BIconPencil, BIconTrash, BIconArrowClockwise } from 'bootstrap-icons-vue'
 
 const userStore = useUserStore()
 const router = useRouter()  
@@ -45,7 +46,8 @@ const isAdmin = () => {
   if (!userStore.user) {
     return false
   }
-  return userStore.user.type == 'A'
+  //ADMIN -> id 1
+  return userStore.user.type_id == 1
 }
 
 const isTrashed = () => {

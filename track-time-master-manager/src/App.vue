@@ -1,9 +1,10 @@
 <script setup>
 import { useRouter, RouterLink, RouterView } from "vue-router";
-import { ref, inject, onMounted } from "vue";
+import { ref, inject, watch, onMounted } from "vue";
 import { useUserStore } from './stores/user.js'
 import Login from './components/auth/Login.vue'
 import PrivatePage from './components/privatePage/PrivatePage.vue'
+import PublicPage from './components/publicPage/PublicPage.vue'
 
 
 const router = useRouter()
@@ -15,11 +16,19 @@ const buttonSidebarExpand = ref(null)
 const logout = async () => {
   if (await userStore.logout()) {
     toast.success('User has logged out of the application.')
-    clickMenuOption()
+    //clickMenuOption()
     router.push({name: 'home'})
   } else {
     toast.error('There was a problem logging out of the application!')
   }
+}
+
+const publicPage = () => {
+  router.push({name: 'home'})
+}
+
+const privatePage = () => {
+  router.push({name: 'Vehicles'})
 }
 
 //For boostrap dropdown
@@ -29,9 +38,29 @@ const clickMenuOption = () => {
   }
 }
 
+const isBackendPage = () =>  {
+  //console.log("Route: ", router.currentRoute.value)
+  const myArray = router.currentRoute.value.fullPath.split('/')
+  //console.log("Route path trim: ", myArray)
+  //console.log("Route path 1: ", myArray[1])
+  if (myArray[1] == "backend"){
+    //console.log("True")
+    return true;
+  }
+  //console.log("False")
+  return false;
+}
+
 onMounted(()=>{
   userStore.restoreToken()
 })
+
+watch (
+  () => router.currentRoute.value,
+  () => {
+    isBackendPage();
+  }
+)
 </script>
 
 <template>
@@ -98,6 +127,16 @@ onMounted(()=>{
               <li>
                 <hr class="dropdown-divider" />
               </li>
+              <li v-if="isBackendPage()">
+                <a class="dropdown-item" @click="publicPage">
+                  <i class="bi bi-arrow-right"></i>Página Pública
+                </a>
+              </li>
+              <li v-else>
+                <a class="dropdown-item" @click="privatePage">
+                  <i class="bi bi-arrow-right"></i>Página Backend
+                </a>
+              </li>
               <li>
                 <a class="dropdown-item" @click.prevent="logout">
                   <i class="bi bi-arrow-right"></i>Logout
@@ -111,7 +150,7 @@ onMounted(()=>{
   </nav>
 
 
-  <div class="container-fluid" v-if="userStore.user">
+  <div class="container-fluid" v-if="userStore.user && isBackendPage()">
     <PrivatePage :clickMenuOption="clickMenuOption"></PrivatePage>
   </div>
   <div v-else>

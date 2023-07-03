@@ -1,8 +1,8 @@
 <script setup>
-  import { BIconSearch } from 'bootstrap-icons-vue';
-import { ref, computed, onMounted, inject } from 'vue'
+  import { ref, computed, onMounted, inject } from 'vue'
   import {useRouter} from 'vue-router'
   import VehicleTable from "./VehicleTable.vue"
+  import { BIconSearch, BIconPlus } from 'bootstrap-icons-vue'
   
   const router = useRouter()
 
