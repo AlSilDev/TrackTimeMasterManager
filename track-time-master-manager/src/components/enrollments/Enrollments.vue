@@ -431,7 +431,7 @@ const flag = (country)=>{
         <div id="pdf-enrollments" hidden>
             <h2>Lista de Inscritos</h2>
             <br>
-            <table class="table table-hover table-striped" style="font-size: 8pt;">
+            <table class="table table-hover table-striped table-sm" style="font-size: 8pt;">
                 <thead class="table-dark" style="cursor: pointer">
                     <tr>
                         <th class="align-middle">Nº</th>
@@ -494,7 +494,7 @@ const flag = (country)=>{
         <div id="pdf-participants" hidden>
             <h2>Lista de Participantes</h2>
             <br>
-            <table class="table table-hover table-striped" style="font-size: 8pt;">
+            <table class="table table-hover table-striped table-sm" style="font-size: 8pt;">
                 <thead class="table-dark" style="cursor: pointer">
                     <tr>
                         <th class="align-middle">Nº</th>
