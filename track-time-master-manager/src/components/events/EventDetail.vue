@@ -281,7 +281,7 @@ onMounted(()=>{
         <div class="mb-3 px-1">
           <label for="inputDateStartEnrollments" class="form-label">Data de Início de Inscrições</label>
           <input
-            type="date"
+            type="datetime-local"
             class="form-control"
             id="inputDateStartEnrollments"
             required
@@ -292,7 +292,7 @@ onMounted(()=>{
         <div class="mb-3 px-1">
           <label for="inputDateEndEnrollments" class="form-label">Data de Fim de Inscrições</label>
           <input
-            type="date"
+            type="datetime-local"
             class="form-control"
             id="inputDateEndEnrollments"
             required
@@ -303,7 +303,7 @@ onMounted(()=>{
         <div class="mb-3 px-1">
           <label for="inputDateStartEvent" class="form-label">Data de Início da Prova</label>
           <input
-            type="date"
+            type="datetime-local"
             class="form-control"
             id="inputDateStartEvent"
             required
@@ -314,7 +314,7 @@ onMounted(()=>{
         <div class="mb-3 px-1">
           <label for="inputDateEndEvent" class="form-label">Data de Fim da Prova</label>
           <input
-            type="date"
+            type="datetime-local"
             class="form-control"
             id="inputDateEndEvent"
             required
