@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, watch, inject, computed } from 'vue'
+  import { ref, watch, inject, computed, onMounted } from 'vue'
   import UserDetail from "./UserDetail.vue"
   import { useUserStore } from '../../stores/user';
   import { useRouter, onBeforeRouteLeave } from 'vue-router'  
@@ -23,25 +23,21 @@
         id: null,
         name: '',
         email: '',
-        type: 'A',
+        type_id: 1,
         blocked: 0,
         password: '',
         photo_url: null
       }
   }
 
-  let originalValueStr = ''
   const loadUser = (id) => { 
-    originalValueStr = ''
       errors.value = null
       if (!id || (id < 0)) {
         user.value = newUser()
-        originalValueStr = dataAsString()
       } else {
         axios.get('users/' + id)
           .then((response) => {
             user.value = response.data.data
-            originalValueStr = dataAsString()
           })
           .catch((error) => {
             console.log(error)
@@ -77,7 +73,7 @@
       formData.append('name', editingUserValue.name)
       formData.append('email', editingUserValue.email)
       formData.append('password', editingUserValue.password)
-      formData.append('type', editingUserValue.type)
+      formData.append('type_id', editingUserValue.type_id)
 
       console.log('FormData:' + formData.values())
 
@@ -110,13 +106,11 @@
         axios.post('users/' + props.id, formData)
         .then((response) => {
           user.value = response.data.data
-          originalValueStr = dataAsString()
           toast.success('User #' + user.value.id + ' was updated successfully.')
-          //router.push({name: 'Users'})
           router.back()
         })
         .catch((error) => {
-          if (error.response.status == 422) {
+          if (error.status == 422) {
               toast.error('User #' + props.id + ' was not updated due to validation errors!')
               errors.value = error.response.data.errors
             } else {
@@ -127,36 +121,12 @@
   }
 
   const cancel = () => {
-    originalValueStr = dataAsString()
     router.push({name: 'Users'})
-    //router.back()
   }
 
-  const dataAsString = () => {
-      return JSON.stringify(user.value)
-  }
-
-  let nextCallBack = null
-  const leaveConfirmed = () => {
-      if (nextCallBack) {
-        nextCallBack()
-      }
-  }
-
-  onBeforeRouteLeave((to, from, next) => {
-    nextCallBack = null
-    let newValueStr = dataAsString()
-    if (originalValueStr != newValueStr) {
-      nextCallBack = next
-      confirmationLeaveDialog.value.show()
-    } else {
-      next()
-    }
-  }) 
 
   const user = ref(newUser())
   const errors = ref(null)
-  const confirmationLeaveDialog = ref(null)
 
   watch(
     () => props.id,
@@ -166,17 +136,11 @@
     {immediate: true}  
     )
 
+  
+
 </script>
 
 <template>
-  <confirmation-dialog
-    ref="confirmationLeaveDialog"
-    confirmationBtn="Discard changes and leave"
-    msg="Do you really want to leave? You have unsaved changes!"
-    @confirmed="leaveConfirmed"
-  >
-  </confirmation-dialog>  
-
   <user-detail
     :operationType="operation"
     :user="user"

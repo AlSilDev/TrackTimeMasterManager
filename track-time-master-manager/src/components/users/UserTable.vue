@@ -2,6 +2,7 @@
 import { inject, ref, onMounted } from "vue";
 import { useUserStore } from "../../stores/user.js"
 import avatarNoneUrl from '@/assets/avatar-none.png'
+import { BIconSearch, BIconArrowUp, BIconArrowDown } from 'bootstrap-icons-vue'
 
 const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
@@ -58,7 +59,8 @@ const canViewUserDetailAndBlock = (userId) => {
   if (!userStore.user) {
     return false
   }
-  return userStore.user.type == 'A' || userStore.user.id == userId
+  //ADMIN -> 1
+  return userStore.user.type_id == 1 || userStore.user.id == userId
 }
 
 const isUserStore = (userId) => {
@@ -111,8 +113,35 @@ const restartSearch = () => {
   getResultsFiltered()
 }
 
+const userCategories = ref([])
+const loadUserCategories = (async() => {
+    await axios.get('userCategories')
+        .then((response) => {
+          userCategories.value = response.data
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+  })
+
+const getUserCategoryName = (userCategoryId) => {
+    for (let index = 0; index < userCategories.value.length; index++) {
+      if (userCategories.value[index].id == userCategoryId){
+        return userCategories.value[index].name
+      }else{
+        if(index == userCategories.value.length - 1){
+          return ''
+        }
+        else{
+          continue
+        }
+      }
+    }
+  }
+
 onMounted(async ()=>{
   await getResultsFiltered()
+  loadUserCategories()
 })
 </script>
 
@@ -125,7 +154,7 @@ onMounted(async ()=>{
         <option value="" selected>Escolher Atributo...</option>
         <option value="name">Nome</option>
         <option value="email">Email</option>
-        <option value="type">Tipo</option>
+        <option value="type_id">Tipo</option>
       </select>
       <button class="btn btn-outline-secondary" type="button" @click="getResultsFiltered()">Procurar</button>
       <button class="btn btn-outline-secondary" type="button" @click="restartSearch()">Reiniciar</button>
@@ -138,7 +167,7 @@ onMounted(async ()=>{
         <th v-if="showPhoto" class="align-middle">Foto</th>
         <th class="align-middle" @click="sortByColumn('name')">Nome <span v-if="sortedColumn == 'name'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
         <th class="align-middle" @click="sortByColumn('email')">Email <span v-if="sortedColumn == 'email'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('type')">Tipo <span v-if="sortedColumn == 'type'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+        <th class="align-middle" @click="sortByColumn('type_id')">Tipo <span v-if="sortedColumn == 'type'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
         <th class="align-middle" @click="sortByColumn('blocked')">Bloqueado<span v-if="sortedColumn == 'blocked'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
         <th></th>
         <th></th>
@@ -151,7 +180,7 @@ onMounted(async ()=>{
         </td>
         <td class="align-middle">{{ user.name }}</td>
         <td class="align-middle">{{ user.email }}</td>
-        <td class="align-middle">{{ user.type == "A" ? "Admin" : "Secretariado" }}</td>
+        <td class="align-middle">{{ getUserCategoryName(user.type_id) }}</td>
         <td class="align-middle">{{ user.blocked == 0 ? "Não" : "Sim"}}</td>
         <td class="text-end align-middle" v-if="showEditButton">
           <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id)">

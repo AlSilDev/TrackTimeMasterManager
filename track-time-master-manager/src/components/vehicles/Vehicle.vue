@@ -20,8 +20,10 @@
       return {
         id: null,
         model: '',
-        category: 'CL',
-        class: '',
+        class_id: null,
+        class: {
+          category_id: null
+        },
         license_plate: '',
         year: null,
         engine_capacity: null
@@ -54,15 +56,15 @@
           .then((response) => {
             vehicle.value = response.data.data
             originalValueStr = dataAsString()
-            toast.success('Vehicle #' + vehicle.value.id + ' was created successfully.')
+            toast.success('Veículo #' + vehicle.value.id + ' criado com sucesso')
             router.push({name: 'Vehicles'})
           })
           .catch((error) => {
             if (error.response.status == 422) {
-              toast.error('Vehicle was not created due to validation errors!')
+              toast.error('Veículo não criado devido a erros de validação')
               errors.value = error.response.data.errors
             } else {
-              toast.error('Vehicle was not created due to unknown server error!')
+              toast.error('Veículo não criado devido a erro de servidor desconhecido')
             }
           })
       }else{
@@ -70,12 +72,12 @@
         .then((response) => {
           vehicle.value = response.data.data
           originalValueStr = dataAsString()
-          toast.success('Vehicle #' + vehicle.value.id + ' was updated successfully.')
+          toast.success('Veículo #' + vehicle.value.id + ' atualizado com sucesso')
           router.push({name: 'Vehicles'})
         })
         .catch((error) => {
           if (error.response.status == 422) {
-              toast.error('Vehicle #' + props.id + ' was not updated due to validation errors!')
+              toast.error('Veículo #' + props.id + ' não atualizado devido a erros de validação')
               errors.value = error.response.data.errors
             } else {
               toast.error('Vehicle #' + props.id + ' was not updated due to unknown server error!')
@@ -105,7 +107,6 @@
     let newValueStr = dataAsString()
     if (originalValueStr != newValueStr) {
       nextCallBack = next
-      confirmationLeaveDialog.value.show()
     } else {
       next()
     }
@@ -113,7 +114,6 @@
 
   const vehicle = ref(newVehicle())
   const errors = ref(null)
-  const confirmationLeaveDialog = ref(null)
 
   watch(
     () => props.id,
@@ -126,14 +126,6 @@
 </script>
 
 <template>
-  <confirmation-dialog
-    ref="confirmationLeaveDialog"
-    confirmationBtn="Discard changes and leave"
-    msg="Do you really want to leave? You have unsaved changes!"
-    @confirmed="leaveConfirmed"
-  >
-  </confirmation-dialog>  
-
   <vehicle-detail
     :operationType="operation"
     :vehicle="vehicle"

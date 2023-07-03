@@ -1,12 +1,14 @@
 <script setup>
 import { ref, inject, onMounted } from "vue";
 import { useUserStore } from "../../stores/user.js"
+import { useRouter } from "vue-router";
 import avatarNoneUrl from '@/assets/avatar-none.png'
-import { BIconArrowLeft } from "bootstrap-icons-vue";
+import { BIconArrowUp, BIconArrowDown, BIconSearch, BIconPencil } from "bootstrap-icons-vue";
 
 const axios = inject('axios')
 const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
+const router = useRouter()
 
 const props = defineProps({
   showId: {
@@ -47,9 +49,9 @@ const photoFullUrl = (user) => {
     : avatarNoneUrl;
 };
 
-const editClick = (user) => {
-  emit("edit", user);
-};
+const editVehicles = (vehicle) => {
+  router.push({ name: 'Vehicle', params: { id: vehicle.id } })
+}
 
 const canViewUserDetail = (userId) => {
   if (!userStore.user) {
@@ -112,8 +114,8 @@ onMounted(async ()=>{
       <select class="form-select" id="inputGroupSelect01" ref="attribute">
         <option value="" selected>Escolher Atributo...</option>
         <option value="model">Modelo</option>
-        <option value="category">Categoria</option>
-        <option value="class">Classe</option>
+        <option value="vehicle_categories.name">Categoria</option>
+        <option value="vehicle_classes.name">Classe</option>
         <option value="license_plate">Matrícula</option>
         <option value="year">Ano</option>
       </select>
@@ -131,6 +133,7 @@ onMounted(async ()=>{
         <th class="align-middle" @click="sortByColumn('license_plate')">Matrícula <span v-if="sortedColumn == 'license_plate'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
         <th class="align-middle" @click="sortByColumn('year')">Ano <span v-if="sortedColumn == 'year'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
         <th class="align-middle" @click="sortByColumn('engine_capacity')">Cilindrada (cm3) <span v-if="sortedColumn == 'engine_capacity'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+        <th v-if="userStore.user.type_id == 1 || userStore.user.type_id == 2"></th>
       </tr>
     </thead>
     <tbody>
@@ -141,6 +144,15 @@ onMounted(async ()=>{
         <td class="align-middle">{{ vehicle.license_plate }}</td>
         <td class="align-middle">{{ vehicle.year }}</td>
         <td class="align-middle">{{ vehicle.engine_capacity }}</td>
+        <td class="text-end align-middle" v-if="userStore.user.type_id == 1 || userStore.user.type_id == 2">
+            <button
+              class="btn btn-xs btn-light"
+              @click="editVehicles(vehicle)"
+              title="Editar"
+            >
+              <BIconPencil/>
+            </button>
+        </td>
       </tr>
     </tbody>
   </table>

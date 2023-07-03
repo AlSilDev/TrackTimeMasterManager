@@ -2,6 +2,7 @@
   import { ref, computed, onMounted, inject } from 'vue'
   import {useRouter} from 'vue-router'
   import DriverTable from "./DriverTable.vue"
+  import {BIconPlus} from "bootstrap-icons-vue"
   
   const router = useRouter()
 
@@ -34,7 +35,7 @@
   <h3 class="mt-5 mb-3">Concorrentes</h3>
   <div class="container">
     <div class="d-flex justify-content-between">
-      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addDriver">Novo Concorrente</button></div>
+      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addDriver"><BIconPlus/> Novo Concorrente</button></div>
       <!--div class="col-sm"><button type="button" class="btn btn-dark">Importar Concorrente(s)</button></div>
       <div-- class="col-sm"><button type="button" class="btn btn-dark">Exportar Concorrente(s)</button></div-->
     </div>
