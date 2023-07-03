@@ -75,6 +75,27 @@
           }
         })
     }
+    else
+    {
+      console.log("PUT Method", editingStageRunValue)
+      axios.put(`stageRuns/${props.stage_run_id}`, editingStageRunValue)
+      .then((response) => {
+        //console.log(response.data.data)
+        stageRun.value = response.data.data
+        toast.success('Partida #' + stageRun.value.id + ' foi atualizada com sucesso!')
+        //TODO
+        router.push({name: 'Stages', params: { event_id: props.event_id }})
+      })
+      .catch((error) => {
+        console.error(error)
+        if (error.response.status == 422) {
+            toast.error('Partida #' + props.stageRun + ' não atualizada devido a erros de validação!')
+            errors.value = error.response.data.errors
+          } else {
+            toast.error('Partida #' + props.stageRun + ' não atualizada devido a erro desconhecido!')
+          }
+      })
+    }
   }
 
   const cancel = () => {
