@@ -89,6 +89,11 @@ const loadStageRuns = (stage) => {
   console.log(`stage ${stage.id}`, stage)
 }
 
+const editStageRun = (stage, stage_run) => {
+  console.log('stage run edit', stage_run)
+  router.push({ name: 'StageRun', params: { event_id: router.currentRoute.value.params['event_id'], stage_id: stage.id, stage_run_id: stage_run.id } })
+}
+
 const newStageRun = (stage) => {
   router.push({ name: 'NewStageRun', params: { event_id: router.currentRoute.value.params['event_id'], stage_id: stage.id } })
 }
@@ -138,6 +143,7 @@ onMounted(async ()=>{
                         <th class="align-middle">Partida #</th>
                         <th class="align-middle">Treino</th>
                         <th class="align-middle">Data de Início</th>
+                        <th class="align-middle"></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -145,6 +151,7 @@ onMounted(async ()=>{
                         <td class="align-middle">{{ run.run_num }}</td>
                         <td class="align-middle">{{ run.practice == 0 ? 'Não' : 'Sim' }}</td>
                         <td class="align-middle">{{ run.date_start }}</td>
+                        <td class="align-middle"><button class="btn btn-success" @click="editStageRun(stage, run)"><BIconPencilSquare></BIconPencilSquare></button></td>
                       </tr>
                     </tbody>
                   </table>
