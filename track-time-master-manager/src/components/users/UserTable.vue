@@ -1,12 +1,13 @@
 <script setup>
-import { inject, ref, onMounted } from "vue";
+import { inject, ref, onMounted, toDisplayString } from "vue";
 import { useUserStore } from "../../stores/user.js"
 import avatarNoneUrl from '@/assets/avatar-none.png'
-import { BIconSearch, BIconArrowUp, BIconArrowDown } from 'bootstrap-icons-vue'
+import { BIconSearch, BIconArrowUp, BIconArrowDown, BIconShieldSlash, BIconShieldSlashFill, BIconPencil } from 'bootstrap-icons-vue'
 
 const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
 const axios = inject('axios')
+const socket = inject("socket")
 
 const props = defineProps({
   showId: {
@@ -54,6 +55,25 @@ const editClick = (user) => {
 const changeBlockValue = (user) => {
   emit("changeBlockValue", user);
 };
+
+socket.on('userBlockValueChange', (user) => {
+    //console.log(`user ${user.id} blocked value updated`)
+    const userUpdatedIdx = laravelData.value.data.findIndex((element) => {return element.id == user.id})
+    //userUpdatedIdx->indice do user atualizado
+    //console.log(`user updated(${laravelData.value.data[userUpdatedIdx].id}) => ${laravelData.value.data[userUpdatedIdx].name}, ${laravelData.value.data[userUpdatedIdx].blocked}`);
+    //console.log("old: ", laravelData.value.data[userUpdatedIdx].blocked)
+    if (userUpdatedIdx != -1)
+    {
+      laravelData.value.data[userUpdatedIdx].blocked = user.blocked
+    }
+    //console.log("new: ", user.blocked)
+    //console.log(`user updated(${laravelData.value.data[userUpdatedIdx].id}) => ${laravelData.value.data[userUpdatedIdx].name}, ${laravelData.value.data[userUpdatedIdx].blocked}`);
+    //console.log("users", laravelData.value.data)
+    //console.log("user 1 (blocked)", laravelData.value.data[user.id-1].blocked)
+    //console.log("user 1 (blocked)", user.blocked)
+    //laravelData.value.data[user.id-1] = user
+    //console.log("user 1 (blocked)", laravelData.value.data[user.id-1].blocked)
+})
 
 const canViewUserDetailAndBlock = (userId) => {
   if (!userStore.user) {

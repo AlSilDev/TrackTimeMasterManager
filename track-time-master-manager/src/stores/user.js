@@ -5,6 +5,7 @@ import avatarNoneUrl from '@/assets/avatar-none.png'
 export const useUserStore = defineStore('user', () => {
     const axios = inject('axios')
     const serverBaseUrl = inject('serverBaseUrl')
+    const socket = inject("socket");
 
     const user = ref(null)
     const errors = ref(null)
@@ -81,6 +82,11 @@ export const useUserStore = defineStore('user', () => {
         try {
             console.log("User ID: " + user.id)
             await axios.patch('users/' + user.id + '/blocked', blockValue)
+            console.log("BlockValue: ", blockValue.blocked)
+            //socket.emit('userBlockValueChange', user);
+            //user.blocked = (user.blocked == 0 ? 1 : 0)
+            user.blocked = blockValue.blocked
+            socket.emit('userBlockValueChange', user);
             return true;
         } catch (error) {
             if (error.response.status == 422) {
@@ -89,6 +95,7 @@ export const useUserStore = defineStore('user', () => {
             return false
         }
     }
+
             
     async function changePassword (passwords) {
         errors.value = null
