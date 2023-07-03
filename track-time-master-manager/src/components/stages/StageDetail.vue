@@ -89,7 +89,7 @@ onMounted(()=>{
           />
         </div>
 
-        <div class="mb-3">
+        <!--div class="mb-3">
           <label for="inputNumRuns" class="form-label">Nº de Partidas</label>
           <input
             type="number"
@@ -102,7 +102,7 @@ onMounted(()=>{
           />
         </div>
 
-        <div class="mb-3">
+        <div-- class="mb-3">
           <label for="inputTimeUntilNextRunMins" class="form-label">Minutos até partida seguinte</label>
           <input
             type="number"
@@ -113,7 +113,7 @@ onMounted(()=>{
             required
             v-model="editingStage.time_until_next_run_mins"
           />
-        </div>
+        </div-->
         
       </div>
     </div>

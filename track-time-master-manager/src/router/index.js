@@ -128,7 +128,8 @@ const router = createRouter({
       component: Stage,
       //props: true
       // Replaced with the following line to ensure that id is a number
-      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.event_id) })
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id) })
+    },
     },
     {
       path: '/backend/events/categories',

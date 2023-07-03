@@ -25,8 +25,8 @@
         id: null,
         name: '',
         date_start: Date,
-        num_runs: null,
-        time_until_next_run_mins: null,
+        //num_runs: null,
+        //time_until_next_run_mins: null,
       }
   }
 
@@ -35,8 +35,7 @@
   const loadStage = (stage_id) => {    
       errors.value = null
       if (!stage_id || (stage_id < 0)) {
-        stage.value = newStage
-    ()
+        stage.value = newStage()
       } else {
         axios.get(`stages/${stage_id}`)
           .then((response) => {
@@ -50,6 +49,7 @@
   }
 
   const save = (editingStageValue) => {
+    console.log('event_id', props.event_id)
     errors.value = null
     if (operation.value == "insert")
     {
@@ -106,7 +106,11 @@
   onMounted(()=>{
     console.log('params', router.currentRoute.value.params)
     console.log('stage_id', router.currentRoute.value.params['stage_id'])
-    console.log('props.stage_id', props.stage_id)
+    setTimeout(()=>{
+      console.log('props.event_id', props.event_id)
+      console.log('props.stage_id', props.stage_id)
+    }, 1000)
+    
   })
 
 </script>

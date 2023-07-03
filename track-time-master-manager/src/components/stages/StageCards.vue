@@ -3,7 +3,7 @@ import { inject, ref, onMounted } from "vue";
 import { useUserStore } from "../../stores/user.js"
 import {useRouter} from 'vue-router'
 import avatarNoneUrl from '@/assets/avatar-none.png'
-import { BIconPencilSquare, BIconSearch } from 'bootstrap-icons-vue'
+import { BIconClock, BIconPencilSquare, BIconPlus, BIconSearch } from 'bootstrap-icons-vue'
 
 const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
@@ -45,6 +45,7 @@ const props = defineProps({
 const stages = ref({})
 
 const editStage = (stage) => {
+  console.log('stage cards id', stage.id)
   router.push({ name: 'Stage', params: { event_id: router.currentRoute.value.params['event_id'], stage_id: stage.id } })
 }
 
@@ -84,7 +85,7 @@ onMounted(async ()=>{
 </script>
 
 <template>
-  <div>
+  <!--div>
     <table class="table table-striped table-hover">
       <thead class="table-dark" style="cursor: pointer">
         <tr>
@@ -101,7 +102,22 @@ onMounted(async ()=>{
         </tr>
       </tbody>
     </table>
-  </div>
+  </div-->
+
+  <div class="accordion" :id="`stage${stage.id}`" v-for="stage in stages">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" :data-bs-target="`#collapseStage${stage.id}`" aria-expanded="true" :aria-controls="`collapseStage${stage.id}`">
+                    Etapa #{{ stage.id }}
+                </button>
+            </h2>
+            <div :id="`collapseStage${stage.id}`" class="accordion-collapse collapse" :data-bs-parent="`#stage${stage.id}`">
+                <div class="accordion-body">
+                  <p>Nome da Etapa: {{ stage.name }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
