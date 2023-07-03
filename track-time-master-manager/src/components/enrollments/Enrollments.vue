@@ -287,7 +287,7 @@ const exportList = async (listName)=>{
     var element = document.getElementById(`pdf-${listName}`);
     var opt = {
         margin:       2,
-        filename:     `INSCRITOS_${event.value.name}_${date.getFullYear()}${date.getMonth()+1}${date.getDate()}${date.getHours()}${date.getMinutes()}.pdf`,
+        filename:     `${listName.toUpperCase()}_${event.value.name}_${date.getFullYear()}${date.getMonth()+1}${date.getDate()}${date.getHours()}${date.getMinutes()}.pdf`,
         image:        { type: 'png' },
         html2canvas:  { scale: 4, letterRendering: true },
         //html2canvas:  { scale: 2 },
