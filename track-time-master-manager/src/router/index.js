@@ -21,6 +21,7 @@ import UserCategory from "../components/userCategories/UserCategory.vue"
 import PublicPage from '../components/publicPage/PublicPage.vue'
 import Stages from "../components/stages/Stages.vue"
 import Stage from "../components/stages/Stage.vue"
+import StageRun from "../components/stage_runs/StageRun.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -128,6 +129,12 @@ const router = createRouter({
       component: Stage,
       //props: true
       // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id) })
+    },
+    {
+      path: '/backend/events/:event_id/stages/:stage_id/stage_runs/new',
+      name: 'NewStageRun',
+      component: StageRun,
       props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id) })
     },
     },
