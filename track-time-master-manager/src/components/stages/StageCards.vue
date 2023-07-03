@@ -79,8 +79,24 @@ const deleteStage = async (stage) => {
     })
 }
 
+const loadStageRuns = (stage) => {
+  axios.get(`stages/${stage.id}/runs`)
+  .then((response)=>{
+    console.log(`stage ${stage.id} response`, response.data)
+    stage.runs = response.data
+  })
+
+  console.log(`stage ${stage.id}`, stage)
+}
+
+const newStageRun = (stage) => {
+  router.push({ name: 'NewStageRun', params: { event_id: router.currentRoute.value.params['event_id'], stage_id: stage.id } })
+}
 onMounted(async ()=>{
   await loadStages()
+  stages.value.forEach(element => {
+    loadStageRuns(element)
+  });
 })
 </script>
 
@@ -115,6 +131,23 @@ onMounted(async ()=>{
                 <div class="accordion-body">
                   <p>Nome da Etapa: {{ stage.name }}</p>
                   <p><button class="btn btn-success" @click="editStage(stage)"><BIconPencilSquare></BIconPencilSquare> Editar Etapa</button></p>
+                  <p><button class="btn btn-success" @click="newStageRun(stage)"><BIconPlus></BIconPlus> Nova Partida</button></p>
+                  <table class="table table-striped table-hover">
+                    <thead class="table-dark" style="cursor: pointer">
+                      <tr>
+                        <th class="align-middle">Partida #</th>
+                        <th class="align-middle">Treino</th>
+                        <th class="align-middle">Data de Início</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="run in stage.runs" :key="run.id">
+                        <td class="align-middle">{{ run.run_num }}</td>
+                        <td class="align-middle">{{ run.practice == 0 ? 'Não' : 'Sim' }}</td>
+                        <td class="align-middle">{{ run.date_start }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
             </div>
         </div>
