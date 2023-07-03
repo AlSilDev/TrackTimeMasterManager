@@ -160,6 +160,9 @@ onMounted(async ()=>{
           <div class="d-flex justify-content-center">
             <button v-if="havePermissionsAdminSecVerTec()" @click="router.push({ name: 'Enrollments', params: { id: event.id } })" class="btn btn-primary w-100">Inscrições</button>
           </div>
+          <div class="d-flex justify-content-center">
+            <button v-if="isAdmin()" @click="router.push({ name: 'Stages', params: { event_id: event.id } })" class="btn btn-primary">Etapas</button>
+          </div>
           <div class="d-flex justify-content-between">
             <button v-if="havePermissionsAdminSec()" @click="editEvent(event)" class="btn btn-primary d-flex justify-content-start">Editar</button>
             <button v-if="havePermissionsAdminSec()" @click="deleteEvent(event)" class="btn btn-danger d-flex justify-content-end">Cancelar</button>

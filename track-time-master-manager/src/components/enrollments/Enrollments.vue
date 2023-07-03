@@ -30,15 +30,17 @@ const loadEvent = async ()=>{
     await axios.get(`events/${props.id}`)
     .then((response)=>{
         event.value = response.data.data
-        /*
+        
         console.log(event.value)
         console.log('date_start_enrollments: ', Date.parse(event.value.date_start_enrollments).valueOf())
         console.log('date_now: ', Date.now())
         console.log('date_end_enrollments: ', Date.parse(event.value.date_end_enrollments).valueOf())
-        */
-        enrollOpen.value = Date.parse(event.value.date_start_enrollments).valueOf() < Date.now() && Date.parse(event.value.date_end_enrollments).valueOf() > Date.now()
-        //console.log('enrollments open: ', enrollOpen.value)
+        console.log('date_start_event: ', Date.parse(event.value.date_start_event).valueOf())
+        
+        enrollOpen.value = Date.parse(event.value.date_start_enrollments).valueOf() < Date.now() && Date.parse(event.value.date_end_enrollments).valueOf()  > Date.now()
+        console.log('enrollments open: ', enrollOpen.value)
         eventStarted.value = Date.parse(event.value.date_start_event).valueOf() < Date.now()
+        console.log('event started', eventStarted.value)
         eventEnded.value = Date.parse(event.value.date_end_event).valueOf() > Date.now()
     })
     .catch((error)=>{
@@ -55,7 +57,7 @@ const loadDriversByName = async ()=>{
     await axios.get(`drivers/canDrive/byName/${props.id}/${driverName.value.value}`)
     .then((response)=>{
         drivers.value = response.data
-        //console.log(drivers.value)
+        console.log(drivers.value)
     })
     .catch((error)=>{
         console.error(error)
@@ -473,7 +475,7 @@ const exportList = async (listName)=>{
     var element = document.getElementById(`pdf-${listName}`);
     var opt = {
         margin:       2,
-        filename:     `INSCRITOS_${event.value.name}_${date.getFullYear()}${date.getMonth()+1}${date.getDate()}${date.getHours()}${date.getMinutes()}.pdf`,
+        filename:     `${listName.toUpperCase()}_${event.value.name}_${date.getFullYear()}${date.getMonth()+1}${date.getDate()}${date.getHours()}${date.getMinutes()}.pdf`,
         image:        { type: 'png' },
         html2canvas:  { scale: 4, letterRendering: true },
         //html2canvas:  { scale: 2 },
@@ -681,7 +683,7 @@ const updateTVNotes = async(VT_Id, VT_Notes) => {
         <div id="pdf-enrollments" hidden>
             <h2>Lista de Inscritos</h2>
             <br>
-            <table class="table table-hover table-striped" style="font-size: 8pt;">
+            <table class="table table-hover table-striped table-sm" style="font-size: 8pt;">
                 <thead class="table-dark" style="cursor: pointer">
                     <tr>
                         <th class="align-middle">Nº</th>
@@ -866,7 +868,7 @@ const updateTVNotes = async(VT_Id, VT_Notes) => {
         <div id="pdf-participants" hidden>
             <h2>Lista de Participantes</h2>
             <br>
-            <table class="table table-hover table-striped" style="font-size: 8pt;">
+            <table class="table table-hover table-striped table-sm" style="font-size: 8pt;">
                 <thead class="table-dark" style="cursor: pointer">
                     <tr>
                         <th class="align-middle">Nº</th>
