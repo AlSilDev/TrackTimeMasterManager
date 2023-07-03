@@ -508,7 +508,7 @@ const flag = (country)=>{
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="eventParticipant in participants" :key="eventParticipant.id">
+                    <tr v-for="eventParticipant in eventParticipants" :key="eventParticipant.id">
                         <td class="align-middle">{{ eventParticipant.run_order }}</td>
                         <td class="align-middle">{{ eventParticipant.first_driver_name }}</td>
                         <td class="align-middle">{{ eventParticipant.first_driver_license }}</td>
