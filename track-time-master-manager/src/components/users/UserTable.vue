@@ -75,6 +75,14 @@ socket.on('userBlockValueChange', (user) => {
     //console.log("user 1 (blocked)", laravelData.value.data[user.id-1].blocked)
 })
 
+socket.on('updateUser', (userUpdated) => {
+    const userUpdatedIdx = laravelData.value.data.findIndex((element) => {return element.id == userUpdated.id})
+    if (userUpdatedIdx != -1)
+    {
+      laravelData.value.data[userUpdatedIdx] = userUpdated
+    }
+})
+
 const canViewUserDetailAndBlock = (userId) => {
   if (!userStore.user) {
     return false

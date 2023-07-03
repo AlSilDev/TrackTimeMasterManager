@@ -123,7 +123,6 @@
   }
 
   socket.on('updateUser', (userUpdated) => {
-    console.log("User updated: ", userUpdated)
     user.value = userUpdated
   })
 

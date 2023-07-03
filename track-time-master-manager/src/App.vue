@@ -12,6 +12,7 @@ const axios = inject("axios")
 const toast = inject("toast")
 const userStore = useUserStore()
 const buttonSidebarExpand = ref(null)
+const socket = inject("socket")
 
 const logout = async () => {
   if (await userStore.logout()) {
@@ -61,6 +62,14 @@ watch (
     isBackendPage();
   }
 )
+
+socket.on('updateUser', (userUpdated) => {
+  if (userStore.user.id == userUpdated.id)
+  {
+    userStore.user = userUpdated
+  }
+})
+
 </script>
 
 <template>
