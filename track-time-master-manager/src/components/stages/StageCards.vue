@@ -101,6 +101,11 @@ const newStageRun = (stage) => {
 const raceStartTimes = (stage, stage_run) => {
   router.push({ name: 'RaceStart', params: { event_id: router.currentRoute.value.params['event_id'], stage_id: stage.id, stage_run_id: stage_run.id } })
 }
+
+const raceTimeControl = (stage, stage_run) => {
+  router.push({ name: 'RaceTimeControl', params: { event_id: router.currentRoute.value.params['event_id'], stage_id: stage.id, stage_run_id: stage_run.id } })
+}
+
 onMounted(async ()=>{
   await loadStages()
   stages.value.forEach(element => {
@@ -149,6 +154,7 @@ onMounted(async ()=>{
                         <th class="align-middle">Data de Início</th>
                         <th class="align-middle"></th>
                         <th class="align-middle"></th>
+                        <th class="align-middle"></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -158,6 +164,7 @@ onMounted(async ()=>{
                         <td class="align-middle">{{ run.date_start }}</td>
                         <td class="align-middle"><button class="btn btn-success" @click="editStageRun(stage, run)"><BIconPencilSquare></BIconPencilSquare></button></td>
                         <td class="align-middle"><button class="btn btn-success" @click="raceStartTimes(stage, run)"><BIconClock></BIconClock> Partidas</button></td>
+                        <td class="align-middle"><button class="btn btn-info" @click="raceTimeControl(stage, run)"><BIconClock></BIconClock> Tomada</button></td>
                       </tr>
                     </tbody>
                   </table>

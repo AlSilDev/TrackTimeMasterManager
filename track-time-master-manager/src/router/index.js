@@ -23,6 +23,7 @@ import Stages from "../components/stages/Stages.vue"
 import Stage from "../components/stages/Stage.vue"
 import StageRun from "../components/stage_runs/StageRun.vue"
 import RaceStart from "../components/race_start/RaceStart.vue"
+import RaceTimeControl from "../components/race_time_control/RaceTimeControl.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -150,6 +151,14 @@ const router = createRouter({
       path: '/backend/events/:event_id/stages/:stage_id/stage_runs/:stage_run_id/race_start',
       name: 'RaceStart',
       component: RaceStart,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id), stage_run_id: parseInt(route.params.stage_run_id) })
+    },
+    {
+      path: '/backend/events/:event_id/stages/:stage_id/stage_runs/:stage_run_id/race_time_control',
+      name: 'RaceTimeControl',
+      component: RaceTimeControl,
       //props: true
       // Replaced with the following line to ensure that id is a number
       props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id), stage_run_id: parseInt(route.params.stage_run_id) })
