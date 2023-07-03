@@ -29,15 +29,17 @@ const loadEvent = async ()=>{
     await axios.get(`events/${props.id}`)
     .then((response)=>{
         event.value = response.data.data
-        /*
+        
         console.log(event.value)
         console.log('date_start_enrollments: ', Date.parse(event.value.date_start_enrollments).valueOf())
         console.log('date_now: ', Date.now())
         console.log('date_end_enrollments: ', Date.parse(event.value.date_end_enrollments).valueOf())
-        */
-        enrollOpen.value = Date.parse(event.value.date_start_enrollments).valueOf() < Date.now() && Date.parse(event.value.date_end_enrollments).valueOf() > Date.now()
-        //console.log('enrollments open: ', enrollOpen.value)
+        console.log('date_start_event: ', Date.parse(event.value.date_start_event).valueOf())
+        
+        enrollOpen.value = Date.parse(event.value.date_start_enrollments).valueOf() < Date.now() && Date.parse(event.value.date_end_enrollments).valueOf()  > Date.now()
+        console.log('enrollments open: ', enrollOpen.value)
         eventStarted.value = Date.parse(event.value.date_start_event).valueOf() < Date.now()
+        console.log('event started', eventStarted.value)
         eventEnded.value = Date.parse(event.value.date_end_event).valueOf() > Date.now()
     })
     .catch((error)=>{
