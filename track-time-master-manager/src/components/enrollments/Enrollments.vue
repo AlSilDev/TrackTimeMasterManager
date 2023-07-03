@@ -51,10 +51,10 @@ const drivers = ref([])
 
 const loadDriversByName = async ()=>{
     //console.log('driver name: ' + driverName.value.value)
-    await axios.get(`drivers/byName/${driverName.value.value}`)
+    await axios.get(`drivers/canDrive/byName/${event.value.id}/${driverName.value.value}`)
     .then((response)=>{
         drivers.value = response.data
-        //console.log(drivers.value)
+        console.log(drivers.value)
     })
     .catch((error)=>{
         console.error(error)
@@ -65,7 +65,7 @@ const loadDriversByName = async ()=>{
 const licensePlate = ref('')
 const vehicles = ref('')
 const loadVehiclesByLicensePlate = async ()=>{
-    await axios.get(`vehicles/byLicensePlate/${licensePlate.value.value}`)
+    await axios.get(`vehicles/canRun/byLicensePlate/${event.value.id}/${licensePlate.value.value}`)
     .then((response)=>{
         vehicles.value = response.data
         //console.log(vehicles.value)
