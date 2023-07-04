@@ -137,7 +137,7 @@ onMounted(async ()=>{
   <div class="accordion" :id="`stage${stage.id}`" v-for="stage in stages">
         <div class="accordion-item">
             <h2 class="accordion-header">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" :data-bs-target="`#collapseStage${stage.id}`" aria-expanded="true" :aria-controls="`collapseStage${stage.id}`">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="`#collapseStage${stage.id}`" aria-expanded="false" :aria-controls="`collapseStage${stage.id}`">
                     Etapa #{{ stage.id }}
                 </button>
             </h2>
