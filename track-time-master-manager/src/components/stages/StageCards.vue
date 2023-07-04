@@ -3,7 +3,7 @@ import { inject, ref, onMounted } from "vue";
 import { useUserStore } from "../../stores/user.js"
 import {useRouter} from 'vue-router'
 import avatarNoneUrl from '@/assets/avatar-none.png'
-import { BIconClock, BIconPencilSquare, BIconPlus, BIconSearch } from 'bootstrap-icons-vue'
+import { BIconClock, BIconPencilSquare, BIconPlus, BIconSearch, BIconTable } from 'bootstrap-icons-vue'
 
 const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
@@ -106,6 +106,14 @@ const raceTimeControl = (stage, stage_run) => {
   router.push({ name: 'RaceTimeControl', params: { event_id: router.currentRoute.value.params['event_id'], stage_id: stage.id, stage_run_id: stage_run.id } })
 }
 
+const runClassifications = (stage, stage_run) => {
+  router.push({ name: 'RunClassifications', params: { event_id: router.currentRoute.value.params['event_id'], stage_id: stage.id, stage_run_id: stage_run.id } })
+}
+
+const stageClassifications = (stage) => {
+  router.push({ name: 'StageClassifications', params: { event_id: router.currentRoute.value.params['event_id'], stage_id: stage.id } })
+}
+
 onMounted(async ()=>{
   await loadStages()
   stages.value.forEach(element => {
@@ -146,12 +154,14 @@ onMounted(async ()=>{
                   <p>Nome da Etapa: {{ stage.name }}</p>
                   <p><button class="btn btn-success" @click="editStage(stage)"><BIconPencilSquare></BIconPencilSquare> Editar Etapa</button></p>
                   <p><button class="btn btn-success" @click="newStageRun(stage)"><BIconPlus></BIconPlus> Nova Partida</button></p>
+                  <p><button class="btn btn-info" @click="stageClassifications(stage)"><BIconTable></BIconTable> Classificações</button></p>
                   <table class="table table-striped table-hover">
                     <thead class="table-dark" style="cursor: pointer">
                       <tr>
                         <th class="align-middle">Partida #</th>
                         <th class="align-middle">Treino</th>
                         <th class="align-middle">Data de Início</th>
+                        <th class="align-middle"></th>
                         <th class="align-middle"></th>
                         <th class="align-middle"></th>
                         <th class="align-middle"></th>
@@ -165,6 +175,7 @@ onMounted(async ()=>{
                         <td class="align-middle"><button class="btn btn-success" @click="editStageRun(stage, run)"><BIconPencilSquare></BIconPencilSquare></button></td>
                         <td class="align-middle"><button class="btn btn-success" @click="raceStartTimes(stage, run)"><BIconClock></BIconClock> Partidas</button></td>
                         <td class="align-middle"><button class="btn btn-info" @click="raceTimeControl(stage, run)"><BIconClock></BIconClock> Tomada</button></td>
+                        <td class="align-middle"><button class="btn btn-info" @click="runClassifications(stage, run)"><BIconTable></BIconTable> Classificações</button></td>
                       </tr>
                     </tbody>
                   </table>
