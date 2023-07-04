@@ -25,6 +25,7 @@ import StageRun from "../components/stage_runs/StageRun.vue"
 import RaceStart from "../components/race_start/RaceStart.vue"
 import RaceTimeControl from "../components/race_time_control/RaceTimeControl.vue"
 import Classifications from "../components/classifications/Classifications.vue"
+import EventClassifications from "../components/classifications/EventClassifications.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -108,6 +109,14 @@ const router = createRouter({
       path: '/backend/events/new',
       name: 'NewEvent',
       component: Event,
+    },
+    {
+      path: '/backend/events/:event_id/classifications',
+      name: 'EventClassifications',
+      component: EventClassifications,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), c_type: 'event' })
     },
     {
       path: '/backend/events',
