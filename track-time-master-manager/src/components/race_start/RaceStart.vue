@@ -19,6 +19,16 @@ const props = defineProps({
     }
 })
 
+const parseDates = (element) => {
+    element.start_date = new Date(element.start_date)
+    element.end_date = new Date(element.end_date)
+    element.time_split = {}
+    element.time_split.hours = element.start_date.getHours()
+    element.time_split.minutes = element.start_date.getMinutes()
+    element.time_split.seconds = element.start_date.getSeconds()
+    console.log(`element ${element.run_order}`, element)
+}
+
 const times = ref([])
 const loadTimesRun = (stage_run_id) => {
     axios.get(`stageRuns/${stage_run_id}/times`)
@@ -26,13 +36,7 @@ const loadTimesRun = (stage_run_id) => {
         console.log(response)
         times.value = response.data
         times.value.forEach((element) => {
-            element.start_date = new Date(element.start_date)
-            element.time_split = {}
-            element.time_split.hours = element.start_date.getHours()
-            element.time_split.minutes = element.start_date.getMinutes()
-            element.time_split.seconds = element.start_date.getSeconds()
-            //element.time_split.milliseconds = element.start_date.getMilliseconds()
-            console.log(`element ${element.run_order}`, element)
+            parseDates(element)
         })
     })
     .catch((error)=>{
@@ -65,6 +69,8 @@ const saveTime = (time) => {
     axios.put(`stageRuns/${props.stage_run_id}/times/${time.id}/start`, time_to_save)
     .then((response) => {
         console.log(response)
+        parseDates(response.data.data)
+        times.value[time.run_order - 1] = response.data.data
         toast.success(`O tempo do participante #${time.run_order} foi alterado com sucesso.`)
     })
     .catch((error) => {
