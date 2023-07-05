@@ -133,38 +133,41 @@ onMounted(async ()=>{
     </div>
   </div>
 
-  <table class="table table-hover table-striped">
-    <thead class="table-dark" style="cursor: pointer">
-      <tr>
-        <th class="align-middle" @click="sortByColumn('model')">Modelo <span v-if="sortedColumn == 'model'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('category')">Categoria <span v-if="sortedColumn == 'category'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('class')">Classe <span v-if="sortedColumn == 'class'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('license_plate')">Matrícula <span v-if="sortedColumn == 'license_plate'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('year')">Ano <span v-if="sortedColumn == 'year'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('engine_capacity')">Cilindrada (cm3) <span v-if="sortedColumn == 'engine_capacity'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th v-if="userStore.user.type_id == 1 || userStore.user.type_id == 2"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="vehicle in laravelData.data" :key="vehicle.id">
-        <td class="align-middle">{{ vehicle.model }}</td>
-        <td class="align-middle">{{ vehicle.category }}</td>
-        <td class="align-middle">{{ vehicle.class }}</td>
-        <td class="align-middle">{{ vehicle.license_plate }}</td>
-        <td class="align-middle">{{ vehicle.year }}</td>
-        <td class="align-middle">{{ vehicle.engine_capacity }}</td>
-        <td class="text-end align-middle" v-if="userStore.user.type_id == 1 || userStore.user.type_id == 2">
-            <button
-              class="btn btn-xs btn-light"
-              @click="editVehicles(vehicle)"
-              title="Editar"
-            >
-              <BIconPencil/>
-            </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table table-hover table-striped">
+      <thead class="table-dark" style="cursor: pointer">
+        <tr>
+          <th class="align-middle" @click="sortByColumn('model')">Modelo <span v-if="sortedColumn == 'model'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('category')">Categoria <span v-if="sortedColumn == 'category'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('class')">Classe <span v-if="sortedColumn == 'class'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('license_plate')">Matrícula <span v-if="sortedColumn == 'license_plate'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('year')">Ano <span v-if="sortedColumn == 'year'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('engine_capacity')">Cilindrada (cm3) <span v-if="sortedColumn == 'engine_capacity'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th v-if="userStore.user.type_id == 1 || userStore.user.type_id == 2"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="vehicle in laravelData.data" :key="vehicle.id">
+          <td class="align-middle">{{ vehicle.model }}</td>
+          <td class="align-middle">{{ vehicle.category }}</td>
+          <td class="align-middle">{{ vehicle.class }}</td>
+          <td class="align-middle">{{ vehicle.license_plate }}</td>
+          <td class="align-middle">{{ vehicle.year }}</td>
+          <td class="align-middle">{{ vehicle.engine_capacity }}</td>
+          <td class="text-end align-middle" v-if="userStore.user.type_id == 1 || userStore.user.type_id == 2">
+              <button
+                class="btn btn-xs btn-light"
+                @click="editVehicles(vehicle)"
+                title="Editar"
+              >
+                <BIconPencil/>
+              </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
 
   <div>
     <ul class="pagination" style="cursor: pointer">

@@ -90,16 +90,16 @@
           axios.post('events/' + props.id, formData, { headers: { 'Content-Type': 'multipart/form-data' }})
           .then((response) => {
             event.value = response.data.data
-            toast.success('Event #' + event.value.id + ' was updated successfully.')
+            toast.success('Evento #' + event.value.id + ' atualizado com sucesso.')
             socket.emit('updateEvent', event.value);
             router.push({name: 'Events'})
           })
           .catch((error) => {
             if (error.response.status == 422) {
-                toast.error('Event #' + props.id + ' was not updated due to validation errors!')
+                toast.error('Evento #' + props.id + ' não atualizado devido a erros de validação.')
                 errors.value = error.response.data.errors
               } else {
-                toast.error('Event #' + props.id + ' was not updated due to unknown server error!')
+                toast.error('Evento #' + props.id + ' não atualizado devido a erro desconhecido.')
               }
           })
         }

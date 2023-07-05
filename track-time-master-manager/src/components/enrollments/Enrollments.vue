@@ -490,7 +490,7 @@ const updateRunOrder = async ()=>{
         socket.emit('changeRunOrdersOfEventEnrollments', updatedValues);
     })
     .catch((error)=>{
-        toast.success("Problemas ao altera.")
+        toast.error("Problemas ao alterar.")
     })
         
     //console.log('updated:', updatedValues)
@@ -706,32 +706,35 @@ const TVUpdateVehicle = (vehicle_id) => {
                             </div>
                         </div>
                         
-                        <table class="table table-hover table-striped" v-if="drivers.length != 0">
-                            <thead class="table-dark" style="cursor: pointer">
-                                <tr>
-                                    <th class="align-middle">Nome</th>
-                                    <th class="align-middle">Email</th>
-                                    <th class="align-middle">Nº de Licença</th>
-                                    <th class="align-middle">Validade da Licença</th>
-                                    <th class="align-middle">Nº de Telemóvel</th>
-                                    <th class="align-middle">Nº de Sócio</th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="driver in drivers" :key="driver.id">
-                                    <td class="align-middle">{{ driver.name }}</td>
-                                    <td class="align-middle">{{ driver.email }}</td>
-                                    <td class="align-middle">{{ driver.license_num }}</td>
-                                    <td class="align-middle">{{ driver.license_expiry }}</td>
-                                    <td class="align-middle">{{ driver.phone_num }}</td>
-                                    <td class="align-middle">{{ driver.affiliate_num }}</td>
-                                    <td><button class="btn btn-dark" @click="selectFirstDriver(driver)" v-if="driver.id != enrollment.first_driver_id">1º</button></td>
-                                    <td><button class="btn btn-dark" @click="selectSecondDriver(driver)" v-if="driver.id != enrollment.second_driver_id">2º</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="table-responsive table-wrapper">
+                            <table class="table table-hover table-striped" v-if="drivers.length != 0">
+                                <thead class="table-dark" style="cursor: pointer">
+                                    <tr>
+                                        <th class="align-middle">Nome</th>
+                                        <th class="align-middle">Email</th>
+                                        <th class="align-middle">Nº de Licença</th>
+                                        <th class="align-middle">Validade da Licença</th>
+                                        <th class="align-middle">Nº de Telemóvel</th>
+                                        <th class="align-middle">Nº de Sócio</th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="driver in drivers" :key="driver.id">
+                                        <td class="align-middle">{{ driver.name }}</td>
+                                        <td class="align-middle">{{ driver.email }}</td>
+                                        <td class="align-middle">{{ driver.license_num }}</td>
+                                        <td class="align-middle">{{ driver.license_expiry }}</td>
+                                        <td class="align-middle">{{ driver.phone_num }}</td>
+                                        <td class="align-middle">{{ driver.affiliate_num }}</td>
+                                        <td><button class="btn btn-dark" @click="selectFirstDriver(driver)" v-if="driver.id != enrollment.first_driver_id">1º</button></td>
+                                        <td><button class="btn btn-dark" @click="selectSecondDriver(driver)" v-if="driver.id != enrollment.second_driver_id">2º</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
                     </div>
                     <div>
                         <div class="mb-2 justify-content-center">
@@ -743,30 +746,33 @@ const TVUpdateVehicle = (vehicle_id) => {
                             </div>
                         </div>
 
-                        <table class="table table-hover table-striped" v-if="vehicles.length != 0">
-                            <thead class="table-dark" style="cursor: pointer">
-                                <tr>
-                                    <th class="align-middle">Matrícula</th>
-                                    <th class="align-middle">Modelo</th>
-                                    <th class="align-middle">Ano</th>
-                                    <th class="align-middle">Cilindrada (cm3)</th>
-                                    <th class="align-middle">Classe</th>
-                                    <th class="align-middle">Categoria</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="vehicle in vehicles" :key="vehicle.id">  
-                                    <td class="align-middle">{{ vehicle.license_plate }}</td>
-                                    <td class="align-middle">{{ vehicle.model }}</td>
-                                    <td class="align-middle">{{ vehicle.year }}</td>
-                                    <td class="align-middle">{{ vehicle.engine_capacity }}</td>
-                                    <td class="align-middle">{{ vehicle.class }}</td>
-                                    <td class="align-middle">{{ vehicle.category }}</td>
-                                    <td><button class="btn btn-dark" @click="selectVehicle(vehicle)" v-if="vehicle.id != enrollment.vehicle_id"><BIconArrowLeftCircleFill/></button></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="table-responsive table-wrapper">
+                            <table class="table table-hover table-striped" v-if="vehicles.length != 0">
+                                <thead class="table-dark" style="cursor: pointer">
+                                    <tr>
+                                        <th class="align-middle">Matrícula</th>
+                                        <th class="align-middle">Modelo</th>
+                                        <th class="align-middle">Ano</th>
+                                        <th class="align-middle">Cilindrada (cm3)</th>
+                                        <th class="align-middle">Classe</th>
+                                        <th class="align-middle">Categoria</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="vehicle in vehicles" :key="vehicle.id">  
+                                        <td class="align-middle">{{ vehicle.license_plate }}</td>
+                                        <td class="align-middle">{{ vehicle.model }}</td>
+                                        <td class="align-middle">{{ vehicle.year }}</td>
+                                        <td class="align-middle">{{ vehicle.engine_capacity }}</td>
+                                        <td class="align-middle">{{ vehicle.class }}</td>
+                                        <td class="align-middle">{{ vehicle.category }}</td>
+                                        <td><button class="btn btn-dark" @click="selectVehicle(vehicle)" v-if="vehicle.id != enrollment.vehicle_id"><BIconArrowLeftCircleFill/></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
                     </div>
                     <!--@click="enroll()"-->
                     <button class="btn btn-dark" @click="updateEnrollModalValues()" :disabled="!selected_first_driver || !selected_second_driver || !selected_vehicle" data-bs-toggle="modal" data-bs-target="#enrollModal">Efetuar Inscrição</button>
@@ -808,32 +814,35 @@ const TVUpdateVehicle = (vehicle_id) => {
     <div v-if="enrollments.length != 0 && !eventStarted">
         <div>
             <h2>Inscritos</h2>
-            <table class="table table-hover table-striped">
-                <thead class="table-dark" style="cursor: pointer">
-                    <tr>
-                        <th v-if="!enrollOpen && !eventStarted && havePermissionsS()" class="align-middle"></th>
-                        <th v-if="!enrollOpen && !eventStarted" class="align-middle"># Porta</th>
-                        <th class="align-middle"># Inscrição</th>
-                        <th class="align-middle">1º Condutor</th>
-                        <th class="align-middle">2º Condutor</th>
-                        <th class="align-middle">Modelo</th>
-                        <th class="align-middle">Matrícula</th>
-                        <th class="align-middle" v-if="havePermissionsS() && enrollOpen"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="eventEnrollment in enrollments" :key="eventEnrollment.id">
-                        <td v-if="!enrollOpen && !eventStarted && havePermissionsS()" class="align-middle"><button class="btn btn-link" :disabled="eventEnrollment.run_order==1 && enrollments[0].run_order==eventEnrollment.run_order" @click="sortRunOrder('up', eventEnrollment.id)"><BIconArrowUp/></button><button class="btn btn-link" :disabled="eventEnrollment.run_order==enrollments[enrollments.length-1].run_order" @click="sortRunOrder('down', eventEnrollment.id)"><BIconArrowDown/></button></td>
-                        <td v-if="!enrollOpen && !eventStarted" class="align-middle">{{ eventEnrollment.run_order }}</td>
-                        <td class="align-middle"> {{ eventEnrollment.enroll_order }}</td>
-                        <td class="align-middle">{{ eventEnrollment.first_driver_name }}</td>
-                        <td class="align-middle">{{ eventEnrollment.second_driver_name }}</td>
-                        <td class="align-middle">{{ eventEnrollment.vehicle_model }}</td>
-                        <td class="align-middle">{{ eventEnrollment.vehicle_license_plate }}</td>
-                        <td class="align-middle" v-if="havePermissionsS() && enrollOpen"><button class="btn btn-danger" @click="cancelEnrollment(eventEnrollment)"><BIconTrash/></button></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-dark" style="cursor: pointer">
+                        <tr>
+                            <th v-if="!enrollOpen && !eventStarted && havePermissionsS()" class="align-middle"></th>
+                            <th v-if="!enrollOpen && !eventStarted" class="align-middle"># Porta</th>
+                            <th class="align-middle"># Inscrição</th>
+                            <th class="align-middle">1º Condutor</th>
+                            <th class="align-middle">2º Condutor</th>
+                            <th class="align-middle">Modelo</th>
+                            <th class="align-middle">Matrícula</th>
+                            <th class="align-middle" v-if="havePermissionsS() && enrollOpen"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="eventEnrollment in enrollments" :key="eventEnrollment.id">
+                            <td v-if="!enrollOpen && !eventStarted && havePermissionsS()" class="align-middle"><button class="btn btn-link" :disabled="eventEnrollment.run_order==1 && enrollments[0].run_order==eventEnrollment.run_order" @click="sortRunOrder('up', eventEnrollment.id)"><BIconArrowUp/></button><button class="btn btn-link" :disabled="eventEnrollment.run_order==enrollments[enrollments.length-1].run_order" @click="sortRunOrder('down', eventEnrollment.id)"><BIconArrowDown/></button></td>
+                            <td v-if="!enrollOpen && !eventStarted" class="align-middle">{{ eventEnrollment.run_order }}</td>
+                            <td class="align-middle"> {{ eventEnrollment.enroll_order }}</td>
+                            <td class="align-middle">{{ eventEnrollment.first_driver_name }}</td>
+                            <td class="align-middle">{{ eventEnrollment.second_driver_name }}</td>
+                            <td class="align-middle">{{ eventEnrollment.vehicle_model }}</td>
+                            <td class="align-middle">{{ eventEnrollment.vehicle_license_plate }}</td>
+                            <td class="align-middle" v-if="havePermissionsS() && enrollOpen"><button class="btn btn-danger" @click="cancelEnrollment(eventEnrollment)"><BIconTrash/></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
             <div class="d-grid gap-3">
                 <button v-if="!enrollOpen && !eventStarted && havePermissionsS()" class="btn btn-dark" @click="updateRunOrder()">Guardar Alterações <BIconArrowLeftRight/></button>
                 <button class="btn btn-warning" @click="exportList('enrollments')">Exportar Lista de Inscritos <BIconDownload/></button>
@@ -879,34 +888,37 @@ const TVUpdateVehicle = (vehicle_id) => {
     <div v-if="enrollmentsAdminVerifications.length != 0 && eventStarted && havePermissionsS()">
         <div v-if="!enrollOpen && eventStarted">
             <h2>Inscritos - Verificações Administrativas</h2>
-            <table class="table table-hover table-striped">
-                <thead class="table-dark" style="cursor: pointer">
-                    <tr>
-                        <th class="align-middle"># Inscrição</th>
-                        <th class="align-middle"># Porta</th>
-                        <th class="align-middle">1º Condutor</th>
-                        <th class="align-middle">2º Condutor</th>
-                        <th class="align-middle">Modelo</th>
-                        <th class="align-middle">Matrícula</th>
-                        <th class="align-middle"></th>
-                        <th class="align-middle"></th>
-                        <th class="align-middle"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="eventEnrollmentsAdminVerification in enrollmentsAdminVerifications" :key="eventEnrollmentsAdminVerification.id">
-                        <td class="align-middle"> {{ eventEnrollmentsAdminVerification.enroll_order }}</td>
-                        <td class="align-middle"> {{ eventEnrollmentsAdminVerification.run_order }}</td>
-                        <td class="align-middle">{{ eventEnrollmentsAdminVerification.first_driver_name }}</td>
-                        <td class="align-middle">{{ eventEnrollmentsAdminVerification.second_driver_name }}</td>
-                        <td class="align-middle">{{ eventEnrollmentsAdminVerification.vehicle_model }}</td>
-                        <td class="align-middle">{{ eventEnrollmentsAdminVerification.vehicle_license_plate }}</td>
-                        <td class="align-middle"><button class="btn btn-success" title="Aprovar" @click="enrollApprovedVA(eventEnrollmentsAdminVerification, 1)"><BIconCheckLg/></button></td>
-                        <td class="align-middle"><button class="btn btn-danger" title="Reprovar" @click="enrollApprovedVA(eventEnrollmentsAdminVerification, 0)"><BIconXLg/></button></td>
-                        <td class="align-middle"><button class="btn btn-secondary" title="Ver/Editar Notas" @click="showNotesVA(eventEnrollmentsAdminVerification)" type="button" data-bs-toggle="modal" data-bs-target="#AVModal"><BIconPencil/></button></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-dark" style="cursor: pointer">
+                        <tr>
+                            <th class="align-middle"># Inscrição</th>
+                            <th class="align-middle"># Porta</th>
+                            <th class="align-middle">1º Condutor</th>
+                            <th class="align-middle">2º Condutor</th>
+                            <th class="align-middle">Modelo</th>
+                            <th class="align-middle">Matrícula</th>
+                            <th class="align-middle"></th>
+                            <th class="align-middle"></th>
+                            <th class="align-middle"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="eventEnrollmentsAdminVerification in enrollmentsAdminVerifications" :key="eventEnrollmentsAdminVerification.id">
+                            <td class="align-middle"> {{ eventEnrollmentsAdminVerification.enroll_order }}</td>
+                            <td class="align-middle"> {{ eventEnrollmentsAdminVerification.run_order }}</td>
+                            <td class="align-middle">{{ eventEnrollmentsAdminVerification.first_driver_name }}</td>
+                            <td class="align-middle">{{ eventEnrollmentsAdminVerification.second_driver_name }}</td>
+                            <td class="align-middle">{{ eventEnrollmentsAdminVerification.vehicle_model }}</td>
+                            <td class="align-middle">{{ eventEnrollmentsAdminVerification.vehicle_license_plate }}</td>
+                            <td class="align-middle"><button class="btn btn-success" title="Aprovar" @click="enrollApprovedVA(eventEnrollmentsAdminVerification, 1)"><BIconCheckLg/></button></td>
+                            <td class="align-middle"><button class="btn btn-danger" title="Reprovar" @click="enrollApprovedVA(eventEnrollmentsAdminVerification, 0)"><BIconXLg/></button></td>
+                            <td class="align-middle"><button class="btn btn-secondary" title="Ver/Editar Notas" @click="showNotesVA(eventEnrollmentsAdminVerification)" type="button" data-bs-toggle="modal" data-bs-target="#AVModal"><BIconPencil/></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
         </div>
     </div>
     <div v-else-if="eventStarted && havePermissionsS()">
@@ -952,35 +964,38 @@ const TVUpdateVehicle = (vehicle_id) => {
 
     <div v-if="enrollmentsTechnicalVerifications.length != 0 && eventStarted && havePermissionsVT()">
         <div v-if="!enrollOpen && eventStarted">
-            <h2>Inscritos - Verificações Técnias</h2>
-            <table class="table table-hover table-striped">
-                <thead class="table-dark" style="cursor: pointer">
-                    <tr>
-                        <th class="align-middle"># Inscrição</th>
-                        <th class="align-middle"># Porta</th>
-                        <th class="align-middle">1º Condutor</th>
-                        <th class="align-middle">2º Condutor</th>
-                        <th class="align-middle">Modelo</th>
-                        <th class="align-middle">Matrícula</th>
-                        <th class="align-middle"></th>
-                        <th class="align-middle"></th>
-                        <th class="align-middle"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="eventEnrollmentsTechnicalVerification in enrollmentsTechnicalVerifications" :key="eventEnrollmentsTechnicalVerification.id">
-                        <td class="align-middle"> {{ eventEnrollmentsTechnicalVerification.enroll_order }}</td>
-                        <td class="align-middle"> {{ eventEnrollmentsTechnicalVerification.run_order }}</td>
-                        <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.first_driver_name }}</td>
-                        <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.second_driver_name }}</td>
-                        <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.vehicle_model }}</td>
-                        <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.vehicle_license_plate }}</td>
-                        <td class="align-middle"><button class="btn btn-success" title="Aprovar" @click="enrollApprovedVT(eventEnrollmentsTechnicalVerification, 1)"><BIconCheckLg/></button></td>
-                        <td class="align-middle"><button class="btn btn-danger" title="Reprovar" @click="enrollApprovedVT(eventEnrollmentsTechnicalVerification, 0)"><BIconXLg/></button></td>
-                        <td class="align-middle"><button class="btn btn-secondary" title="Ver/Editar Notas" @click="showNotesVT(eventEnrollmentsTechnicalVerification)" type="button" data-bs-toggle="modal" data-bs-target="#TVModal"><BIconPencil/></button></td>
-                    </tr>
-                </tbody>
-            </table>
+            <h2>Inscritos - Verificações Técnicas</h2>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-dark" style="cursor: pointer">
+                        <tr>
+                            <th class="align-middle"># Inscrição</th>
+                            <th class="align-middle"># Porta</th>
+                            <th class="align-middle">1º Condutor</th>
+                            <th class="align-middle">2º Condutor</th>
+                            <th class="align-middle">Modelo</th>
+                            <th class="align-middle">Matrícula</th>
+                            <th class="align-middle"></th>
+                            <th class="align-middle"></th>
+                            <th class="align-middle"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="eventEnrollmentsTechnicalVerification in enrollmentsTechnicalVerifications" :key="eventEnrollmentsTechnicalVerification.id">
+                            <td class="align-middle"> {{ eventEnrollmentsTechnicalVerification.enroll_order }}</td>
+                            <td class="align-middle"> {{ eventEnrollmentsTechnicalVerification.run_order }}</td>
+                            <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.first_driver_name }}</td>
+                            <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.second_driver_name }}</td>
+                            <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.vehicle_model }}</td>
+                            <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.vehicle_license_plate }}</td>
+                            <td class="align-middle"><button class="btn btn-success" title="Aprovar" @click="enrollApprovedVT(eventEnrollmentsTechnicalVerification, 1)"><BIconCheckLg/></button></td>
+                            <td class="align-middle"><button class="btn btn-danger" title="Reprovar" @click="enrollApprovedVT(eventEnrollmentsTechnicalVerification, 0)"><BIconXLg/></button></td>
+                            <td class="align-middle"><button class="btn btn-secondary" title="Ver/Editar Notas" @click="showNotesVT(eventEnrollmentsTechnicalVerification)" type="button" data-bs-toggle="modal" data-bs-target="#TVModal"><BIconPencil/></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
         </div>
     </div>
     <div v-else-if="eventStarted && havePermissionsVT()">
@@ -1026,28 +1041,31 @@ const TVUpdateVehicle = (vehicle_id) => {
 
     <div v-if="eventParticipants.length != 0 && eventStarted">
         <h2>Participantes</h2>
-        <table class="table table-hover table-striped">
-            <thead class="table-dark" style="cursor: pointer">
-                <tr>
-                    <th class="align-middle"># Inscrição</th>
-                    <th class="align-middle"># Porta</th>
-                    <th class="align-middle">1º Condutor</th>
-                    <th class="align-middle">2º Condutor</th>
-                    <th class="align-middle">Modelo</th>
-                    <th class="align-middle">Matrícula</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="eventParticipant in eventParticipants" :key="eventParticipant.id">
-                    <td class="align-middle">{{ eventParticipant.enroll_order }}</td>
-                    <td class="align-middle">{{ eventParticipant.run_order }}</td>
-                    <td class="align-middle">{{ eventParticipant.first_driver_name }}</td>
-                    <td class="align-middle">{{ eventParticipant.second_driver_name }}</td>
-                    <td class="align-middle">{{ eventParticipant.vehicle_model }}</td>
-                    <td class="align-middle">{{ eventParticipant.vehicle_license_plate }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead class="table-dark" style="cursor: pointer">
+                    <tr>
+                        <th class="align-middle"># Inscrição</th>
+                        <th class="align-middle"># Porta</th>
+                        <th class="align-middle">1º Condutor</th>
+                        <th class="align-middle">2º Condutor</th>
+                        <th class="align-middle">Modelo</th>
+                        <th class="align-middle">Matrícula</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="eventParticipant in eventParticipants" :key="eventParticipant.id">
+                        <td class="align-middle">{{ eventParticipant.enroll_order }}</td>
+                        <td class="align-middle">{{ eventParticipant.run_order }}</td>
+                        <td class="align-middle">{{ eventParticipant.first_driver_name }}</td>
+                        <td class="align-middle">{{ eventParticipant.second_driver_name }}</td>
+                        <td class="align-middle">{{ eventParticipant.vehicle_model }}</td>
+                        <td class="align-middle">{{ eventParticipant.vehicle_license_plate }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
 
         <div id="pdf-participants" hidden>
             <h2>Lista de Participantes</h2>
@@ -1088,3 +1106,11 @@ const TVUpdateVehicle = (vehicle_id) => {
         <h6>Sem Participantes</h6>
     </div>
 </template>
+
+<style>
+.table-wrapper {
+  max-height: 300px;
+  overflow: auto;
+  /*display:inline-block;*/
+}
+</style>

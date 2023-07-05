@@ -73,7 +73,7 @@
         .then((response) => {
           vehicle.value = response.data.data
           originalValueStr = dataAsString()
-          toast.success('Veículo #' + vehicle.value.id + ' atualizado com sucesso')
+          toast.success('Veículo #' + vehicle.value.id + ' atualizado com sucesso.')
           vehicle.value.category = category.name
           vehicle.value.class = vehicle.value.class.name
           socket.emit('updateVehicle', vehicle.value);
@@ -82,10 +82,10 @@
         })
         .catch((error) => {
           if (error.response.status == 422) {
-              toast.error('Veículo #' + props.id + ' não atualizado devido a erros de validação')
+              toast.error('Veículo #' + props.id + ' não atualizado devido a erros de validação.')
               errors.value = error.response.data.errors
             } else {
-              toast.error('Vehicle #' + props.id + ' was not updated due to unknown server error!')
+              toast.error('Veículo #' + props.id + ' não atualizado devido a erro desconhecido.')
             }
         })
       }
