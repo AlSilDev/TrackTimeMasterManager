@@ -490,7 +490,7 @@ const updateRunOrder = async ()=>{
         socket.emit('changeRunOrdersOfEventEnrollments', updatedValues);
     })
     .catch((error)=>{
-        toast.success("Problemas ao altera.")
+        toast.error("Problemas ao alterar.")
     })
         
     //console.log('updated:', updatedValues)

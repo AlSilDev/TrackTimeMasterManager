@@ -98,13 +98,13 @@
         return
       }
       if (await userStore.changePassword(passwords.value)) {
-        toast.success("Password has been changed correctly!")
+        toast.success("Password atualizada com sucesso.")
         emit("changedPassword")
         router.back()
         
       } else {
         passwords.value.password_confirmation = ""
-        toast.error("Password has not been changed!")
+        toast.error("Password não atualizada.")
       }
   }
 
