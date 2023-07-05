@@ -155,30 +155,33 @@ onMounted(async ()=>{
                   <p><button class="btn btn-success" @click="editStage(stage)"><BIconPencilSquare></BIconPencilSquare> Editar Etapa</button></p>
                   <p><button class="btn btn-success" @click="newStageRun(stage)"><BIconPlus></BIconPlus> Nova Partida</button></p>
                   <p><button class="btn btn-info" @click="stageClassifications(stage)"><BIconTable></BIconTable> Classificações</button></p>
-                  <table class="table table-striped table-hover">
-                    <thead class="table-dark" style="cursor: pointer">
-                      <tr>
-                        <th class="align-middle">Partida #</th>
-                        <th class="align-middle">Treino</th>
-                        <th class="align-middle">Data de Início</th>
-                        <th class="align-middle"></th>
-                        <th class="align-middle"></th>
-                        <th class="align-middle"></th>
-                        <th class="align-middle"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="run in stage.runs" :key="run.id">
-                        <td class="align-middle">{{ run.run_num }}</td>
-                        <td class="align-middle">{{ run.practice == 0 ? 'Não' : 'Sim' }}</td>
-                        <td class="align-middle">{{ run.date_start }}</td>
-                        <td class="align-middle"><button class="btn btn-success" @click="editStageRun(stage, run)"><BIconPencilSquare></BIconPencilSquare></button></td>
-                        <td class="align-middle"><button class="btn btn-success" @click="raceStartTimes(stage, run)"><BIconClock></BIconClock> Partidas</button></td>
-                        <td class="align-middle"><button class="btn btn-info" @click="raceTimeControl(stage, run)"><BIconClock></BIconClock> Tomada</button></td>
-                        <td class="align-middle"><button class="btn btn-info" @click="runClassifications(stage, run)"><BIconTable></BIconTable> Classificações</button></td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  <div class="table-responsive table-scroll">
+                    <table class="table table-striped table-hover">
+                      <thead class="table-dark" style="cursor: pointer">
+                        <tr>
+                          <th class="align-middle">Partida #</th>
+                          <th class="align-middle">Treino</th>
+                          <th class="align-middle">Data de Início</th>
+                          <th class="align-middle"></th>
+                          <th class="align-middle"></th>
+                          <th class="align-middle"></th>
+                          <th class="align-middle"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="run in stage.runs" :key="run.id">
+                          <td class="align-middle">{{ run.run_num }}</td>
+                          <td class="align-middle">{{ run.practice == 0 ? 'Não' : 'Sim' }}</td>
+                          <td class="align-middle">{{ run.date_start }}</td>
+                          <td class="align-middle"><button class="btn btn-success" @click="editStageRun(stage, run)"><BIconPencilSquare></BIconPencilSquare></button></td>
+                          <td class="align-middle"><button class="btn btn-success" @click="raceStartTimes(stage, run)"><BIconClock></BIconClock> Partidas</button></td>
+                          <td class="align-middle"><button class="btn btn-info" @click="raceTimeControl(stage, run)"><BIconClock></BIconClock> Tomada</button></td>
+                          <td class="align-middle"><button class="btn btn-info" @click="runClassifications(stage, run)"><BIconTable></BIconTable> Classificações</button></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  
                 </div>
             </div>
         </div>
@@ -200,5 +203,11 @@ button {
   color:white !important;
   background-color: dimgrey !important;
   border-color: black;
+}
+
+.table-scroll {
+  max-height: 500px;
+  overflow: auto;
+  /*display:inline-block;*/
 }
 </style>

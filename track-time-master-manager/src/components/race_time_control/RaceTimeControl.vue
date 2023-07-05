@@ -91,7 +91,7 @@ watch(
 </script>
 <template>
     <h1>TOMADA DE TEMPO</h1>
-    <div>
+    <div class="table-responsive">
         <table class="table table-striped table-hoverable">
             <thead class="table-dark" style="cursor: pointer">
                 <tr>

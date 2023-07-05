@@ -133,41 +133,43 @@ onMounted(async ()=>{
       <button class="btn btn-outline-secondary" type="button" @click="restartSearch()">Reiniciar</button>
     </div>
   </div>
-
-  <table class="table table-hover table-striped">
-    <thead class="table-dark" style="cursor: pointer">
-      <tr>
-        <th></th>
-        <th class="align-middle" @click="sortByColumn('name')">Nome <span v-if="sortedColumn == 'name'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('email')">Email <span v-if="sortedColumn == 'email'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('license_num')">Nº de Licença <span v-if="sortedColumn == 'license_num'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('license_expiry')">Validade da Licença <span v-if="sortedColumn == 'license_expiry'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('phone_num')">Nº de Telemóvel <span v-if="sortedColumn == 'phone_num'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('affiliate_num')">Nº de Sócio <span v-if="sortedColumn == 'affiliate_num'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="driver in laravelData.data" :key="driver.id">
-        <td><i :class="flag(driver.country)"></i></td>
-        <td class="align-middle">{{ driver.name }}</td>
-        <td class="align-middle">{{ driver.email }}</td>
-        <td class="align-middle">{{ driver.license_num }}</td>
-        <td class="align-middle">{{ driver.license_expiry }}</td>
-        <td class="align-middle">{{ driver.phone_num }}</td>
-        <td class="align-middle">{{ driver.affiliate_num }}</td>
-        <td class="text-end align-middle" v-if="userStore.user.type_id == 1 || userStore.user.type_id == 2">
-            <button
-              class="btn btn-xs btn-light"
-              @click="editDrivers(driver)"
-              title="Editar"
-            >
-              <BIconPencil/>
-            </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table table-hover table-striped">
+      <thead class="table-dark" style="cursor: pointer">
+        <tr>
+          <th></th>
+          <th class="align-middle" @click="sortByColumn('name')">Nome <span v-if="sortedColumn == 'name'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('email')">Email <span v-if="sortedColumn == 'email'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('license_num')">Nº de Licença <span v-if="sortedColumn == 'license_num'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('license_expiry')">Validade da Licença <span v-if="sortedColumn == 'license_expiry'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('phone_num')">Nº de Telemóvel <span v-if="sortedColumn == 'phone_num'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('affiliate_num')">Nº de Sócio <span v-if="sortedColumn == 'affiliate_num'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="driver in laravelData.data" :key="driver.id">
+          <td><i :class="flag(driver.country)"></i></td>
+          <td class="align-middle">{{ driver.name }}</td>
+          <td class="align-middle">{{ driver.email }}</td>
+          <td class="align-middle">{{ driver.license_num }}</td>
+          <td class="align-middle">{{ driver.license_expiry }}</td>
+          <td class="align-middle">{{ driver.phone_num }}</td>
+          <td class="align-middle">{{ driver.affiliate_num }}</td>
+          <td class="text-end align-middle" v-if="userStore.user.type_id == 1 || userStore.user.type_id == 2">
+              <button
+                class="btn btn-xs btn-light"
+                @click="editDrivers(driver)"
+                title="Editar"
+              >
+                <BIconPencil/>
+              </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
 
   <div>
     <ul class="pagination" style="cursor: pointer">
