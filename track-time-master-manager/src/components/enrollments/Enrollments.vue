@@ -506,7 +506,7 @@ socket.on('changeRunOrdersOfEventEnrollments', (updatedValues) => {
     console.log('enrollments: ', enrollments.value);
     //enrollments.value.length = 0;
     console.log('valuesToOrder.length', valuesToOrder.length)
-    for (let index = 0; index < valuesToOrder.length - 1; index++) {
+    for (let index = 0; index < enrollments.value.length; index++) {
         var auxElem = enrollments.value.find((element) => {
             return element.id == valuesToOrder[index].id;
         })
