@@ -6,6 +6,7 @@
   const router = useRouter()  
   const axios = inject('axios')
   const toast = inject('toast')
+  const socket = inject("socket")
 
   const props = defineProps({
       id: {
@@ -90,6 +91,7 @@
           .then((response) => {
             event.value = response.data.data
             toast.success('Event #' + event.value.id + ' was updated successfully.')
+            socket.emit('updateEvent', event.value);
             router.push({name: 'Events'})
           })
           .catch((error) => {
@@ -102,6 +104,10 @@
           })
         }
   }
+
+  socket.on('updateEvent', (eventUpdated) => {
+    event.value = eventUpdated
+  })
 
   const cancel = () => {
     router.push({name: 'Events'})

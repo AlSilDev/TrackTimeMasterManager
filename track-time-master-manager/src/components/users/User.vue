@@ -8,6 +8,7 @@
   const axios = inject('axios')
   const toast = inject('toast')
   const userStore = useUserStore()
+  const socket = inject("socket")
 
   const props = defineProps({
       id: {
@@ -107,7 +108,8 @@
         .then((response) => {
           user.value = response.data.data
           toast.success('User #' + user.value.id + ' was updated successfully.')
-          router.back()
+          socket.emit('updateUser', user.value);
+          router.push({name: 'Users'})
         })
         .catch((error) => {
           if (error.status == 422) {
@@ -119,6 +121,10 @@
         })
       }
   }
+
+  socket.on('updateUser', (userUpdated) => {
+    user.value = userUpdated
+  })
 
   const cancel = () => {
     router.push({name: 'Users'})

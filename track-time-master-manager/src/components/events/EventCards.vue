@@ -10,6 +10,7 @@ const userStore = useUserStore()
 const axios = inject("axios")
 const router = useRouter()
 const toast = inject('toast')
+const socket = inject("socket")
 
 const props = defineProps({
   showId: {
@@ -129,6 +130,14 @@ const restartSearch = () => {
   attribute.value.selectedIndex = 0
   getResultsFiltered()
 }
+
+socket.on('updateEvent', (eventUpdated) => {
+    const eventUpdatedIdx = laravelData.value.data.findIndex((element) => {return element.id == eventUpdated.id})
+    if (eventUpdatedIdx != -1)
+    {
+      laravelData.value.data[eventUpdatedIdx] = eventUpdated
+    }
+})
 
 onMounted(async ()=>{
   await getResultsFiltered()

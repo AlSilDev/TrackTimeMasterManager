@@ -9,6 +9,7 @@ const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
 const axios = inject("axios")
 const router = useRouter()
+const socket = inject("socket")
 
 const props = defineProps({
   showId: {
@@ -101,6 +102,14 @@ const restartSearch = () => {
   attribute.value.selectedIndex = 0
   getResultsFiltered()
 }
+
+socket.on('updateDriver', (driverUpdated) => {
+    const driverUpdatedIdx = laravelData.value.data.findIndex((element) => {return element.id == driverUpdated.id})
+    if (driverUpdatedIdx != -1)
+    {
+      laravelData.value.data[driverUpdatedIdx] = driverUpdated
+    }
+})
 
 onMounted(async ()=>{
   await getResultsFiltered()

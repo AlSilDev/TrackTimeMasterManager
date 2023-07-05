@@ -22,7 +22,7 @@ const login = async () => {
   }
   else {
     credentials.value.password = ''
-    toast.error('User credentials are invalid!')
+    toast.error('Credenciais de utilizador invalidas ou bloqueado!')
   }
 }
 </script>

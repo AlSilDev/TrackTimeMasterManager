@@ -9,6 +9,7 @@ const axios = inject('axios')
 const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
 const router = useRouter()
+const socket = inject("socket")
 
 const props = defineProps({
   showId: {
@@ -100,6 +101,14 @@ const sortByColumn = (column) => {
     currentPage.value = 1
     getResultsFiltered()
 }
+
+socket.on('updateVehicle', (vehicleUpdated) => {
+    const vehicleUpdatedIdx = laravelData.value.data.findIndex((element) => {return element.id == vehicleUpdated.id})
+    if (vehicleUpdatedIdx != -1)
+    {
+      laravelData.value.data[vehicleUpdatedIdx] = vehicleUpdated
+    }
+})
 
 onMounted(async ()=>{
   await getResultsFiltered()
