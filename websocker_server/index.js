@@ -34,4 +34,32 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('updateEvent', event)
         console.log(`event ${event.id} has updated`)
     })
+    socket.on('createNewEventEnrollment', (enrollment) => {
+        socket.broadcast.emit('createNewEventEnrollment', enrollment)
+        console.log(`enrollment ${enrollment.id} has created`)
+    })
+    socket.on('removeEventEnrollment', (enrollment) => {
+        socket.broadcast.emit('removeEventEnrollment', enrollment)
+        console.log(`enrollment ${enrollment.id} has removed`)
+    })
+    socket.on('changeRunOrdersOfEventEnrollments', (UpdatedEnrollments) => {
+        socket.broadcast.emit('changeRunOrdersOfEventEnrollments', UpdatedEnrollments)
+        console.log(`enrollments ${UpdatedEnrollments.length} has updated run order`)
+    })
+    socket.on('approveAdminVerification', (AVapproved) => {
+        socket.broadcast.emit('approveAdminVerification', AVapproved)
+        console.log(`admin verification ${AVapproved.id} has approved`)
+    })
+    socket.on('repproveAdminVerification', (AVrepproved) => {
+        socket.broadcast.emit('repproveAdminVerification', AVrepproved)
+        console.log(`admin verification ${AVrepproved.id} has repproved`)
+    })
+    socket.on('approveTechnicalVerification', (TVapproved) => {
+        socket.broadcast.emit('approveTechnicalVerification', TVapproved)
+        console.log(`technical verification ${TVapproved.id} has approved`)
+    })
+    socket.on('repproveTechnicalVerification', (TVrepproved) => {
+        socket.broadcast.emit('repproveTechnicalVerification', TVrepproved)
+        console.log(`technical verification ${TVrepproved.id} has repproved`)
+    })
 })
