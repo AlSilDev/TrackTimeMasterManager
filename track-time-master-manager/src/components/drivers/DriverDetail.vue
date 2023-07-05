@@ -159,7 +159,7 @@ onMounted(async ()=>{
         </div>
 
         <div class="mb-3 px-1">
-          <label for="inputAffiliateNum" class="form-label">Nr. Afiliação</label>
+          <label for="inputAffiliateNum" class="form-label">Nr. Sócio</label>
           <input
             type="number"
             class="form-control"

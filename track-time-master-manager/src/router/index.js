@@ -19,6 +19,13 @@ import Enrollments from "../components/enrollments/Enrollments.vue"
 import UserCategories from "../components/userCategories/UserCategories.vue"
 import UserCategory from "../components/userCategories/UserCategory.vue"
 import PublicPage from '../components/publicPage/PublicPage.vue'
+import Stages from "../components/stages/Stages.vue"
+import Stage from "../components/stages/Stage.vue"
+import StageRun from "../components/stage_runs/StageRun.vue"
+import RaceStart from "../components/race_start/RaceStart.vue"
+import RaceTimeControl from "../components/race_time_control/RaceTimeControl.vue"
+import Classifications from "../components/classifications/Classifications.vue"
+import EventClassifications from "../components/classifications/EventClassifications.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -104,9 +111,83 @@ const router = createRouter({
       component: Event,
     },
     {
+      path: '/backend/events/:event_id/classifications',
+      name: 'EventClassifications',
+      component: EventClassifications,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), c_type: 'event' })
+    },
+    {
       path: '/backend/events',
       name: 'Events',
       component: Events,
+    },
+    {
+      path: '/backend/events/:event_id/stages',
+      name: 'Stages',
+      component: Stages,
+      props: route => ({ event_id: parseInt(route.params.event_id) })
+    },
+    {
+      path: '/backend/events/:event_id/stages/new',
+      name: 'NewStage',
+      component: Stage,
+      props: route => ({ event_id: parseInt(route.params.event_id) })
+    },
+    {
+      path: '/backend/events/:event_id/stages/:stage_id',
+      name: 'Stage',
+      component: Stage,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id) })
+    },
+    {
+      path: '/backend/events/:event_id/stages/:stage_id/classifications',
+      name: 'StageClassifications',
+      component: Classifications,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id), c_type: 'stage' })
+    },
+    {
+      path: '/backend/events/:event_id/stages/:stage_id/stage_runs/new',
+      name: 'NewStageRun',
+      component: StageRun,
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id) })
+    },
+    {
+      path: '/backend/events/:event_id/stages/:stage_id/stage_runs/:stage_run_id',
+      name: 'StageRun',
+      component: StageRun,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id), stage_run_id: parseInt(route.params.stage_run_id) })
+    },
+    {
+      path: '/backend/events/:event_id/stages/:stage_id/stage_runs/:stage_run_id/classifications',
+      name: 'RunClassifications',
+      component: Classifications,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id), stage_run_id: parseInt(route.params.stage_run_id), c_type: 'stageRun' })
+    },
+    {
+      path: '/backend/events/:event_id/stages/:stage_id/stage_runs/:stage_run_id/race_start',
+      name: 'RaceStart',
+      component: RaceStart,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id), stage_run_id: parseInt(route.params.stage_run_id) })
+    },
+    {
+      path: '/backend/events/:event_id/stages/:stage_id/stage_runs/:stage_run_id/race_time_control',
+      name: 'RaceTimeControl',
+      component: RaceTimeControl,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id), stage_run_id: parseInt(route.params.stage_run_id) })
     },
     {
       path: '/backend/events/categories',
