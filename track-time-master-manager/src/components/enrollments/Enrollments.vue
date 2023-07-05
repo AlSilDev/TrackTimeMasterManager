@@ -498,24 +498,38 @@ const updateRunOrder = async ()=>{
 
 socket.on('changeRunOrdersOfEventEnrollments', (updatedValues) => {
     console.log('updated values: ', updatedValues);
-    console.log('enrollments: ', enrollments.value);
-    //enrollments.value.length = 0;
-    let ind = -1;
-    /*updatedValues.forEach(element => {
-        //console.log('run order: ', enrollments.value[++ind].run_order)
-        //console.log('updated values: ', updatedValues[++ind].run_order)
-        //enrollments.value = updatedValues
-    });*/
-    /*enrollments.value.slice().sort(function(a, b){
-        return updatedValues.indexOf(a) - updatedValues.indexOf(b);
-    });*/
-    /*sortEnrolls(enrollments.value, updatedValues);
-    console.log('after enrollments: ', enrollments.value);*/
     const valuesToOrder = []
     updatedValues.forEach(element => {
         valuesToOrder.push({'id': element.id})
     })
     console.log('valuesToOrder', valuesToOrder)
+    console.log('enrollments: ', enrollments.value);
+    //enrollments.value.length = 0;
+    console.log('valuesToOrder.length', valuesToOrder.length)
+    for (let index = 0; index < valuesToOrder.length - 1; index++) {
+        var auxElem = enrollments.value.find((element) => {
+            return element.id == valuesToOrder[index].id;
+        })
+        //console.log('auxElem', auxElem)
+        auxElem.run_order = index+1;
+    }
+    enrollments.value = enrollments.value.slice().sort((a,b) => {
+        return a.run_order - b.run_order;
+    });
+    console.log('after enrollments: ', enrollments.value);
+    /*updatedValues.forEach(element => {
+        //console.log('run order: ', enrollments.value[++ind].run_order)
+        //console.log('updated values: ', updatedValues[++ind].run_order)
+        //enrollments.value = updatedValues
+    });*/
+
+    /*enrollments.value.slice().sort(function(a, b){
+        return updatedValues.indexOf(a) - updatedValues.indexOf(b);
+    });*/
+
+    /*sortEnrolls(enrollments.value, updatedValues);
+    console.log('after enrollments: ', enrollments.value);*/
+    
     //console.log(enrollments.value[0].id)
     //const arrayOrder = mapOrder(enrollments.value, valuesToOrder, 'id');
     //console.log('arrayOrder', arrayOrder)
