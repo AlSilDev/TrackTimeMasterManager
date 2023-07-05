@@ -170,13 +170,6 @@ onMounted(async ()=>{
           />
           <field-error-message :errors="errors" fieldName="affiliate_num"></field-error-message>
         </div>
-
-        <div class="mb-3 px-1">
-          <label for="inputCategory" class="form-label">País: </label>
-          <select class="form-select" id="inputCategory" v-model="editingDriver.country">
-              <option v-for="country in countries" v-bind:value="country.name.common">{{country.name.common}}</option>
-          </select>
-        </div>
       </div>
     </div>
     <div class="mb-3 d-flex justify-content-center">

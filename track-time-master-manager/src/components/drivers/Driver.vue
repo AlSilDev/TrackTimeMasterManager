@@ -6,6 +6,7 @@
   const router = useRouter()  
   const axios = inject('axios')
   const toast = inject('toast')
+  const socket = inject("socket")
 
   const props = defineProps({
       id: {
@@ -82,6 +83,7 @@
           originalValueStr = dataAsString()
           console.log('new driver', driver.value)
           toast.success('Driver #' + driver.value.id + ' was updated successfully.')
+          socket.emit('updateDriver', driver.value);
           router.push({name: 'Drivers'})
         })
         .catch((error) => {
@@ -94,6 +96,10 @@
         })
       }
   }
+
+  socket.on('updateDriver', (driverUpdated) => {
+    driver.value = driverUpdated
+  })
 
   const cancel = () => {
     originalValueStr = dataAsString()

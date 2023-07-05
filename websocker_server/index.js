@@ -22,4 +22,8 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('updateUser', user)
         console.log(`user ${user.id} has updated`)
     })
+    socket.on('updateDriver', (driver) => {
+        socket.broadcast.emit('updateDriver', driver)
+        console.log(`driver ${driver.id} has updated`)
+    })
 })
