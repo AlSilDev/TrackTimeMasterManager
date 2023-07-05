@@ -2,7 +2,7 @@
   import { ref, computed, onMounted, inject } from 'vue'
   import {useRouter} from 'vue-router'
   import StageCards from "./StageCards.vue"
-  import { BIconPlus } from 'bootstrap-icons-vue'
+  import { BIconPlus, BIconTable } from 'bootstrap-icons-vue'
   
   const router = useRouter()
 
@@ -34,7 +34,7 @@
   <div class="container">
     <div class="d-flex justify-content-between">
       <div class="col-sm"><button type="button" class="btn btn-dark" @click="addStage"><BIconPlus/> Nova Etapa</button></div>
-      <div class="col-sm"><button type="button" class="btn btn-dark" @click="classifications"><BIconPlus/> Classificações Gerais</button></div>
+      <div class="col-sm"><button type="button" class="btn btn-dark" @click="classifications"><BIconTable/> Classificações Gerais</button></div>
     </div>
   </div>
   

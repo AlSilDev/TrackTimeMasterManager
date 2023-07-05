@@ -68,7 +68,7 @@ onMounted(()=>{
 })
 </script>
 <template>
-<div>
+<div class="table-responsive">
     <table class="table table-striped table-hoverable table-sm">
         <thead class="table-dark" style="cursor: pointer">
             <tr>

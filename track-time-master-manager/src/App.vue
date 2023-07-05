@@ -16,11 +16,10 @@ const socket = inject("socket")
 
 const logout = async () => {
   if (await userStore.logout()) {
-    toast.success('User has logged out of the application.')
     //clickMenuOption()
     router.push({name: 'home'})
   } else {
-    toast.error('There was a problem logging out of the application!')
+    toast.error('Ocorreu um problema ao fechar a sessão')
   }
 }
 
@@ -76,7 +75,7 @@ socket.on('updateUser', (userUpdated) => {
   <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow">
     <div class="container">
 
-      <a class="btn" role="button">
+      <a class="btn" role="button" :href="publicPage">
         <h4><b>TtmM</b></h4>
       </a>
 
