@@ -179,7 +179,7 @@ const enroll = async ()=>{
         enrollCreated.value.vehicle_license_plate = selected_vehicle.value.license_plate;
         enrollCreated.value.vehicle_class = selected_vehicle.value.class;
         enrollCreated.value.vehicle_category = selected_vehicle.value.category;
-        enrollments.value.push(enrollCreated.value)
+        enrollments.value.push({ ...enrollCreated.value })
 
         toast.success(`A inscrição #${enrollCreated.value.id} foi efetuada com sucesso.`)
         socket.emit('createNewEventEnrollment', enrollCreated.value);
