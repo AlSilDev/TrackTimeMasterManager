@@ -30,4 +30,8 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('updateDriver', driver)
         console.log(`driver ${driver.id} has updated`)
     })
+    socket.on('updateEvent', (event) => {
+        socket.broadcast.emit('updateEvent', event)
+        console.log(`event ${event.id} has updated`)
+    })
 })
