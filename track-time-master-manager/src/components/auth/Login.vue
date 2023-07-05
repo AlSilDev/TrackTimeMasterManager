@@ -41,6 +41,7 @@ const login = async () => {
           <div class="mb-3">
             <div class="mb-3">
               <label
+                style="color: white;"
                 for="inputUsername"
                 class="form-label"
               >Username</label>
@@ -56,6 +57,7 @@ const login = async () => {
           <div class="mb-3">
             <div class="mb-3">
               <label
+                style="color: white;"
                 for="inputPassword"
                 class="form-label"
               >Password</label>
