@@ -52,7 +52,7 @@ const validData = computed(()=>{
 })
 
 const save = () => {
-  emit("save", editingVehicle.value);
+  emit("save", categories.value.find((element) => {return element.id == editingVehicle.value.category_id}));
 };
 
 const cancel = () => {
@@ -65,6 +65,7 @@ const classesCategoryId = ref([])
 
 const isCategoryNotNull = (categoryId) => {
   if(categoryId != 0){
+    editingVehicle.value.category_id = categoryId;
     classesCategoryId.value.length = 0;
     let i;
     for (i = 0; i < classes.value.length; i++) {
