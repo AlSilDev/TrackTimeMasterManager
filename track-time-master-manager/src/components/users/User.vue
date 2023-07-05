@@ -109,7 +109,7 @@
           user.value = response.data.data
           toast.success('User #' + user.value.id + ' was updated successfully.')
           socket.emit('updateUser', user.value);
-          router.back()
+          router.push({name: 'Users'})
         })
         .catch((error) => {
           if (error.status == 422) {

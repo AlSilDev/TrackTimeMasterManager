@@ -7,7 +7,6 @@
   
   const router = useRouter()
   const userStore = useUserStore()
-  const socket = inject("socket")
 
   const axios = inject('axios')
   const toast = inject('toast')
@@ -24,7 +23,6 @@
       if(user.blocked == 1){
         toast.success("Utilizador " + user.name + " bloqueado")
       }
-      //socket.emit('userBlockValueChange', user);
     } else {
       toast.error("Utilizador não foi bloqueado/desbloqueado")
     }
