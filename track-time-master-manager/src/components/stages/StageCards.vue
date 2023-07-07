@@ -4,12 +4,14 @@ import { useUserStore } from "../../stores/user.js"
 import {useRouter} from 'vue-router'
 import avatarNoneUrl from '@/assets/avatar-none.png'
 import { BIconClock, BIconPencilSquare, BIconPlus, BIconSearch, BIconTable } from 'bootstrap-icons-vue'
+import moment from 'moment'
 
 const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
 const axios = inject("axios")
 const router = useRouter()
 const toast = inject('toast')
+const socket = inject("socket")
 
 const props = defineProps({
   showId: {
@@ -112,6 +114,24 @@ const runClassifications = (stage, stage_run) => {
 
 const stageClassifications = (stage) => {
   router.push({ name: 'StageClassifications', params: { event_id: router.currentRoute.value.params['event_id'], stage_id: stage.id } })
+}
+
+socket.on('updateStageRun', (stageRunUpdated) => {
+  console.log('stages', stages.value)
+  const stageRunToUpdate = stages.value[0].runs.find((element) => {
+    return element.id == stageRunUpdated.id
+  })
+  console.log('stageRunUpdated', stageRunUpdated)
+  console.log('stageRunToUpdate', stageRunToUpdate)
+  //stageRunToUpdate.date_start = (stageRunUpdated.date_start, 'YYYY-MM-DDThh:mm').format('YYYY-MM-DD hh:mm:ss');
+  stageRunToUpdate.date_start = formatDate(stageRunUpdated.date_start);
+  stageRunToUpdate.practice = stageRunUpdated.practice;
+})
+
+const formatDate = (value)=>{
+  if (value) {
+    return moment(String(value)).format('DD/MM/YYYY hh:mm:ss')
+  }
 }
 
 onMounted(async ()=>{
