@@ -2,6 +2,7 @@
 import { inject, onMounted, ref } from 'vue';
 import RunHeader from './RunHeader.vue'
 import RowData from './RowData.vue'
+const socket = inject("socket")
 
 const axios = inject('axios')
 const toast = inject('toast')
@@ -53,6 +54,24 @@ const timeInMinutes = (time_secs) => {
     seconds = seconds/10 < 1 ? '0' + seconds : seconds
     return minutes + ':' + seconds
 }
+
+socket.on('updateFinalTimeForTimeRun', (classificationUpdated) => {
+    console.log('timeUpdated', classificationUpdated)
+
+    const elementToUpdatedIdx = classifications.value.findIndex((element) => {
+        return element.id == classificationUpdated.id
+    })
+
+    console.log('BEFOPRE classifications.value[elementToUpdatedIdx]', classifications.value[elementToUpdatedIdx])
+    classifications.value[elementToUpdatedIdx].penalty = classificationUpdated.penalty
+    classifications.value[elementToUpdatedIdx].time_mils = classificationUpdated.time_mils
+    classifications.value[elementToUpdatedIdx].points = classificationUpdated.time_points
+    classifications.value[elementToUpdatedIdx].time_secs = classificationUpdated.time_secs
+
+    classifications.value = classifications.value.slice().sort( (a,b) => {
+        return a.time_secs - b.time_secs
+    })
+})
 
 onMounted(()=>{
     switch(props.c_type)

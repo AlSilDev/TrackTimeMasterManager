@@ -78,10 +78,10 @@
             })
             .catch((error) => {
               if (error.response.status == 422) {
-                toast.error('Evento ' + event.value.name + '(#' +event.value.id+ ') não apagada devido a erros de validação!')
+                toast.error('Evento ' + event.value.name + '(#' +event.value.id+ ') não criado devido a erros de validação!')
                 errors.value = error.response.data.errors
               } else {
-                toast.error('Evento ' + event.value.name + '(#' +event.value.id+ ') não apagada devido a erro(s) desconhecido para o servidor!')
+                toast.error('Evento ' + event.value.name + '(#' +event.value.id+ ') não criado devido a erro(s) desconhecido para o servidor!')
               }
             })
         }else{

@@ -62,4 +62,32 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('repproveTechnicalVerification', TVrepproved)
         console.log(`technical verification ${TVrepproved.id} has repproved`)
     })
+    socket.on('updateStageRun', (stageRun) => {
+        socket.broadcast.emit('updateStageRun', stageRun)
+        console.log(`stage run ${stageRun.id} has updated`)
+    })
+    socket.on('updateStageRunRaceStartTime', (stageRunRaceStart) => {
+        socket.broadcast.emit('updateStageRunRaceStartTime', stageRunRaceStart)
+        console.log(`Time Run Race Start ${stageRunRaceStart.id} has updated`)
+    })
+    socket.on('updateStageRunRaceTimeControlTime', (stageRunRaceTimeControl) => {
+        socket.broadcast.emit('updateStageRunRaceTimeControlTime', stageRunRaceTimeControl)
+        console.log(`Time Run Race Time Control ${stageRunRaceTimeControl.id} has updated`)
+    })
+    socket.on('updateFinalTimeForTimeRun', (exampleX) => {
+        socket.broadcast.emit('updateFinalTimeForTimeRun', exampleX)
+        console.log(`Time Run Race ${exampleX.id} has updated`)
+    })
+    socket.on('updateEventFinalTimeForTimeRun', (exampleY) => {
+        socket.broadcast.emit('updateEventFinalTimeForTimeRun', exampleY)
+        console.log(`Time Run Race ${exampleY.id} has updated`)
+    })
+    socket.on('updateNotesForAdminVerification', (AV) => {
+        socket.broadcast.emit('updateNotesForAdminVerification', AV)
+        console.log(`admin verification ${AV.id} notes has updated`)
+    })
+    socket.on('updateNotesForTechnicalVerification', (TV) => {
+        socket.broadcast.emit('updateNotesForTechnicalVerification', TV)
+        console.log(`technical verification ${TV.id} notes has updated`)
+    })
 })

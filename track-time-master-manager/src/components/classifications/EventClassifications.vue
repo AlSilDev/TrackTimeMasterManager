@@ -3,6 +3,7 @@ import { inject, onMounted, ref } from 'vue';
 
 const axios = inject('axios')
 const toast = inject('toast')
+const socket = inject("socket")
 
 const props = defineProps({
     event_id: {
@@ -35,6 +36,47 @@ const timeInMinutes = (time_secs) => {
     seconds = seconds/10 < 1 ? '0' + seconds : seconds
     return minutes + ':' + seconds
 }
+
+socket.on('updateEventFinalTimeForTimeRun', (eventClassificationUpdated) => {
+    //console.log('eventClassificationUpdated', eventClassificationUpdated)
+    //console.log('classifications', classifications)
+    //console.log('classifications.valuelength', classifications.value.length)
+    //console.log('classifications.value[0]', classifications.value[0][2].participant_id)
+
+
+    for (let index = 0; index < classifications.value.length; index++) {
+        var lengthInside = classifications.value[index].length;
+        //console.log('lengthInside', lengthInside)
+        var elementToUpdatedIdx = -1;
+        var elementSecond = -1;
+        for (let indexAuxS = 0; indexAuxS < lengthInside; indexAuxS++) {
+            elementToUpdatedIdx = classifications.value[index].findIndex((element) => {
+                return element.participant_id == eventClassificationUpdated.participant_id
+            })
+            if (elementToUpdatedIdx!= -1){
+                elementSecond = indexAuxS;
+                break;
+            }
+        }
+
+        //console.log('elementToUpdatedIdx', elementToUpdatedIdx)
+        //console.log('elementSecond', elementSecond)
+        if(elementToUpdatedIdx != -1) break
+    }
+    //console.log('elementToUpdatedIdx', elementToUpdatedIdx)
+    //console.log('elementSecond', elementSecond)
+
+    //console.log('BEFORE classifications.value[elementToUpdatedIdx]', classifications.value[elementSecond][elementToUpdatedIdx])
+    classifications.value[elementSecond][elementToUpdatedIdx].penalty = eventClassificationUpdated.penalty
+    classifications.value[elementSecond][elementToUpdatedIdx].time_mils = eventClassificationUpdated.time_mils
+    classifications.value[elementSecond][elementToUpdatedIdx].points = String(eventClassificationUpdated.time_points)
+    classifications.value[elementSecond][elementToUpdatedIdx].time_secs = eventClassificationUpdated.time_secs
+
+    //console.log('classifications.value[elementSecond]', classifications.value[elementSecond])
+    classifications.value[elementSecond] = classifications.value[elementSecond].slice().sort( (a,b) => {
+        return a.points - b.points
+    })
+})
 
 onMounted(()=>{
     loadClassifications()
