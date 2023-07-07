@@ -2,6 +2,7 @@
 import { inject, computed, ref, onMounted, watch } from "vue";
 import { useUserStore } from "../../stores/user.js"
 import { useRouter } from 'vue-router'  
+import { BIconPencil, BIconTrash, BIconArrowClockwise } from 'bootstrap-icons-vue'
 
 const userStore = useUserStore()
 const router = useRouter()  
@@ -45,7 +46,8 @@ const isAdmin = () => {
   if (!userStore.user) {
     return false
   }
-  return userStore.user.type == 'A'
+  //ADMIN -> id 1
+  return userStore.user.type_id == 1
 }
 
 const isTrashed = () => {
@@ -134,28 +136,31 @@ const updateArrayValues = (array1, array2) => {
     <span class="checkmark"></span>
   </label>
   <br>
-  <table class="table table-hover table-striped">
-    <thead class="table-dark" style="cursor: pointer">
-      <tr>
-        <th class="align-middle w-25" >Nome</th>
-        <th class="align-middle w-50">Descrição</th>
-        <th class="align-middle w-auto"></th>
-        <th class="align-middle w-auto"></th>
-        <th class="align-middle w-auto"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="eventCategory in eventCategoriesListAux" :key="eventCategory.id">
-        <td class="align-middle text-danger text-decoration-line-through font-weight-bold" v-if="isTrashed()">{{ eventCategory.name }}</td>
-        <td class="align-middle" v-else>{{ eventCategory.name }}</td>
-        <td class="align-middle text-danger text-decoration-line-through font-weight-bold" v-if="isTrashed()">{{ eventCategory.description }}</td>
-        <td class="align-middle" v-else>{{ eventCategory.description }}</td>
-        <td><button v-if="isAdmin() && !isTrashed()" @click="editClick(eventCategory)" class="btn btn-dark" title="Editar"><BIconPencil/></button></td>
-        <td><button v-if="isAdmin() && !isTrashed()" @click="deleteClick(eventCategory)" class="btn btn-danger" title="Apagar"><BIconTrash/></button></td>
-        <td><button v-if="isAdmin() && isTrashed()" @click="restoreClick(eventCategory)" class="btn btn-warning" title="Apagar"><BIconArrowClockwise/></button></td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table table-hover table-striped">
+      <thead class="table-dark" style="cursor: pointer">
+        <tr>
+          <th class="align-middle w-25" >Nome</th>
+          <th class="align-middle w-50">Descrição</th>
+          <th class="align-middle w-auto"></th>
+          <th class="align-middle w-auto"></th>
+          <th class="align-middle w-auto"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="eventCategory in eventCategoriesListAux" :key="eventCategory.id">
+          <td class="align-middle text-danger text-decoration-line-through font-weight-bold" v-if="isTrashed()">{{ eventCategory.name }}</td>
+          <td class="align-middle" v-else>{{ eventCategory.name }}</td>
+          <td class="align-middle text-danger text-decoration-line-through font-weight-bold" v-if="isTrashed()">{{ eventCategory.description }}</td>
+          <td class="align-middle" v-else>{{ eventCategory.description }}</td>
+          <td><button v-if="isAdmin() && !isTrashed()" @click="editClick(eventCategory)" class="btn btn-dark" title="Editar"><BIconPencil/></button></td>
+          <td><button v-if="isAdmin() && !isTrashed()" @click="deleteClick(eventCategory)" class="btn btn-danger" title="Apagar"><BIconTrash/></button></td>
+          <td><button v-if="isAdmin() && isTrashed()" @click="restoreClick(eventCategory)" class="btn btn-warning" title="Apagar"><BIconArrowClockwise/></button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
 </template>
 
 <style scoped>

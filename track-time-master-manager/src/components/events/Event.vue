@@ -6,6 +6,7 @@
   const router = useRouter()  
   const axios = inject('axios')
   const toast = inject('toast')
+  const socket = inject("socket")
 
   const props = defineProps({
       id: {
@@ -63,7 +64,6 @@
     formData.append('date_end_enrollments', editingEventValue.date_end_enrollments)
     formData.append('date_start_event', editingEventValue.date_start_event)
     formData.append('date_end_event', editingEventValue.date_end_event)
-    formData.append('year', editingEventValue.year)
     formData.append('category_id', editingEventValue.category_id)
     formData.append('base_penalty', editingEventValue.base_penalty)
     formData.append('point_calc_reason', editingEventValue.point_calc_reason)
@@ -77,10 +77,10 @@
             })
             .catch((error) => {
               if (error.response.status == 422) {
-                toast.error('Evento ' + event.value.name + '(#' +event.value.id+ ') não apagada devido a erros de validação!')
+                toast.error('Evento ' + event.value.name + '(#' +event.value.id+ ') não criado devido a erros de validação!')
                 errors.value = error.response.data.errors
               } else {
-                toast.error('Evento ' + event.value.name + '(#' +event.value.id+ ') não apagada devido a erro(s) desconhecido para o servidor!')
+                toast.error('Evento ' + event.value.name + '(#' +event.value.id+ ') não criado devido a erro(s) desconhecido para o servidor!')
               }
             })
         }else{
@@ -89,19 +89,24 @@
           axios.post('events/' + props.id, formData, { headers: { 'Content-Type': 'multipart/form-data' }})
           .then((response) => {
             event.value = response.data.data
-            toast.success('Event #' + event.value.id + ' was updated successfully.')
+            toast.success('Evento #' + event.value.id + ' atualizado com sucesso.')
+            socket.emit('updateEvent', event.value);
             router.push({name: 'Events'})
           })
           .catch((error) => {
             if (error.response.status == 422) {
-                toast.error('Event #' + props.id + ' was not updated due to validation errors!')
+                toast.error('Evento #' + props.id + ' não atualizado devido a erros de validação.')
                 errors.value = error.response.data.errors
               } else {
-                toast.error('Event #' + props.id + ' was not updated due to unknown server error!')
+                toast.error('Evento #' + props.id + ' não atualizado devido a erro desconhecido.')
               }
           })
         }
   }
+
+  socket.on('updateEvent', (eventUpdated) => {
+    event.value = eventUpdated
+  })
 
   const cancel = () => {
     router.push({name: 'Events'})

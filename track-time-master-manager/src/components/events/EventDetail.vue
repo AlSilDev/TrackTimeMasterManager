@@ -2,7 +2,7 @@
 import { ref, watch, computed, inject, onMounted } from "vue";
 import avatarNoneUrl from '@/assets/avatar-none.png'
 import moment from 'moment'
-import { BIconArrowRight, BIconTrash } from "bootstrap-icons-vue";
+import { BIconArrowRight, BIconArrowDown, BIconTrash } from "bootstrap-icons-vue";
 
 const serverBaseUrl = inject("serverBaseUrl");
 const axios = inject('axios')
@@ -206,6 +206,21 @@ const addRegulationFile = async ()=>{
       console.error(error)
     })
 }
+
+const deleteRegulationFile = async (regulation)=>{
+  await axios.delete(`regulations/${regulation.id}`)
+    .then((response)=>{
+      //console.log(response.data)
+      toast.success(`O ficheiro ${regulation.name} foi eliminado com sucesso.`)
+      console.log('index: ' + regulationFiles.value.indexOf(regulation))
+      regulationFiles.value.splice(regulationFiles.value.indexOf(regulation), 1)
+      //console.log(pressFiles.value)
+    })
+    .catch((error)=>{
+      toast.error('Ocorreu um erro no servidor')
+      console.error(error)
+    })  
+}
 /* */
 
 const eventCategories = ref([])
@@ -222,7 +237,7 @@ const loadEventCategoriesArray = (async () => {
 onMounted(()=>{
   setTimeout(()=>{
     imageFullUrl.value = editingEvent.value.image_url
-      ? serverBaseUrl + "/storage/fotos/eventos/" + editingEvent.value.image_url
+      ? serverBaseUrl + "/storage/eventos/" + editingEvent.value.image_url
       : null
 
     console.log("image: " + imageFullUrl.value)
@@ -266,7 +281,7 @@ onMounted(()=>{
         <div class="mb-3 px-1">
           <label for="inputDateStartEnrollments" class="form-label">Data de Início de Inscrições</label>
           <input
-            type="date"
+            type="datetime-local"
             class="form-control"
             id="inputDateStartEnrollments"
             required
@@ -277,7 +292,7 @@ onMounted(()=>{
         <div class="mb-3 px-1">
           <label for="inputDateEndEnrollments" class="form-label">Data de Fim de Inscrições</label>
           <input
-            type="date"
+            type="datetime-local"
             class="form-control"
             id="inputDateEndEnrollments"
             required
@@ -288,7 +303,7 @@ onMounted(()=>{
         <div class="mb-3 px-1">
           <label for="inputDateStartEvent" class="form-label">Data de Início da Prova</label>
           <input
-            type="date"
+            type="datetime-local"
             class="form-control"
             id="inputDateStartEvent"
             required
@@ -299,7 +314,7 @@ onMounted(()=>{
         <div class="mb-3 px-1">
           <label for="inputDateEndEvent" class="form-label">Data de Fim da Prova</label>
           <input
-            type="date"
+            type="datetime-local"
             class="form-control"
             id="inputDateEndEvent"
             required
@@ -307,7 +322,7 @@ onMounted(()=>{
           />
         </div>
 
-        <div class="mb-3 px-1">
+        <!--div class="mb-3 px-1">
           <label for="inputYear" class="form-label">Ano</label>
           <input
             type="number"
@@ -318,7 +333,7 @@ onMounted(()=>{
             required
             v-model="editingEvent.year"
           />
-        </div>
+        </!--div-->
 
         <div class="w-25">
           <div class="mb-3">
@@ -392,158 +407,164 @@ onMounted(()=>{
     </div>
   </form>
 
-  <hr>
-  <div>
-    <h3>Imprensa</h3>
+  
+  <div v-if="props.operationType != 'insert'">
+    <hr>
+    <div>
+      <h3>Imprensa</h3>
 
-    <form class="row g-3 needs-validation" novalidate @submit.prevent="addPressFile">
-      <!-- Press files -->
-      <div class="d-flex flex-wrap justify-content-center">
-          <div class="w-75 pe-4">
-            <div class="mb-3">
-              <label for="inputNamePress" class="form-label">Nome</label>
-              <input
-                type="text"
-                class="form-control"
-                id="inputNamePress"
-                placeholder="Nome"
-                required
-                v-model="pressName"
-              />
+      <form class="row g-3 needs-validation" novalidate @submit.prevent="addPressFile">
+        <!-- Press files -->
+        <div class="d-flex flex-wrap justify-content-center">
+            <div class="w-75 pe-4">
+              <div class="mb-3">
+                <label for="inputNamePress" class="form-label">Nome</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="inputNamePress"
+                  placeholder="Nome"
+                  required
+                  v-model="pressName"
+                />
+              </div>
+            </div>
+            <div class="w-25">
+              <div class="mb-3">
+                <label class="form-label">Ficheiro</label>
+                <input type="file" ref="press_file_input" class="form-control" name="press" v-on:change="uploadPress()"/>
+              </div>
             </div>
           </div>
-          <div class="w-25">
-            <div class="mb-3">
-              <label class="form-label">Ficheiro</label>
-              <input type="file" ref="press_file_input" class="form-control" name="press" v-on:change="uploadPress()"/>
-            </div>
+          <div class="col-sm"><button type="button" class="btn btn-dark" :disabled="!pressName.length && !press_file_input.files" @click="addPressFile()">Adicionar Ficheiro</button></div>
+        </form>
+        
+        <br>
+        <table class="table table-hover table-striped" v-if="pressFiles.length">
+          <thead class="table-dark" style="cursor: pointer">
+            <tr>
+              <th class="align-middle">Nome</th>
+              <th class="align-middle">Data de Criação</th>
+              <th class="align-middle">Data de Atualização</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="press in pressFiles" :key="press.id">
+              <td class="align-middle">{{ press.name }}</td>
+              <td class="align-middle">{{ formatDate(press.created_at) }}</td>
+              <td class="align-middle">{{ formatDate(press.updated_at) }}</td>
+              <td class="align-middle"><button class="btn btn-danger" @click="deletePressFile(press)"><BIconTrash/></button></td>
+              <td class="align-middle"><a class="btn btn-info" :href="serverBaseUrl + '/storage/imprensa/' + press.file_url" target="_blank"><BIconArrowDown/></a></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 v-if="!pressFiles.length">Ainda não há ficheiros de imprensa</h4>
+    </div>
+
+    <hr>
+    <div>
+      <h3>Vídeos</h3>
+
+      <form class="row g-3 needs-validation" novalidate @submit.prevent="addVideoLink">
+        <!-- Video links -->
+          <div class="mb-3">
+            <label for="inputVideoLink" class="form-label">URL</label>
+            <input
+              type="text"
+              class="form-control"
+              id="inputVideoLink"
+              placeholder="Nome"
+              required
+              v-model="videoLinkToUpload.video_url"
+            />
           </div>
-        </div>
-        <div class="col-sm"><button type="button" class="btn btn-dark" :disabled="!pressName.length && !press_file_input.files" @click="addPressFile()">Adicionar Ficheiro</button></div>
-      </form>
+          <div class="col-sm"><button type="button" class="btn btn-dark" :disabled="!videoLinkToUpload.video_url.length" @click="addVideoLink()">Adicionar Vídeo</button></div>
+        </form>
+        
+        <br>
+        <table class="table table-hover table-striped" v-if="videoLinks.length">
+          <thead class="table-dark" style="cursor: pointer">
+            <tr>
+              <th class="align-middle">URL</th>
+              <th class="align-middle">Data de Criação</th>
+              <th class="align-middle">Data de Atualização</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="video in videoLinks" :key="video.id">
+              <td class="align-middle">{{ video.video_url }}</td>
+              <td class="align-middle">{{ formatDate(video.created_at) }}</td>
+              <td class="align-middle">{{ formatDate(video.updated_at) }}</td>
+              <td class="align-middle"><button class="btn btn-danger" @click="deleteVideoLink(video)"><BIconTrash/></button></td>
+              <td class="align-middle"><a class="btn btn-info" :href="video.video_url" target="_blank"><BIconArrowRight/></a></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 v-if="!videoLinks.length">Ainda não há vídeos</h4>
+    </div>
       
-      <br>
-      <table class="table table-hover table-striped" v-if="pressFiles.length">
-        <thead class="table-dark" style="cursor: pointer">
-          <tr>
-            <th class="align-middle">Nome</th>
-            <th class="align-middle">Data de Criação</th>
-            <th class="align-middle">Data de Atualização</th>
-            <th></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="press in pressFiles" :key="press.id">
-            <td class="align-middle">{{ press.name }}</td>
-            <td class="align-middle">{{ formatDate(press.created_at) }}</td>
-            <td class="align-middle">{{ formatDate(press.updated_at) }}</td>
-            <td class="align-middle"><button class="btn btn-danger" @click="deletePressFile(press)"><BIconTrash/></button></td>
-            <td class="align-middle"><a class="btn btn-info" :href="serverBaseUrl + '/storage/imprensa/' + press.file_url" target="_blank"><BIconArrowDown/></a></td>
-          </tr>
-        </tbody>
-      </table>
+    <hr>
+    <div>
+      <h3>Regulamentos</h3>
 
-      <h4 v-if="!pressFiles.length">Ainda não há ficheiros de imprensa</h4>
-  </div>
-
-  <hr>
-  <div>
-    <h3>Vídeos</h3>
-
-    <form class="row g-3 needs-validation" novalidate @submit.prevent="addVideoLink">
-      <!-- Video links -->
-        <div class="mb-3">
-          <label for="inputVideoLink" class="form-label">URL</label>
-          <input
-            type="text"
-            class="form-control"
-            id="inputVideoLink"
-            placeholder="Nome"
-            required
-            v-model="videoLinkToUpload.video_url"
-          />
-        </div>
-        <div class="col-sm"><button type="button" class="btn btn-dark" :disabled="!videoLinkToUpload.video_url.length" @click="addVideoLink()">Adicionar Vídeo</button></div>
-      </form>
-      
-      <br>
-      <table class="table table-hover table-striped" v-if="videoLinks.length">
-        <thead class="table-dark" style="cursor: pointer">
-          <tr>
-            <th class="align-middle">URL</th>
-            <th class="align-middle">Data de Criação</th>
-            <th class="align-middle">Data de Atualização</th>
-            <th></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="video in videoLinks" :key="video.id">
-            <td class="align-middle">{{ video.video_url }}</td>
-            <td class="align-middle">{{ formatDate(video.created_at) }}</td>
-            <td class="align-middle">{{ formatDate(video.updated_at) }}</td>
-            <td class="align-middle"><button class="btn btn-danger" @click="deleteVideoLink(video)"><BIconTrash/></button></td>
-            <td class="align-middle"><a class="btn btn-info" :href="video.video_url" target="_blank"><BIconArrowRight/></a></td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h4 v-if="!videoLinks.length">Ainda não há vídeos</h4>
-  </div>
-    
-  <hr>
-  <div>
-    <h3>Regulamentos</h3>
-
-    <form class="row g-3 needs-validation" novalidate @submit.prevent="addRegulationsFile">
-      <!-- Press files -->
-      <div class="d-flex flex-wrap justify-content-center">
-          <div class="w-75 pe-4">
-            <div class="mb-3">
-              <label for="inputNameRegulation" class="form-label">Nome</label>
-              <input
-                type="text"
-                class="form-control"
-                id="inputNameRegulation"
-                placeholder="Nome"
-                required
-                v-model="regulationName"
-              />
+      <form class="row g-3 needs-validation" novalidate @submit.prevent="addRegulationsFile">
+        <!-- Press files -->
+        <div class="d-flex flex-wrap justify-content-center">
+            <div class="w-75 pe-4">
+              <div class="mb-3">
+                <label for="inputNameRegulation" class="form-label">Nome</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="inputNameRegulation"
+                  placeholder="Nome"
+                  required
+                  v-model="regulationName"
+                />
+              </div>
+            </div>
+            <div class="w-25">
+              <div class="mb-3">
+                <label class="form-label">Ficheiro</label>
+                <input type="file" ref="regulation_file_input" class="form-control" name="regulation"/>
+              </div>
             </div>
           </div>
-          <div class="w-25">
-            <div class="mb-3">
-              <label class="form-label">Ficheiro</label>
-              <input type="file" ref="regulation_file_input" class="form-control" name="regulation"/>
-            </div>
-          </div>
-        </div>
-        <div class="col-sm"><button type="button" class="btn btn-dark" :disabled="!regulationName.length && !regulation_file_input.files" @click="addRegulationFile()">Adicionar Ficheiro</button></div>
-      </form>
-      
-      <br>
-      <table class="table table-hover table-striped" v-if="regulationFiles.length">
-        <thead class="table-dark" style="cursor: pointer">
-          <tr>
-            <th class="align-middle">Nome</th>
-            <th class="align-middle">Data de Criação</th>
-            <th class="align-middle">Data de Atualização</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="regulation in regulationFiles" :key="regulation.id">
-            <td class="align-middle">{{ regulation.name }}</td>
-            <td class="align-middle">{{ formatDate(regulation.created_at) }}</td>
-            <td class="align-middle">{{ formatDate(regulation.updated_at) }}</td>
-            <td class="align-middle"><a class="btn btn-info" :href="serverBaseUrl + '/storage/regulamentos/' + regulation.file_url" target="_blank"><BIconArrowDown/></a></td>
-          </tr>
-        </tbody>
-      </table>
+          <div class="col-sm"><button type="button" class="btn btn-dark" :disabled="!regulationName.length && !regulation_file_input.files" @click="addRegulationFile()">Adicionar Ficheiro</button></div>
+        </form>
+        
+        <br>
+        <table class="table table-hover table-striped" v-if="regulationFiles.length">
+          <thead class="table-dark" style="cursor: pointer">
+            <tr>
+              <th class="align-middle">Nome</th>
+              <th class="align-middle">Data de Criação</th>
+              <th class="align-middle">Data de Atualização</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="regulation in regulationFiles" :key="regulation.id">
+              <td class="align-middle">{{ regulation.name }}</td>
+              <td class="align-middle">{{ formatDate(regulation.created_at) }}</td>
+              <td class="align-middle">{{ formatDate(regulation.updated_at) }}</td>
+              <td class="align-middle"><button class="btn btn-danger" @click="deleteRegulationFile(regulation)"><BIconTrash/></button></td>
+              <td class="align-middle"><a class="btn btn-info" :href="serverBaseUrl + '/storage/regulamentos/' + regulation.file_url" target="_blank"><BIconArrowDown/></a></td>
+            </tr>
+          </tbody>
+        </table>
 
-      <h4 v-if="!regulationFiles.length">Ainda não há ficheiros de regulamentos</h4>
+        <h4 v-if="!regulationFiles.length">Ainda não há ficheiros de regulamentos</h4>
+    </div>
   </div>
+  
 
 </template>
 

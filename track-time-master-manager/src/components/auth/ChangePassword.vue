@@ -35,22 +35,22 @@
     }
   })
 
-  const dataAsString = () => {
+  /*const dataAsString = () => {
       return JSON.stringify(user.value)
-  }
+  }*/
 
-  let originalValueStr = ''
+  //let originalValueStr = ''
   const loadUser = (id) => {
     console.log("ID: " + id) 
-    originalValueStr = ''
+    //originalValueStr = ''
       if (!id || (id < 0)) {
         user.value = newUser()
-        originalValueStr = dataAsString()
+        //originalValueStr = dataAsString()
       } else {
         axios.get('users/' + id)
           .then((response) => {
             user.value = response.data.data
-            originalValueStr = dataAsString()
+            //originalValueStr = dataAsString()
           })
           .catch((error) => {
             console.log(error)
@@ -58,27 +58,26 @@
       }
   }
 
-  let nextCallBack = null
+  /*let nextCallBack = null
   const leaveConfirmed = () => {
       if (nextCallBack) {
         nextCallBack()
       }
-  }
+  }*/
 
-  onBeforeRouteLeave((to, from, next) => {
-    nextCallBack = null
+  /*
     let newValueStr = dataAsString()
     if (originalValueStr != newValueStr) {
       nextCallBack = next
-      confirmationLeaveDialog.value.show()
+      //confirmationLeaveDialog.value.show()
     } else {
       next()
     }
-  }) 
+  }) */
 
   const user = ref(newUser())
-  const errors = ref(null)
-  const confirmationLeaveDialog = ref(null)
+  //const errors = ref(null)
+  //const confirmationLeaveDialog = ref(null)
   watch(
     () => props.id,
     (newValue) => {
@@ -99,13 +98,13 @@
         return
       }
       if (await userStore.changePassword(passwords.value)) {
-        toast.success("Password has been changed correctly!")
+        toast.success("Password atualizada com sucesso.")
         emit("changedPassword")
         router.back()
         
       } else {
         passwords.value.password_confirmation = ""
-        toast.error("Password has not been changed!")
+        toast.error("Password não atualizada.")
       }
   }
 
@@ -121,14 +120,6 @@
 </script>
 
 <template>
-  <confirmation-dialog
-    ref="confirmationLeaveDialog"
-    confirmationBtn="Discard changes and leave"
-    msg="Do you really want to leave? You have unsaved changes!"
-    @confirmed="leaveConfirmed"
-  >
-  </confirmation-dialog> 
-  {{userStore.errors}}
   <form class="row g-3 needs-validation" novalidate @submit.prevent="changePassword">
     <h3 class="mt-5 mb-3">Mudar a password</h3>
     <hr />
@@ -143,10 +134,6 @@
           </div>
         </div>
         <div class="col-sm align-self-center">
-          <div class="mb-3">
-          <label class="bg-warning" v-if="user.type == 'A'">ADMINISTRADOR</label>
-          <label class="bg-success" v-if="user.type == 'S'">SECRETARIADO</label>
-          </div>
           <div class="mb-3">
             Nome: <label class="fw-bold"> {{ user.name }}</label>
           </div>
@@ -167,7 +154,6 @@
           required
           v-model="passwords.current_password"
         />
-        <field-error-message :errors="userStore.errors" fieldName="current_password"></field-error-message>
       </div>
     </div>
     <div class="mb-3">
@@ -180,7 +166,6 @@
           required
           v-model="passwords.password"
         />
-        <field-error-message :errors="userStore.errors" fieldName="password"></field-error-message>
       </div>
     </div>
     <div class="mb-3">
@@ -194,7 +179,6 @@
           required
           v-model="passwords.password_confirmation"
         />
-        <field-error-message :errors="userStore.errors" fieldName="password_confirmation"></field-error-message>
       </div>
     </div>
     <div class="mb-3 d-flex justify-content-center">

@@ -29,6 +29,9 @@ watch(
   (newVehicle) => {
     editingVehicle.value = newVehicle
   },
+  (editingVehicle) => {
+    validData()
+  },
   { immediate: true },
 )
 
@@ -39,8 +42,17 @@ const vehicleTitle = computed(() => {
   return props.operationType == "insert" ? "Nova Viatura" : "Viatura #" + editingVehicle.value.id;
 })
 
+const validData = computed(()=>{
+  console.log('valid?', editingVehicle.value)
+  return (editingVehicle.value.model != ''
+          && editingVehicle.value.class_id != null
+          && editingVehicle.value.license_plate != '' 
+          && editingVehicle.value.year != '' 
+          && editingVehicle.value.engine_capacity != '') == true
+})
+
 const save = () => {
-  emit("save", editingVehicle.value);
+  emit("save", categories.value.find((element) => {return element.id == editingVehicle.value.category_id}));
 };
 
 const cancel = () => {
@@ -53,11 +65,15 @@ const classesCategoryId = ref([])
 
 const isCategoryNotNull = (categoryId) => {
   if(categoryId != 0){
+    editingVehicle.value.category_id = categoryId;
     classesCategoryId.value.length = 0;
     let i;
     for (i = 0; i < classes.value.length; i++) {
       if(((classes.value[i]).category_id) == categoryId){
-        classesCategoryId.value.push(classes.value[i]);
+        classesCategoryId.value.push(classes.value[i])
+        if(props.operationType == 'update' && classes.value[i].id == editingVehicle.value.class.id){
+          console.log('found select', classes.value[i])
+        }
       }
     }
     return true;
@@ -66,7 +82,7 @@ const isCategoryNotNull = (categoryId) => {
 }
 
 const loadCategories = (async()  => {
-    await axios.get('categories')
+    await axios.get('vehicles/categories')
         .then((response) => {
           //laravelData.value = response.data
           categories.value = response.data
@@ -77,7 +93,7 @@ const loadCategories = (async()  => {
 })
 
 const loadClasses = (async()  => {
-    await axios.get('classes')
+    await axios.get('vehicles/classes')
         .then((response) => {
           //laravelData.value = response.data
           classes.value = response.data
@@ -87,9 +103,29 @@ const loadClasses = (async()  => {
         })
 })
 
-onMounted (() => {
-  loadCategories()
-  loadClasses()
+onMounted (async () => {
+  await loadCategories()
+  await loadClasses()
+
+  /* Carrega categoria default */
+  if(categories.value.length != 0)
+  {
+    isCategoryNotNull(categories.value[0].id)
+  }
+
+  /*console.log('categories', categories.value)
+  console.log('classes', classes.value)
+  console.log('editingVehicle', editingVehicle.value)*/
+  
+  /*if(props.operationType == 'update')
+  {
+    const cn = isCategoryNotNull(editingVehicle.value.class.category_id)
+    console.log('category not null:', cn)
+    console.log('classesCategoryId', classesCategoryId.value)
+
+  }*/
+
+  //isCategoryNotNull(vehicle.class_id)
 })
 
 </script>
@@ -111,27 +147,27 @@ onMounted (() => {
             required
             v-model="editingVehicle.model"
           />
-          <field-error-message :errors="errors" fieldName="model"></field-error-message>
+          <!--field-error-message :errors="errors" fieldName="model"></field-error-message-->
         </div>
 
         <div class="mb-3 px-1">
           <label for="inputCategory" class="form-label">Categoria</label>
           <br>
-          <select name="category" v-model="editingVehicle.category">
-              <option v-for="category in categories" v-bind:value="category.id">{{category.name}}</option>
+          <select class="form-select" name="category" @change="isCategoryNotNull($event.target.value)">
+              <option v-for="category in categories" v-bind:value="category.id" :selected="props.operationType == 'update' && category.id == editingVehicle.class.category_id">{{category.name}}</option>
           </select>
-          <field-error-message :errors="errors" fieldName="category"></field-error-message>
+          <!--field-error-message :errors="errors" fieldName="category"></field-error-message-->
         </div>
 
-        <div class="mb-3 px-1" v-if="isCategoryNotNull(editingVehicle.category)">
+        <div class="mb-3 px-1">
           <label for="inputClass" class="form-label">Classe</label>
           <br>
           <!--select name="class_id" v-model="editingVehicle.class_id"-->
-          <select name="class_id" v-model="editingVehicle.class_id">
+          <select class="form-select" name="class_id" v-model="editingVehicle.class_id" required>
               <!--option v-for="classe in classes" v-bind:value="classe.id">{{classe.name}}</option-->
-              <option v-for="classe in classesCategoryId" v-bind:value="classe.id" >{{classe.name}}</option>
+              <option v-for="(classe, index) in classesCategoryId" v-bind:value="classe.id" :selected="(props.operationType == 'update' && classe.id == editingVehicle.class.id) || index == 1">{{classe.name}}</option>
           </select>
-          <field-error-message :errors="errors" fieldName="class"></field-error-message>
+          <!--field-error-message :errors="errors" fieldName="class"></field-error-message-->
         </div>
 
         <!--div class="mb-3 px-1" v-if="editingVehicle.category == 'CL'"-->
@@ -173,7 +209,7 @@ onMounted (() => {
             required
             v-model="editingVehicle.license_plate"
           />
-          <field-error-message :errors="errors" fieldName="license_plate"></field-error-message>
+          <!--field-error-message :errors="errors" fieldName="license_plate"></field-error-message-->
         </div>
 
         <div class="mb-3 px-1">
@@ -186,7 +222,7 @@ onMounted (() => {
             required
             v-model="editingVehicle.year"
           />
-          <field-error-message :errors="errors" fieldName="year"></field-error-message>
+          <!--field-error-message :errors="errors" fieldName="year"></field-error-message-->
         </div>
 
         <div class="mb-3 px-1">
@@ -199,7 +235,7 @@ onMounted (() => {
             required
             v-model="editingVehicle.engine_capacity"
           />
-          <field-error-message :errors="errors" fieldName="engine_capacity"></field-error-message>
+          <!--field-error-message :errors="errors" fieldName="engine_capacity"></field-error-message-->
         </div>
       </div>
       <!--div class="w-25">
@@ -212,7 +248,7 @@ onMounted (() => {
       </div-->
     </div>
     <div class="mb-3 d-flex justify-content-center">
-      <button type="button" class="btn btn-dark px-5" @click="save">Guardar</button>
+      <button type="submit" class="btn btn-dark px-5" :disabled="!validData">Guardar</button>
       <button type="button" class="btn btn-light px-5" @click="cancel">Cancelar</button>
     </div>
   </form>

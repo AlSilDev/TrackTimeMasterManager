@@ -16,13 +16,13 @@ const userStore = useUserStore()
 const emit = defineEmits(['login'])
 const login = async () => {
   if (await userStore.login(credentials.value)) {
-    toast.success('User ' + credentials.value.username + ' has entered the application.')
+    toast.success('O utilizador ' + credentials.value.username + ' iniciou sessão.')
     emit('login')
     router.push({name: 'Vehicles'})
   }
   else {
     credentials.value.password = ''
-    toast.error('User credentials are invalid!')
+    toast.error('Credenciais inválidas!')
   }
 }
 </script>
@@ -41,6 +41,7 @@ const login = async () => {
           <div class="mb-3">
             <div class="mb-3">
               <label
+                style="color: white;"
                 for="inputUsername"
                 class="form-label"
               >Username</label>
@@ -56,6 +57,7 @@ const login = async () => {
           <div class="mb-3">
             <div class="mb-3">
               <label
+                style="color: white;"
                 for="inputPassword"
                 class="form-label"
               >Password</label>
@@ -70,9 +72,8 @@ const login = async () => {
           </div>
           <div class="mb-3 d-flex justify-content-center">
             <button
-              type="button"
+              type="submit"
               class="btn btn-light px-5"
-              @click="login"
             >Login</button>
           </div>
           </form>

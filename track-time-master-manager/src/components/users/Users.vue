@@ -3,6 +3,7 @@
   import {useRouter} from 'vue-router'
   import { useUserStore } from "../../stores/user.js"
   import UserTable from "./UserTable.vue"
+  import { BIconPlus, BIconTable } from 'bootstrap-icons-vue'
   
   const router = useRouter()
   const userStore = useUserStore()
@@ -17,17 +18,16 @@
   const changeBlockValue = async (user) => {
     if (await userStore.changeBlockValue(user)) {
       if(user.blocked == 0){
-        toast.success("Utilizador " + user.name + " bloqueado")
-      }
-      if(user.blocked == 1){
         toast.success("Utilizador " + user.name + " desbloqueado")
       }
-      emit("changeBlockValue")
-      user.blocked = (user.blocked == 0 ? 1 : 0)
+      if(user.blocked == 1){
+        toast.success("Utilizador " + user.name + " bloqueado")
+      }
     } else {
       toast.error("Utilizador não foi bloqueado/desbloqueado")
     }
   }
+
 
   /*const totalUsers = computed(() => {
     return users.value.length
@@ -45,6 +45,7 @@
     }*/
 
   const editUser = (user) => {
+    console.log("Chegou " + user.id)
     router.push({ name: 'User', params: { id: user.id } })
   }
 
@@ -55,6 +56,10 @@
   const addUser = () => {
     router.push({ name: 'NewUser' })
   }
+
+  const showCategories = () => {
+    router.push({ name: 'UserCategories' })
+  }
 </script>
 
 <template>
@@ -62,6 +67,7 @@
   <div class="container">
     <div class="d-flex justify-content-between">
       <div class="col-sm"><button type="button" class="btn btn-dark" @click="addUser"><BIconPlus/> Novo Utilizador</button></div>
+      <div class="col-sm"><button type="button" class="btn btn-dark" @click="showCategories"><BIconTable/> Categorias</button></div>
     </div>
   </div>
   <hr>

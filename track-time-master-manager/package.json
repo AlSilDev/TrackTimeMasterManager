@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --mode production",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -12,9 +12,12 @@
     "@popperjs/core": "^2.11.6",
     "bootstrap": "^5.2.3",
     "bootstrap-icons-vue": "^1.10.3",
+    "html2pdf.js": "^0.10.1",
     "moment": "^2.29.4",
     "pinia": "^2.0.32",
+    "socket.io-client": "^4.7.1",
     "vue": "^3.2.47",
+    "vue-country-flag-next": "^2.3.2",
     "vue-router": "^4.1.6"
   },
   "devDependencies": {

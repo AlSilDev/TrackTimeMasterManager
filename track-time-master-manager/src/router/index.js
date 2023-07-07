@@ -6,7 +6,6 @@ import Login from '../components/auth/Login.vue'
 import ChangePassword from "../components/auth/ChangePassword.vue"
 import Users from "../components/users/Users.vue"
 import User from "../components/users/User.vue"
-import UserCreate from "../components/users/UserCreate.vue"
 import Vehicles from "../components/vehicles/Vehicles.vue"
 import Vehicle from "../components/vehicles/Vehicle.vue"
 import Drivers from "../components/drivers/Drivers.vue"
@@ -16,6 +15,17 @@ import Events from "../components/events/Events.vue"
 import Event from "../components/events/Event.vue"
 import EventCategories from "../components/eventCategories/EventCategories.vue"
 import EventCategory from "../components/eventCategories/EventCategory.vue"
+import Enrollments from "../components/enrollments/Enrollments.vue"
+import UserCategories from "../components/userCategories/UserCategories.vue"
+import UserCategory from "../components/userCategories/UserCategory.vue"
+import PublicPage from '../components/publicPage/PublicPage.vue'
+import Stages from "../components/stages/Stages.vue"
+import Stage from "../components/stages/Stage.vue"
+import StageRun from "../components/stage_runs/StageRun.vue"
+import RaceStart from "../components/race_start/RaceStart.vue"
+import RaceTimeControl from "../components/race_time_control/RaceTimeControl.vue"
+import Classifications from "../components/classifications/Classifications.vue"
+import EventClassifications from "../components/classifications/EventClassifications.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,7 +33,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: PublicPage
     },
     {
       path: '/redirect/:redirectTo',
@@ -37,69 +47,160 @@ const router = createRouter({
       component: Login
     },
     {
-      path: '/secretariado/users/:id/password',
+      path: '/backend/users/:id/password',
       //path: '/secretariado/users/user/password',
       name: 'ChangePassword',
       component: ChangePassword,
       props: route => ({ id: parseInt(route.params.id) })
     },
     {
-      path: '/secretariado/users',
+      path: '/backend/users',
       name: 'Users',
       component: Users,
     },
     {
-      path: '/secretariado/vehicles',
+      path: '/backend/vehicles',
       name: 'Vehicles',
       component: Vehicles,
     },
     {
-      path: '/secretariado/vehicles/new',
+      path: '/backend/vehicles/new',
       name: 'NewVehicle',
       component: Vehicle,
     },
     {
-      path: '/secretariado/drivers',
+      path: '/backend/vehicles/:id',
+      name: 'Vehicle',
+      component: Vehicle,
+      props: route => ({ id: parseInt(route.params.id) })
+    },
+    {
+      path: '/backend/drivers',
       name: 'Drivers',
       component: Drivers,
     },
     {
-      path: '/secretariado/drivers/new',
+      path: '/backend/drivers/:id',
+      name: 'Driver',
+      component: Driver,
+      props: route => ({ id: parseInt(route.params.id) })
+    },
+    {
+      path: '/backend/drivers/new',
       name: 'NewDriver',
       component: Driver,
     },
     {
-      path: '/secretariado/users/new',
+      path: '/backend/users/new',
       name: 'NewUser',
       component: User,
     },
     {
-      path: '/events/categories/new',
+      path: '/backend/events/categories/new',
       name: 'NewEventCategory',
       component: EventCategory,
     },
     {
-      path: '/events/new',
+      path: '/backend/users/categories/new',
+      name: 'NewUserCategory',
+      component: UserCategory,
+    },
+    {
+      path: '/backend/events/new',
       name: 'NewEvent',
       component: Event,
     },
     {
-      path: '/events',
+      path: '/backend/events/:event_id/classifications',
+      name: 'EventClassifications',
+      component: EventClassifications,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), c_type: 'event' })
+    },
+    {
+      path: '/backend/events',
       name: 'Events',
       component: Events,
     },
     {
-      path: '/events/categories',
+      path: '/backend/events/:event_id/stages',
+      name: 'Stages',
+      component: Stages,
+      props: route => ({ event_id: parseInt(route.params.event_id) })
+    },
+    {
+      path: '/backend/events/:event_id/stages/new',
+      name: 'NewStage',
+      component: Stage,
+      props: route => ({ event_id: parseInt(route.params.event_id) })
+    },
+    {
+      path: '/backend/events/:event_id/stages/:stage_id',
+      name: 'Stage',
+      component: Stage,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id) })
+    },
+    {
+      path: '/backend/events/:event_id/stages/:stage_id/classifications',
+      name: 'StageClassifications',
+      component: Classifications,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id), c_type: 'stage' })
+    },
+    {
+      path: '/backend/events/:event_id/stages/:stage_id/stage_runs/new',
+      name: 'NewStageRun',
+      component: StageRun,
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id) })
+    },
+    {
+      path: '/backend/events/:event_id/stages/:stage_id/stage_runs/:stage_run_id',
+      name: 'StageRun',
+      component: StageRun,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id), stage_run_id: parseInt(route.params.stage_run_id) })
+    },
+    {
+      path: '/backend/events/:event_id/stages/:stage_id/stage_runs/:stage_run_id/classifications',
+      name: 'RunClassifications',
+      component: Classifications,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id), stage_run_id: parseInt(route.params.stage_run_id), c_type: 'stageRun' })
+    },
+    {
+      path: '/backend/events/:event_id/stages/:stage_id/stage_runs/:stage_run_id/race_start',
+      name: 'RaceStart',
+      component: RaceStart,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id), stage_run_id: parseInt(route.params.stage_run_id) })
+    },
+    {
+      path: '/backend/events/:event_id/stages/:stage_id/stage_runs/:stage_run_id/race_time_control',
+      name: 'RaceTimeControl',
+      component: RaceTimeControl,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ event_id: parseInt(route.params.event_id), stage_id: parseInt(route.params.stage_id), stage_run_id: parseInt(route.params.stage_run_id) })
+    },
+    {
+      path: '/backend/events/categories',
       name: 'EventCategories',
       component: EventCategories,
     },
     {
-      path: '/privatePage',
-      name: 'PrivatePage',
-      component: PrivatePage,
+      path: '/backend/users/categories',
+      name: 'UserCategories',
+      component: UserCategories,
     },
     {
-      path: '/users/:id',
+      path: '/backend/users/:id',
       name: 'User',
       component: User,
       //props: true
@@ -107,7 +208,7 @@ const router = createRouter({
       props: route => ({ id: parseInt(route.params.id) })
     },
     {
-      path: '/events/:id',
+      path: '/backend/events/:id',
       name: 'Event',
       component: Event,
       //props: true
@@ -115,9 +216,25 @@ const router = createRouter({
       props: route => ({ id: parseInt(route.params.id) })
     },
     {
-      path: '/events/category/:id',
+      path: '/backend/events/:id/enrollments',
+      name: 'Enrollments',
+      component: Enrollments,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ id: parseInt(route.params.id) })
+    },
+    {
+      path: '/backend/events/category/:id',
       name: 'EventCategory',
       component: EventCategory,
+      //props: true
+      // Replaced with the following line to ensure that id is a number
+      props: route => ({ id: parseInt(route.params.id) })
+    },
+    {
+      path: '/backend/users/category/:id',
+      name: 'UserCategory',
+      component: UserCategory,
       //props: true
       // Replaced with the following line to ensure that id is a number
       props: route => ({ id: parseInt(route.params.id) })
@@ -149,12 +266,12 @@ router.beforeEach((to, from, next) => {
     next()
     return
   }
-  if (!userStore.user && to.name != 'home') {
+  if (!userStore.user && to.name != 's') {
     next({ name: 'Login' })
     return
   }
   if (to.name == 'User') {
-    if ((userStore.user.type == 'A') || (userStore.user.id == to.params.id)) {
+    if ((userStore.user.type_id == 1) || (userStore.user.id == to.params.id)) {
       next()
       return
     }

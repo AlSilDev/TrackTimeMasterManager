@@ -6,6 +6,7 @@
   const router = useRouter()  
   const axios = inject('axios')
   const toast = inject('toast')
+  const socket = inject("socket")
 
   const props = defineProps({
       id: {
@@ -21,7 +22,9 @@
         id: null,
         model: '',
         class_id: null,
-        category: '',
+        class: {
+          category_id: null
+        },
         license_plate: '',
         year: null,
         engine_capacity: null
@@ -47,22 +50,22 @@
       }
   }
 
-  const save = () => {
+  const save = (category) => {
       errors.value = null
       if (operation.value == "insert"){
         axios.post('vehicles', vehicle.value)
           .then((response) => {
             vehicle.value = response.data.data
             originalValueStr = dataAsString()
-            toast.success('Vehicle #' + vehicle.value.id + ' was created successfully.')
+            toast.success('Veículo #' + vehicle.value.id + ' criado com sucesso')
             router.push({name: 'Vehicles'})
           })
           .catch((error) => {
             if (error.response.status == 422) {
-              toast.error('Vehicle was not created due to validation errors!')
+              toast.error('Veículo não criado devido a erros de validação')
               errors.value = error.response.data.errors
             } else {
-              toast.error('Vehicle was not created due to unknown server error!')
+              toast.error('Veículo não criado devido a erro de servidor desconhecido')
             }
           })
       }else{
@@ -70,19 +73,27 @@
         .then((response) => {
           vehicle.value = response.data.data
           originalValueStr = dataAsString()
-          toast.success('Vehicle #' + vehicle.value.id + ' was updated successfully.')
+          toast.success('Veículo #' + vehicle.value.id + ' atualizado com sucesso.')
+          vehicle.value.category = category.name
+          vehicle.value.class = vehicle.value.class.name
+          socket.emit('updateVehicle', vehicle.value);
+          console.log('vehicle:', vehicle.value)
           router.push({name: 'Vehicles'})
         })
         .catch((error) => {
           if (error.response.status == 422) {
-              toast.error('Vehicle #' + props.id + ' was not updated due to validation errors!')
+              toast.error('Veículo #' + props.id + ' não atualizado devido a erros de validação.')
               errors.value = error.response.data.errors
             } else {
-              toast.error('Vehicle #' + props.id + ' was not updated due to unknown server error!')
+              toast.error('Veículo #' + props.id + ' não atualizado devido a erro desconhecido.')
             }
         })
       }
   }
+
+  socket.on('updateVehicle', (vehicleUpdated) => {
+    vehicle.value = vehicleUpdated
+  })
 
   const cancel = () => {
     originalValueStr = dataAsString()
@@ -105,7 +116,6 @@
     let newValueStr = dataAsString()
     if (originalValueStr != newValueStr) {
       nextCallBack = next
-      confirmationLeaveDialog.value.show()
     } else {
       next()
     }
@@ -113,7 +123,6 @@
 
   const vehicle = ref(newVehicle())
   const errors = ref(null)
-  const confirmationLeaveDialog = ref(null)
 
   watch(
     () => props.id,
@@ -126,14 +135,6 @@
 </script>
 
 <template>
-  <confirmation-dialog
-    ref="confirmationLeaveDialog"
-    confirmationBtn="Discard changes and leave"
-    msg="Do you really want to leave? You have unsaved changes!"
-    @confirmed="leaveConfirmed"
-  >
-  </confirmation-dialog>  
-
   <vehicle-detail
     :operationType="operation"
     :vehicle="vehicle"

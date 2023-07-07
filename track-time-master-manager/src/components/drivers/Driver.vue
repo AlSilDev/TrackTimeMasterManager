@@ -1,11 +1,12 @@
 <script setup>
-  import { ref, watch, computed, inject } from 'vue'
+  import { ref, watch, computed, inject, onMounted } from 'vue'
   import DriverDetail from "./DriverDetail.vue"
   import { useRouter, onBeforeRouteLeave } from 'vue-router'  
   
   const router = useRouter()  
   const axios = inject('axios')
   const toast = inject('toast')
+  const socket = inject("socket")
 
   const props = defineProps({
       id: {
@@ -24,8 +25,18 @@
         license_num: null,
         license_expiry: Date,
         phone_num: null,
-        affiliate_num: null
+        affiliate_num: null,
+        country: ''
       }
+  }
+
+  const countries = ref([])
+  const loadCountries = async ()=>{
+    await axios.get('https://restcountries.com/v3.1/all?fields=name,translations')
+    .then((response)=>{
+      console.log(response.data)
+      countries.value = response.data
+    })
   }
 
   let originalValueStr = ''
@@ -54,15 +65,15 @@
           .then((response) => {
             driver.value = response.data.data
             originalValueStr = dataAsString()
-            toast.success('Driver #' + driver.value.id + ' was created successfully.')
+            toast.success('O condutor #' + driver.value.id + ' foi criado com sucesso.')
             router.push({name: 'Drivers'})
           })
           .catch((error) => {
             if (error.response.status == 422) {
-              toast.error('Driver was not created due to validation errors!')
+              toast.error('O condutor não foi criado devido a erros de validação.')
               errors.value = error.response.data.errors
             } else {
-              toast.error('Driver was not created due to unknown server error!')
+              toast.error('O condutor não foi criado devido a erro desconhecido.')
             }
           })
       }else{
@@ -70,19 +81,25 @@
         .then((response) => {
           driver.value = response.data.data
           originalValueStr = dataAsString()
-          toast.success('Driver #' + driver.value.id + ' was updated successfully.')
+          console.log('new driver', driver.value)
+          toast.success('Condutor #' + driver.value.id + ' atualizado com sucesso.')
+          socket.emit('updateDriver', driver.value);
           router.push({name: 'Drivers'})
         })
         .catch((error) => {
           if (error.response.status == 422) {
-              toast.error('Driver #' + props.id + ' was not updated due to validation errors!')
+              toast.error('Condutor #' + props.id + ' não atualizado devido a erros de validação.')
               errors.value = error.response.data.errors
             } else {
-              toast.error('Driver #' + props.id + ' was not updated due to unknown server error!')
+              toast.error('Condutor #' + props.id + ' não atualizado devido a erro desconhecido.')
             }
         })
       }
   }
+
+  socket.on('updateDriver', (driverUpdated) => {
+    driver.value = driverUpdated
+  })
 
   const cancel = () => {
     originalValueStr = dataAsString()
@@ -105,7 +122,6 @@
     let newValueStr = dataAsString()
     if (originalValueStr != newValueStr) {
       nextCallBack = next
-      confirmationLeaveDialog.value.show()
     } else {
       next()
     }
@@ -113,7 +129,6 @@
 
   const driver = ref(newDriver())
   const errors = ref(null)
-  const confirmationLeaveDialog = ref(null)
 
   watch(
     () => props.id,
@@ -123,20 +138,17 @@
     {immediate: true}  
     )
 
+  onMounted(async ()=>{
+    await loadCountries()
+  })
+
 </script>
 
 <template>
-  <confirmation-dialog
-    ref="confirmationLeaveDialog"
-    confirmationBtn="Discard changes and leave"
-    msg="Do you really want to leave? You have unsaved changes!"
-    @confirmed="leaveConfirmed"
-  >
-  </confirmation-dialog>  
-
   <driver-detail
     :driver="driver"
     :errors="errors"
+    :countries="countries"
     @save="save"
     @cancel="cancel"
   ></driver-detail>

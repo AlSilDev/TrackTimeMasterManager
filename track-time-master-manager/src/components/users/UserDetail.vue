@@ -18,6 +18,10 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  userCategories: {
+    type: Array,
+    default: () => []
+  },
   errors: {
     type: Object,
     required: false
@@ -53,6 +57,17 @@ const photoFullUrl = ref()
   emit("save", editingUser.value);
 }*/
 
+const userCategories = ref([])
+const loadUserCategories = (async() => {
+    await axios.get('userCategories')
+        .then((response) => {
+          userCategories.value = response.data
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+  })
+
 onMounted(()=>{
   setTimeout(()=>{
     photoFullUrl.value = editingUser.value.photo_url ? serverBaseUrl + "/storage/fotos/" + editingUser.value.photo_url : avatarNoneUrl;
@@ -60,8 +75,8 @@ onMounted(()=>{
     //console.log("Photo: " + editingUser.value.photo_url)
     //console.log("Photo props: " + props.user.photo_file)
   },1000);
-  
-}) 
+  loadUserCategories()
+})
 
 /*const save = () => {
       errors.value = null
@@ -147,7 +162,6 @@ const userTitle = computed(() => {
             required
             v-model="editingUser.name"
           />
-          <field-error-message :errors="errors" fieldName="name"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -160,27 +174,14 @@ const userTitle = computed(() => {
             required
             v-model="editingUser.email"
           />
-          <field-error-message :errors="errors" fieldName="email"></field-error-message>
-        </div>
-
-        <div class="mb-3 px-1" v-if="props.operationType == 'insert' && user.id == props.id">
-          <label for="inputTipo" class="form-label">Tipo</label>
-          <br>
-          <select name="type" v-model="editingUser.type">
-              <option value="A">Administrador</option>
-              <option value="S">Secretariado</option>
-          </select>
-          <field-error-message :errors="errors" fieldName="type"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
-          <label for="inputType" class="form-label">Tipo</label>
+          <label for="inputCategory" class="form-label">Categoria: </label>
           <br>
-          <select name="type" v-model="editingUser.type">
-              <option value="A">Administrador</option>
-              <option value="S">Secretariado</option>
+          <select id="inputCategory" v-model="editingUser.type_id">
+              <option v-for="userCategory in userCategories" v-bind:value="userCategory.id">{{userCategory.name}} ({{userCategory.abv}})</option>
           </select>
-          <field-error-message :errors="errors" fieldName="type"></field-error-message>
         </div>
 
         <div class="mb-3 px-1" v-if="props.operationType == 'insert'">
@@ -193,7 +194,6 @@ const userTitle = computed(() => {
             required
             v-model="editingUser.password"
           />
-          <field-error-message :errors="errors" fieldName="password"></field-error-message>
         </div>
 
         <!--div class="mb-3 px-1">

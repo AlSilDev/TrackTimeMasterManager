@@ -1,11 +1,16 @@
 <script setup>
-import { inject, ref, onMounted } from "vue";
+import { inject, ref, onMounted, computed } from "vue";
+import {useRouter} from 'vue-router'
 import { useUserStore } from "../../stores/user.js"
 import avatarNoneUrl from '@/assets/avatar-none.png'
+import { BIconSearch, BIconArrowUp, BIconArrowDown, BIconPencil } from 'bootstrap-icons-vue'
+//import CountryFlag from 'vue-country-flag-next'
 
 const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
 const axios = inject("axios")
+const router = useRouter()
+const socket = inject("socket")
 
 const props = defineProps({
   showId: {
@@ -78,6 +83,10 @@ const getResultsFiltered = async (page = 1) => {
     })
 }
 
+/*const flag = (country)=>{
+  return 'flag flag-' + country.toLowerCase().split('(')[0].trim().replaceAll(' ', '-')
+}*/
+
 const sortByColumn = (column) => {
     if (column === sortedColumn.value) {
       order.value = (order.value === 'asc') ? 'desc' : 'asc'
@@ -94,6 +103,14 @@ const restartSearch = () => {
   attribute.value.selectedIndex = 0
   getResultsFiltered()
 }
+
+socket.on('updateDriver', (driverUpdated) => {
+    const driverUpdatedIdx = laravelData.value.data.findIndex((element) => {return element.id == driverUpdated.id})
+    if (driverUpdatedIdx != -1)
+    {
+      laravelData.value.data[driverUpdatedIdx] = driverUpdated
+    }
+})
 
 onMounted(async ()=>{
   await getResultsFiltered()
@@ -117,29 +134,43 @@ onMounted(async ()=>{
       <button class="btn btn-outline-secondary" type="button" @click="restartSearch()">Reiniciar</button>
     </div>
   </div>
-
-  <table class="table table-hover table-striped">
-    <thead class="table-dark" style="cursor: pointer">
-      <tr>
-        <th class="align-middle" @click="sortByColumn('name')">Nome <span v-if="sortedColumn == 'name'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('email')">Email <span v-if="sortedColumn == 'email'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('license_num')">Nº de Licença <span v-if="sortedColumn == 'license_num'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('license_expiry')">Validade da Licença <span v-if="sortedColumn == 'license_expiry'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('phone_num')">Nº de Telemóvel <span v-if="sortedColumn == 'phone_num'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('affiliate_num')">Nº de Sócio <span v-if="sortedColumn == 'affiliate_num'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="user in laravelData.data" :key="user.id">
-        <td class="align-middle">{{ user.name }}</td>
-        <td class="align-middle">{{ user.email }}</td>
-        <td class="align-middle">{{ user.license_num }}</td>
-        <td class="align-middle">{{ user.license_expiry }}</td>
-        <td class="align-middle">{{ user.phone_num }}</td>
-        <td class="align-middle">{{ user.affiliate_num }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table table-hover table-striped">
+      <thead class="table-dark" style="cursor: pointer">
+        <tr>
+          <th></th>
+          <th class="align-middle" @click="sortByColumn('name')">Nome <span v-if="sortedColumn == 'name'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('email')">Email <span v-if="sortedColumn == 'email'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('license_num')">Nº de Licença <span v-if="sortedColumn == 'license_num'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('license_expiry')">Validade da Licença <span v-if="sortedColumn == 'license_expiry'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('phone_num')">Nº de Telemóvel <span v-if="sortedColumn == 'phone_num'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('affiliate_num')">Nº de Sócio <span v-if="sortedColumn == 'affiliate_num'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="driver in laravelData.data" :key="driver.id">
+          <td><CountryFlag :country="driver.country" size="normal"></CountryFlag></td>
+          <td class="align-middle">{{ driver.name }}</td>
+          <td class="align-middle">{{ driver.email }}</td>
+          <td class="align-middle">{{ driver.license_num }}</td>
+          <td class="align-middle">{{ driver.license_expiry }}</td>
+          <td class="align-middle">{{ driver.phone_num }}</td>
+          <td class="align-middle">{{ driver.affiliate_num }}</td>
+          <td class="text-end align-middle" v-if="userStore.user.type_id == 1 || userStore.user.type_id == 2">
+              <button
+                class="btn btn-xs btn-light"
+                @click="editDrivers(driver)"
+                title="Editar"
+              >
+                <BIconPencil/>
+              </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
 
   <div>
     <ul class="pagination" style="cursor: pointer">

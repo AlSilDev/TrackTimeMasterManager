@@ -3,12 +3,14 @@ import { inject, ref, onMounted } from "vue";
 import { useUserStore } from "../../stores/user.js"
 import {useRouter} from 'vue-router'
 import avatarNoneUrl from '@/assets/avatar-none.png'
+import { BIconSearch } from 'bootstrap-icons-vue'
 
 const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
 const axios = inject("axios")
 const router = useRouter()
 const toast = inject('toast')
+const socket = inject("socket")
 
 const props = defineProps({
   showId: {
@@ -53,11 +55,29 @@ const editEvent = (event) => {
   router.push({ name: 'Event', params: { id: event.id } })
 }
 
+//Admin -> id=1
+//Secretariado -> id=2
+//Verificações Técnicas -> id=3
+
 const isAdmin = () => {
   if (!userStore.user) {
     return false
   }
-  return userStore.user.type == 'A'
+  return userStore.user.type_id == 1
+}
+
+const havePermissionsAdminSec = () => {
+  if (!userStore.user) {
+    return false
+  }
+  return userStore.user.type_id == 1 || userStore.user.type_id == 2
+}
+
+const havePermissionsAdminSecVerTec = () => {
+  if (!userStore.user) {
+    return false
+  }
+  return userStore.user.type_id == 1 || userStore.user.type_id == 2 || userStore.user.type_id == 3
 }
 
 const getResultsFiltered = async (page = 1) => {
@@ -79,7 +99,7 @@ const getResultsFiltered = async (page = 1) => {
 
 const imageFullUrl = (event) => {
   return event.image_url
-    ? serverBaseUrl + "/storage/fotos/eventos/" + event.image_url
+    ? serverBaseUrl + "/storage/eventos/" + event.image_url
     : avatarNoneUrl;
 };
 
@@ -111,6 +131,14 @@ const restartSearch = () => {
   getResultsFiltered()
 }
 
+socket.on('updateEvent', (eventUpdated) => {
+    const eventUpdatedIdx = laravelData.value.data.findIndex((element) => {return element.id == eventUpdated.id})
+    if (eventUpdatedIdx != -1)
+    {
+      laravelData.value.data[eventUpdatedIdx] = eventUpdated
+    }
+})
+
 onMounted(async ()=>{
   await getResultsFiltered()
 })
@@ -136,9 +164,19 @@ onMounted(async ()=>{
     <div class="card" style="width: 18rem; margin: 10px;" v-for="event in laravelData.data" :key="event.id">
       <img class="card-img-top d-flex h-75" :src="imageFullUrl(event)" alt="Imagem do evento">
       <div class="card-body">
-        <h5 class="card-title">{{ event.name }}</h5>
-        <button v-if="isAdmin()" @click="editEvent(event)" class="btn btn-primary">Editar</button>
-        <button v-if="isAdmin()" @click="deleteEvent(event)" class="btn btn-danger">Cancelar</button>
+        <h5 class="card-title d-flex justify-content-center"><b>{{ event.name }}</b></h5>
+        <div class="d-grid gap-3">
+          <div class="d-flex justify-content-center">
+            <button v-if="havePermissionsAdminSecVerTec()" @click="router.push({ name: 'Enrollments', params: { id: event.id } })" class="btn btn-primary w-100">Inscrições</button>
+          </div>
+          <div class="d-flex justify-content-center">
+            <button v-if="isAdmin()" @click="router.push({ name: 'Stages', params: { event_id: event.id } })" class="btn btn-primary w-100">Etapas</button>
+          </div>
+          <div class="d-flex justify-content-between">
+            <button v-if="havePermissionsAdminSec()" @click="editEvent(event)" class="btn btn-primary d-flex justify-content-start">Editar</button>
+            <button v-if="havePermissionsAdminSec()" @click="deleteEvent(event)" class="btn btn-danger d-flex justify-content-end">Cancelar</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
