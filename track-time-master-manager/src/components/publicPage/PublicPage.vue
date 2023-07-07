@@ -1,4 +1,10 @@
 <script setup>
+import { onMounted } from 'vue';
+
+
+onMounted(()=>{
+  document.title = "NDML - Página Inicial"
+})
 </script>
 
 <template>
@@ -13,14 +19,17 @@
     </div>
   </div>
 
-  <div class="container-fluid" style="padding-top: 5%; padding-bottom: 5%">
-    <div class="container">
-      <div class="d-flex justify-content-between">
-        <button type="button" class="btn btn-dark btn-lg">Provas</button>
-        <button type="button" class="btn btn-dark btn-lg">Calendários</button>
-        <button type="button" class="btn btn-dark btn-lg">Organização</button>
-        <button type="button" class="btn btn-dark btn-lg">Seguranças</button>
+  <!--div class="d-flex justify-content-center"-->
+    <div class="container-fluid" style="padding-top: 5%; padding-bottom: 5%">
+      <div class="container">
+        <div class="d-flex flex-wrap justify-content-between">
+          <button type="button" class="btn btn-dark btn-lg">Provas</button>
+          <button type="button" class="btn btn-dark btn-lg">Calendários</button>
+          <button type="button" class="btn btn-dark btn-lg">Organização</button>
+          <button type="button" class="btn btn-dark btn-lg">Seguranças</button>
+        </div>
       </div>
     </div>
-  </div>
+  <!--/div-->
+  
 </template>
