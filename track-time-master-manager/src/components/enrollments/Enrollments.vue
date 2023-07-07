@@ -256,10 +256,14 @@ const loadEventParticipants = async ()=>{
 }
     
 const cancelEnrollment = async (enrollment)=>{
+    const runOrderEnrollDeleted = enrollment.run_order;
     await axios.delete(`enrollments/${enrollment.id}`)
     .then((response)=>{
         const index = enrollments.value.findIndex(element => element.id == enrollment.id)
         enrollments.value.splice(index, 1)
+        for (let i = index; i < enrollments.value.length; i++) {
+            enrollments.value[i].run_order--;
+        }
         toast.success(`A inscrição #${enrollment.id} foi cancelada com sucesso.`)
         socket.emit('removeEventEnrollment', enrollment);
         restartDriversSearch()
@@ -358,6 +362,7 @@ const enrollApprovedVA = async(enrollAdminVerification, boolApproved) => {
         axios.put(`adminVerifications/${enrollAdminVerification.id}/changeVerified`, updatedVerifieds, enrollAdminVerification)
         .then((response)=>{
             removeObjectWithId(enrollAdminVerification.id, enrollmentsAdminVerifications)
+            enrollAdminVerification.notes = null
             addObject(enrollAdminVerification, enrollmentsTechnicalVerifications)
             enrollmentsTechnicalVerifications.value = enrollmentsTechnicalVerifications.value.slice().sort((a,b) => {
                 return a.run_order - b.run_order;
@@ -486,6 +491,10 @@ const updateRunOrder = async ()=>{
     enrollments.value.forEach(enrollment => {
         updatedValues.push({'id': enrollment.id, 'run_order': enrollment.run_order, 'first_driver_id': enrollment.first_driver_id, 'second_driver_id': enrollment.second_driver_id, 'vehicle_id': enrollment.vehicle_id});
     })
+
+    enrollments.value = enrollments.value.slice().sort((a,b) => {
+        return a.run_order - b.run_order;
+    });
 
     axios.put(`enrollments/${props.id}/run_order`, updatedValues)
     .then((response)=>{
@@ -639,11 +648,12 @@ const VTInformationModal = ref({
     notes: '',
 })
 
-const updateAVNotes = async(VA_Id, VA_Notes) => {
+const updateAVNotes = async(VA) => {
     //update verificacao administrativa notes
     //console.log("VA id: ", VA_Id);
     //console.log("VA notes: ", VA_Notes);
-
+    const VA_Notes = VA.notes
+    const VA_Id = VA.id
     const updatedNotes = {'notes': VA_Notes}
     axios.put(`adminVerifications/${VA_Id}/changeNotes`, updatedNotes, VA_Id)
     .then((response)=>{
@@ -652,17 +662,19 @@ const updateAVNotes = async(VA_Id, VA_Notes) => {
         })
         enrollVAToUpdate.notes = VA_Notes
         toast.success("Notas atualizadas com sucesso!")
+        socket.emit('updateNotesForAdminVerification', VA)
     })
     .catch((error)=>{
         toast.error("Problemas ao atualizar notas. Contacte o admin")
     })
 }
 
-const updateTVNotes = async(VT_Id, VT_Notes) => {
+const updateTVNotes = async(VT) => {
     //update verificacao administrativa notes
     //console.log("VA id: ", VT_Id);
     //console.log("VA notes: ", VT_Notes);
-
+    const VT_Notes = VT.notes
+    const VT_Id = VT.id
     const updatedNotes = {'notes': VT_Notes}
     axios.put(`technicalVerifications/${VT_Id}/changeNotes`, updatedNotes, VT_Id)
     .then((response)=>{
@@ -671,11 +683,27 @@ const updateTVNotes = async(VT_Id, VT_Notes) => {
         })
         enrollVTToUpdate.notes = VT_Notes
         toast.success("Notas atualizadas com sucesso!")
+        socket.emit('updateNotesForTechnicalVerification', VT)
     })
     .catch((error)=>{
         toast.error("Problemas ao atualizar notas. Contacte o admin")
     })
 }
+
+socket.on('updateNotesForAdminVerification', (adminVerUpdated) => {
+    const avToUpdatedIndx = enrollmentsAdminVerifications.value.findIndex((element) => {
+        return element.id == adminVerUpdated.id
+    })
+    enrollmentsAdminVerifications.value[avToUpdatedIndx].notes = adminVerUpdated.notes
+})
+
+socket.on('updateNotesForTechnicalVerification', (technicalVerUpdated) => {
+    const tvToUpdatedIndx = enrollmentsTechnicalVerifications.value.findIndex((element) => {
+        return element.id == technicalVerUpdated.id
+    })
+    enrollmentsTechnicalVerifications.value[tvToUpdatedIndx].notes = technicalVerUpdated.notes
+})
+
 
 const AVUpdateDriver = (driver_id) => {
     //console.log('Driver_id', driver_id)
@@ -957,7 +985,7 @@ const TVUpdateVehicle = (vehicle_id) => {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal"><u>Close</u></button>
-                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal" @click="updateAVNotes(VAInformationModal.id, VAInformationModal.notes)">Save changes</button>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal" @click="updateAVNotes(VAInformationModal)">Save changes</button>
                 </div>
             </div>
         </div>
@@ -1034,7 +1062,7 @@ const TVUpdateVehicle = (vehicle_id) => {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal"><u>Close</u></button>
-                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal" @click="updateTVNotes(VTInformationModal.id, VTInformationModal.notes)">Save changes</button>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal" @click="updateTVNotes(VTInformationModal)">Save changes</button>
                 </div>
             </div>
         </div>
