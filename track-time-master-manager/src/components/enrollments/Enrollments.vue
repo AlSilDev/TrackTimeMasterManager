@@ -221,7 +221,6 @@ const loadEventToAdminVerifications = async ()=>{
     await axios.get('events/' + props.id+ '/adminVerifications/canBeVerified')
     .then((response)=>{
         enrollmentsAdminVerifications.value = response.data
-        //console.log(enrollmentsAdminVerifications.value)
         console.log(enrollmentsAdminVerifications.value)
     })
     .catch((error)=>{
@@ -708,13 +707,12 @@ socket.on('updateNotesForTechnicalVerification', (technicalVerUpdated) => {
 
 const AVUpdateDriver = (driver_id) => {
     //console.log('Driver_id', driver_id)
-    router.push({ name: 'Driver', params: { id: driver_id } })
     router.push({ name: 'DriverHistory', params: { id: driver_id } })
 }
 
 const TVUpdateVehicle = (vehicle_id) => {
     //console.log('Vehicle_id', vehicle_id)
-    router.push({ name: 'Vehicle', params: { id: vehicle_id } })
+    router.push({ name: 'VehicleHistory', params: { id: vehicle_id } })
 }
 
 socket.on('updateDriver', (driverUpdated) => {
@@ -727,6 +725,19 @@ socket.on('updateDriver', (driverUpdated) => {
         }
     });
 })
+
+socket.on('updateVehicle', (vehicleUpdated) => {
+    console.log('vehicleUpdated.id', vehicleUpdated)
+    console.log('enrollmentsTechnicalVerifications.value', enrollmentsTechnicalVerifications.value)
+    enrollmentsTechnicalVerifications.value.forEach((element) => {
+        if (element.vehicle_id == vehicleUpdated.id) {
+            //console.log('aqui')
+            element.vehicle_model = vehicleUpdated.model
+            element.vehicle_license_plate = vehicleUpdated.license_plate
+        }
+    })
+})
+
 </script>
 <template>
     <br>

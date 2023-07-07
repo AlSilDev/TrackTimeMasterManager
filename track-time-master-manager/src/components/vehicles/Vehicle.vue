@@ -1,7 +1,7 @@
 <script setup>
   import { ref, watch, computed, inject } from 'vue'
   import VehicleDetail from "./VehicleDetail.vue"
-  import { useRouter, onBeforeRouteLeave } from 'vue-router'  
+  import { useRouter, onBeforeRouteLeave } from 'vue-router'
   
   const router = useRouter()  
   const axios = inject('axios')
@@ -31,76 +31,125 @@
     }
   }
 
+  const pathHaveWordHistory = ref(null)
+
   let originalValueStr = ''
   const loadVehicle = (id) => {    
-    originalValueStr = ''
+    //originalValueStr = ''
       errors.value = null
       if (!id || (id < 0)) {
         vehicle.value = newVehicle()
-        originalValueStr = dataAsString()
+        //originalValueStr = dataAsString()
       } else {
-        axios.get('vehicles/' + id)
+        const currentPath = router.currentRoute.value.fullPath
+        console.log('Path: ', currentPath)
+        pathHaveWordHistory.value = currentPath.includes('history')
+        console.log('pathHaveWordHistory.value', pathHaveWordHistory.value)
+
+        if (!pathHaveWordHistory.value){
+          axios.get('vehicles/' + id)
           .then((response) => {
             vehicle.value = response.data.data
-            originalValueStr = dataAsString()
+            //console.log('vehicle.value', vehicle.value)
+            //originalValueStr = dataAsString()
           })
           .catch((error) => {
             console.log(error)
           })
+        }else{
+          axios.get('vehiclesHistory/' + id)
+          .then((response) => {
+            vehicle.value = response.data.data
+            console.log('vehicle.value', vehicle.value)
+            //originalValueStr = dataAsString()
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+        }
+        
       }
   }
 
-  const save = (category) => {
+  const save = async(category) => {
       errors.value = null
-      if (operation.value == "insert"){
-        axios.post('vehicles', vehicle.value)
+      if (!pathHaveWordHistory.value){
+        if (operation.value == "insert"){
+          axios.post('vehicles', vehicle.value)
+            .then((response) => {
+              vehicle.value = response.data.data
+              //originalValueStr = dataAsString()
+              toast.success('Veículo #' + vehicle.value.id + ' criado com sucesso')
+              router.push({name: 'Vehicles'})
+            })
+            .catch((error) => {
+              if (error.response.status == 422) {
+                toast.error('Veículo não criado devido a erros de validação')
+                errors.value = error.response.data.errors
+              } else {
+                toast.error('Veículo não criado devido a erro de servidor desconhecido')
+              }
+            })
+        }else{
+          await axios.put('vehicles/' + props.id, vehicle.value)
           .then((response) => {
             vehicle.value = response.data.data
-            originalValueStr = dataAsString()
-            toast.success('Veículo #' + vehicle.value.id + ' criado com sucesso')
-            router.push({name: 'Vehicles'})
+            //originalValueStr = dataAsString()
+            toast.success('Veículo #' + vehicle.value.id + ' atualizado com sucesso.')
+            vehicle.value.category = category.name
+            vehicle.value.class = vehicle.value.class.name
+            console.log('vehicle:', vehicle.value)
+            socket.emit('updateVehicle', vehicle.value);
+            router.back()
           })
           .catch((error) => {
             if (error.response.status == 422) {
-              toast.error('Veículo não criado devido a erros de validação')
-              errors.value = error.response.data.errors
-            } else {
-              toast.error('Veículo não criado devido a erro de servidor desconhecido')
-            }
+                toast.error('Veículo #' + props.id + ' não atualizado devido a erros de validação.')
+                errors.value = error.response.data.errors
+              } else {
+                toast.error('Veículo #' + props.id + ' não atualizado devido a erro desconhecido.')
+              }
           })
+          router.go(-1)
+        }
       }else{
-        axios.put('vehicles/' + props.id, vehicle.value)
-        .then((response) => {
-          vehicle.value = response.data.data
-          originalValueStr = dataAsString()
-          toast.success('Veículo #' + vehicle.value.id + ' atualizado com sucesso.')
-          vehicle.value.category = category.name
-          vehicle.value.class = vehicle.value.class.name
-          socket.emit('updateVehicle', vehicle.value);
-          console.log('vehicle:', vehicle.value)
-          router.push({name: 'Vehicles'})
-        })
-        .catch((error) => {
-          if (error.response.status == 422) {
-              toast.error('Veículo #' + props.id + ' não atualizado devido a erros de validação.')
-              errors.value = error.response.data.errors
-            } else {
-              toast.error('Veículo #' + props.id + ' não atualizado devido a erro desconhecido.')
-            }
-        })
+        axios.put('vehiclesHistory/' + props.id, vehicle.value)
+          .then((response) => {
+            vehicle.value = response.data.data
+            //originalValueStr = dataAsString()
+            toast.success('Veículo #' + vehicle.value.id + ' atualizado com sucesso.')
+            vehicle.value.category = category.name
+            vehicle.value.class = vehicle.value.class.name
+            socket.emit('updateVehicle', vehicle.value);
+            console.log('vehicle:', vehicle.value)//Enrollments
+            router.back()
+          })
+          .catch((error) => {
+            if (error.response.status == 422) {
+                toast.error('Veículo #' + props.id + ' não atualizado devido a erros de validação.')
+                errors.value = error.response.data.errors
+              } else {
+                toast.error('Veículo #' + props.id + ' não atualizado devido a erro desconhecido.')
+              }
+          })
       }
   }
 
   socket.on('updateVehicle', (vehicleUpdated) => {
-    vehicle.value = vehicleUpdated
+    if ((pathHaveWordHistory && vehicleUpdated.vehicle_id != null) || !pathHaveWordHistory && !vehicleUpdated.vehicle_id){
+      if (driver.value.id == driverUpdated.id){
+        vehicle.value = vehicleUpdated
+      }
+    }
   })
 
   const cancel = () => {
-    originalValueStr = dataAsString()
-    router.push({name: 'Vehicles'})
+    //originalValueStr = dataAsString()
+    //router.push({name: 'Vehicles'})
+    router.back()
   }
 
-  const dataAsString = () => {
+  /*const dataAsString = () => {
       return JSON.stringify(vehicle.value)
   }
 
@@ -119,7 +168,7 @@
     } else {
       next()
     }
-  })  
+  })*/
 
   const vehicle = ref(newVehicle())
   const errors = ref(null)
@@ -128,7 +177,7 @@
     () => props.id,
     (newValue) => {
       loadVehicle(newValue)
-      },
+    },
     {immediate: true}  
     )
 
