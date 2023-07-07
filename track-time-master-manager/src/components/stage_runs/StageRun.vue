@@ -6,6 +6,7 @@
   const router = useRouter()  
   const axios = inject('axios')
   const toast = inject('toast')
+  const socket = inject("socket")
 
   const props = defineProps({
       stage_run_id: {
@@ -84,6 +85,7 @@
         stageRun.value = response.data.data
         toast.success('Partida #' + stageRun.value.id + ' foi atualizada com sucesso!')
         //TODO
+        socket.emit('updateStageRun', stageRun.value);
         router.push({name: 'Stages', params: { event_id: props.event_id }})
       })
       .catch((error) => {

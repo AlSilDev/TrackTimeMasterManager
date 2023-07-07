@@ -62,6 +62,10 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('repproveTechnicalVerification', TVrepproved)
         console.log(`technical verification ${TVrepproved.id} has repproved`)
     })
+    socket.on('updateStageRun', (stageRun) => {
+        socket.broadcast.emit('updateStageRun', stageRun)
+        console.log(`stage run ${stageRun.id} has updated`)
+    })
     socket.on('updateNotesForAdminVerification', (AV) => {
         socket.broadcast.emit('updateNotesForAdminVerification', AV)
         console.log(`admin verification ${AV.id} notes has updated`)
