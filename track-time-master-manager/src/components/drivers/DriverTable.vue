@@ -4,6 +4,7 @@ import {useRouter} from 'vue-router'
 import { useUserStore } from "../../stores/user.js"
 import avatarNoneUrl from '@/assets/avatar-none.png'
 import { BIconSearch, BIconArrowUp, BIconArrowDown, BIconPencil } from 'bootstrap-icons-vue'
+//import CountryFlag from 'vue-country-flag-next'
 
 const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
@@ -82,9 +83,9 @@ const getResultsFiltered = async (page = 1) => {
     })
 }
 
-const flag = (country)=>{
+/*const flag = (country)=>{
   return 'flag flag-' + country.toLowerCase().split('(')[0].trim().replaceAll(' ', '-')
-}
+}*/
 
 const sortByColumn = (column) => {
     if (column === sortedColumn.value) {
@@ -149,7 +150,7 @@ onMounted(async ()=>{
       </thead>
       <tbody>
         <tr v-for="driver in laravelData.data" :key="driver.id">
-          <td><i :class="flag(driver.country)"></i></td>
+          <td><CountryFlag :country="driver.country" size="normal"></CountryFlag></td>
           <td class="align-middle">{{ driver.name }}</td>
           <td class="align-middle">{{ driver.email }}</td>
           <td class="align-middle">{{ driver.license_num }}</td>

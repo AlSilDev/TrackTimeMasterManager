@@ -2,9 +2,11 @@
 import { inject, onMounted, ref } from 'vue';
 import RunHeader from './RunHeader.vue'
 import RowData from './RowData.vue'
+//import CountryFlag from 'vue-country-flag-next'
 
 const axios = inject('axios')
 const toast = inject('toast')
+const socket = inject("socket")
 
 const props = defineProps({
     c_type: {
@@ -41,9 +43,9 @@ const loadClassifications = (id) => {
     })
 }
 
-const flag = (country)=>{
+/*const flag = (country)=>{
   return 'flag flag-' + country.toLowerCase().split('(')[0].trim().replaceAll(' ', '-')
-}
+}*/
 
 const timeInMinutes = (time_secs) => {
     var minutes = Math.floor(time_secs / 60)
@@ -53,6 +55,24 @@ const timeInMinutes = (time_secs) => {
     seconds = seconds/10 < 1 ? '0' + seconds : seconds
     return minutes + ':' + seconds
 }
+
+socket.on('updateFinalTimeForTimeRun', (classificationUpdated) => {
+    console.log('timeUpdated', classificationUpdated)
+
+    const elementToUpdatedIdx = classifications.value.findIndex((element) => {
+        return element.id == classificationUpdated.id
+    })
+
+    console.log('BEFOPRE classifications.value[elementToUpdatedIdx]', classifications.value[elementToUpdatedIdx])
+    classifications.value[elementToUpdatedIdx].penalty = classificationUpdated.penalty
+    classifications.value[elementToUpdatedIdx].time_mils = classificationUpdated.time_mils
+    classifications.value[elementToUpdatedIdx].points = classificationUpdated.time_points
+    classifications.value[elementToUpdatedIdx].time_secs = classificationUpdated.time_secs
+
+    classifications.value = classifications.value.slice().sort( (a,b) => {
+        return a.time_secs - b.time_secs
+    })
+})
 
 onMounted(()=>{
     switch(props.c_type)
@@ -97,8 +117,8 @@ onMounted(()=>{
             <tr v-for="(classification, index) in classifications" :key="classification.id">
                 <td class="align-middle">{{ index + 1 }}</td>
                 <td class="align-middle">{{ classification.run_order }}</td>
-                <td class="align-middle"><i :class="flag(classification.first_driver_country)"></i> {{ classification.first_driver_name }}</td>
-                <td class="align-middle"><i :class="flag(classification.second_driver_country)"></i> {{ classification.second_driver_name }}</td>
+                <td class="align-middle"><country-flag :country="classification.first_driver_country" size="small"></country-flag> {{ classification.first_driver_name }}</td>
+                <td class="align-middle"><country-flag :country="classification.second_driver_country" size="small"></country-flag> {{ classification.second_driver_name }}</td>
                 <td class="align-middle">{{ classification.vehicle_model }}</td>
                 <td class="align-middle">{{ classification.vehicle_category }}</td>
                 <td class="align-middle">{{ classification.vehicle_class }}</td>

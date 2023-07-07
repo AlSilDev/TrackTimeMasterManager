@@ -90,7 +90,8 @@
             router.push({name: 'Users'})
           })
           .catch((error) => {
-            if (error.response.status == 422) {
+            console.log(error)
+            if (error.status == 422) {
               toast.error('Utilizador não criado devido a erros de validação.')
               errors.value = error.response.data.errors
             } else {
