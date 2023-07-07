@@ -322,7 +322,7 @@ onMounted(()=>{
           />
         </div>
 
-        <div class="mb-3 px-1">
+        <!--div class="mb-3 px-1">
           <label for="inputYear" class="form-label">Ano</label>
           <input
             type="number"
@@ -333,7 +333,7 @@ onMounted(()=>{
             required
             v-model="editingEvent.year"
           />
-        </div>
+        </!--div-->
 
         <div class="w-25">
           <div class="mb-3">
