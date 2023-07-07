@@ -1,9 +1,12 @@
 <script setup>
 import { inject, ref, watch } from 'vue';
 import { BIconSave } from 'bootstrap-icons-vue';
+import moment from 'moment'
 
 const axios = inject('axios')
 const toast = inject('toast')
+const socket = inject("socket")
+
 const props = defineProps({
     event_id: {
         type: Number,
@@ -19,6 +22,16 @@ const props = defineProps({
     }
 })
 
+const parseDates = (element) => {
+    element.start_date = new Date(element.start_date)
+    element.end_date = new Date(element.end_date)
+    element.time_split = {}
+    element.time_split.hours = element.start_date.getHours()
+    element.time_split.minutes = element.start_date.getMinutes()
+    element.time_split.seconds = element.start_date.getSeconds()
+    console.log(`element ${element.run_order}`, element)
+}
+
 const times = ref([])
 const loadTimesRun = (stage_run_id) => {
     axios.get(`stageRuns/${stage_run_id}/times`)
@@ -26,13 +39,7 @@ const loadTimesRun = (stage_run_id) => {
         console.log(response)
         times.value = response.data
         times.value.forEach((element) => {
-            element.start_date = new Date(element.start_date)
-            element.time_split = {}
-            element.time_split.hours = element.start_date.getHours()
-            element.time_split.minutes = element.start_date.getMinutes()
-            element.time_split.seconds = element.start_date.getSeconds()
-            //element.time_split.milliseconds = element.start_date.getMilliseconds()
-            console.log(`element ${element.run_order}`, element)
+            parseDates(element)
         })
     })
     .catch((error)=>{
@@ -65,11 +72,56 @@ const saveTime = (time) => {
     axios.put(`stageRuns/${props.stage_run_id}/times/${time.id}/start`, time_to_save)
     .then((response) => {
         console.log(response)
+        parseDates(response.data.data)
+        times.value[time.run_order - 1] = response.data.data
+        socket.emit('updateStageRunRaceStartTime', time);
         toast.success(`O tempo do participante #${time.run_order} foi alterado com sucesso.`)
     })
     .catch((error) => {
         console.error(error)
     })
+    //console.log('time_to_save', time_to_save)
+    //parseDates(time_to_save)
+    //times.value[time.run_order - 1] = time_to_save
+    //toast.success(`O tempo do participante #${time.run_order} foi alterado com sucesso.`)
+    //socket.emit('updateStageRunRaceStartTime', time);
+}
+
+socket.on('updateStageRunRaceStartTime', (timeUpdated) => {
+    //atualizar elemento com timeUpdated nos times
+    console.log('timeUpdated', timeUpdated)
+    //const auxDater = new Date(timeUpdated.start_date)
+    //console.log('auxDater', auxDater)
+    timeUpdated.start_date = new Date(timeUpdated.start_date)
+
+    const elementToUpdatedIdx = times.value.findIndex((element) => {
+        return element.id == timeUpdated.id
+    })
+    console.log('BEFORE times.value[elementToUpdatedIdx]', times.value[elementToUpdatedIdx].start_date)
+    console.log('timeUpdated.start_date', timeUpdated.start_date)
+    const auxDaterFinal = new Date(timeUpdated.start_date)
+    times.value[elementToUpdatedIdx].time_split.hours = auxDaterFinal.getHours()
+    times.value[elementToUpdatedIdx].time_split.minutes = auxDaterFinal.getMinutes()
+    times.value[elementToUpdatedIdx].time_split.seconds = auxDaterFinal.getSeconds()
+    console.log('AFTER times.value[elementToUpdatedIdx]', times.value[elementToUpdatedIdx])
+    //const timeUpdatedAux = new Date(timeUpdated.start_date)
+    //const timeToUpdate = new Date(times.value[elementToUpdatedIdx].start_date)
+    /*updateTime(times.value[elementToUpdatedIdx], timeUpdatedAux.getHours(), 'h');
+    updateTime(times.value[elementToUpdatedIdx], timeUpdatedAux.getMinutes(), 'm');
+    updateTime(times.value[elementToUpdatedIdx], timeUpdatedAux.getSeconds(), 's');*/
+    //console.log('times.value[elementToUpdatedIdx].start_date', times.value[elementToUpdatedIdx].start_date)
+    //console.log('timeToUpdate', timeToUpdate)
+    //console.log('timeUpdatedAux.getHours()', timeUpdatedAux.getHours())
+    //timeToUpdate.setHours(timeUpdatedAux.getHours())
+    //timeToUpdate.setMinutes(timeUpdatedAux.getMinutes())
+    //timeToUpdate.setSeconds(timeUpdatedAux.getSeconds())
+    //console.log('timeToUpdate', timeToUpdate)
+})
+
+const formatDate = (value)=>{
+  if (value) {
+    return moment(String(value)).format('DD/MM/YYYY hh:mm:ss')
+  }
 }
 
 watch(
@@ -82,7 +134,7 @@ watch(
 </script>
 <template>
     <h1>PARTIDAS</h1>
-    <div>
+    <div class="table-responsive">
         <table class="table table-striped table-hoverable">
             <thead class="table-dark" style="cursor: pointer">
                 <tr>

@@ -10,6 +10,7 @@ const userStore = useUserStore()
 const axios = inject("axios")
 const router = useRouter()
 const toast = inject('toast')
+const socket = inject("socket")
 
 const props = defineProps({
   showId: {
@@ -98,7 +99,7 @@ const getResultsFiltered = async (page = 1) => {
 
 const imageFullUrl = (event) => {
   return event.image_url
-    ? serverBaseUrl + "/storage/fotos/eventos/" + event.image_url
+    ? serverBaseUrl + "/storage/eventos/" + event.image_url
     : avatarNoneUrl;
 };
 
@@ -129,6 +130,14 @@ const restartSearch = () => {
   attribute.value.selectedIndex = 0
   getResultsFiltered()
 }
+
+socket.on('updateEvent', (eventUpdated) => {
+    const eventUpdatedIdx = laravelData.value.data.findIndex((element) => {return element.id == eventUpdated.id})
+    if (eventUpdatedIdx != -1)
+    {
+      laravelData.value.data[eventUpdatedIdx] = eventUpdated
+    }
+})
 
 onMounted(async ()=>{
   await getResultsFiltered()
@@ -161,7 +170,7 @@ onMounted(async ()=>{
             <button v-if="havePermissionsAdminSecVerTec()" @click="router.push({ name: 'Enrollments', params: { id: event.id } })" class="btn btn-primary w-100">Inscrições</button>
           </div>
           <div class="d-flex justify-content-center">
-            <button v-if="isAdmin()" @click="router.push({ name: 'Stages', params: { event_id: event.id } })" class="btn btn-primary">Etapas</button>
+            <button v-if="isAdmin()" @click="router.push({ name: 'Stages', params: { event_id: event.id } })" class="btn btn-primary w-100">Etapas</button>
           </div>
           <div class="d-flex justify-content-between">
             <button v-if="havePermissionsAdminSec()" @click="editEvent(event)" class="btn btn-primary d-flex justify-content-start">Editar</button>

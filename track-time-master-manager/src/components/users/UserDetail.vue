@@ -178,8 +178,9 @@ const userTitle = computed(() => {
 
         <div class="mb-3 px-1">
           <label for="inputCategory" class="form-label">Categoria: </label>
+          <br>
           <select id="inputCategory" v-model="editingUser.type_id">
-              <option v-for="userCategory in userCategories" v-bind:value="userCategory.id">{{userCategory.name}} ({{userCategory.sigla}})</option>
+              <option v-for="userCategory in userCategories" v-bind:value="userCategory.id">{{userCategory.name}} ({{userCategory.abv}})</option>
           </select>
         </div>
 

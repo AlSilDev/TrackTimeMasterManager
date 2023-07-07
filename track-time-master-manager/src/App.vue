@@ -5,6 +5,7 @@ import { useUserStore } from './stores/user.js'
 import Login from './components/auth/Login.vue'
 import PrivatePage from './components/privatePage/PrivatePage.vue'
 import PublicPage from './components/publicPage/PublicPage.vue'
+import { BIconList, BIconArrowRight, BIconPersonFill, BIconKeyFill, BIconBoxArrowInRight } from "bootstrap-icons-vue"
 
 
 const router = useRouter()
@@ -12,14 +13,14 @@ const axios = inject("axios")
 const toast = inject("toast")
 const userStore = useUserStore()
 const buttonSidebarExpand = ref(null)
+const socket = inject("socket")
 
 const logout = async () => {
   if (await userStore.logout()) {
-    toast.success('User has logged out of the application.')
-    //clickMenuOption()
+    clickMenuOption()
     router.push({name: 'home'})
   } else {
-    toast.error('There was a problem logging out of the application!')
+    toast.error('Ocorreu um problema ao fechar a sessão')
   }
 }
 
@@ -59,27 +60,47 @@ watch (
   () => router.currentRoute.value,
   () => {
     isBackendPage();
+  },
+  (buttonSidebarExpand) => {
+    console.log(buttonSidebarExpand.value)
   }
 )
+
+const backend = ref(false)
+
+
+
+socket.on('updateUser', (userUpdated) => {
+  if (userStore.user.id == userUpdated.id)
+  {
+    userStore.user = userUpdated
+  }
+})
+
 </script>
 
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow">
-    <div class="container">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top shadow">
+    <div class="container-fluid">
 
-      <a class="btn" role="button">
-        <h4><b>TtmM</b></h4>
-      </a>
+      <router-link
+        class="navbar-brand col-md-3 col-lg-2 me-0 px-3"
+        :to="{ name: 'home' }"
+        @click="clickMenuOption"
+      >
+        TtmM
+      </router-link>
 
-      <div class="collapse navbar-collapse justify-content-end">
+      <div class="d-flex">
         <ul class="navbar-nav">
           <li class="nav-item" v-show="!userStore.user">
             <router-link
-              class="nav-link text-dark"
+              class="nav-link"
               :class="{ active: $route.name === 'Login' }"
               :to="{ name: 'Login' }"
             >
               <i class="bi bi-box-arrow-in-right"></i>
+              <BIconBoxArrowInRight/>
               Login
             </router-link>
           </li>
@@ -100,7 +121,7 @@ watch (
               <span class="avatar-text">{{ userStore.user?.name ?? 'Anonymous' }}</span>
             </a>
             <ul
-              class="dropdown-menu dropdown-menu-dark dropdown-menu-end"
+              class="dropdown-menu dropdown-menu-dark dropdown-menu-end position-absolute"
               aria-labelledby="navbarDropdownMenuLink"
             >
               <li>
@@ -110,7 +131,7 @@ watch (
                   :to="{ name: 'User', params: { id: userStore.userId } }"
                   @click="clickMenuOption"
                 >
-                  <i class="bi bi-person-square"></i>Perfil
+                  <BIconPersonFill/> Perfil
                 </router-link>
               </li>
               <li>
@@ -120,8 +141,7 @@ watch (
                   :to="{ name: 'ChangePassword', params: { id: userStore.userId } }"
                   @click="clickMenuOption"
                 >
-                  <i class="bi bi-key-fill"></i>
-                  Mudar password
+                  <BIconKeyFill/> Mudar password
                 </router-link>
               </li>
               <li>
@@ -129,32 +149,130 @@ watch (
               </li>
               <li v-if="isBackendPage()">
                 <a class="dropdown-item" @click="publicPage">
-                  <i class="bi bi-arrow-right"></i>Página Pública
+                  <BIconArrowRight/> Página Pública
                 </a>
               </li>
               <li v-else>
                 <a class="dropdown-item" @click="privatePage">
-                  <i class="bi bi-arrow-right"></i>Página Backend
+                  <BIconArrowRight/> Página Backend
                 </a>
               </li>
               <li>
                 <a class="dropdown-item" @click.prevent="logout">
-                  <i class="bi bi-arrow-right"></i>Logout
+                  <BIconArrowRight/> Logout
                 </a>
               </li>
             </ul>
           </li>
         </ul>
+
+        <button
+          id="buttonSidebarExpandId"
+          ref="buttonSidebarExpand"
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#sidebarMenu"
+          aria-controls="sidebarMenu"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+          v-if="isBackendPage()"
+        >
+          <BIconList></BIconList>
+        </button>                   
       </div>
     </div>
   </nav>
 
+  <div class="container-fluid">
+      <div class="row" v-if="userStore.user && isBackendPage()">
+        <nav
+          id="sidebarMenu"
+          class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse navbar-collapse"
+        >
+          <div class="position-relative pt-3">
+            <ul class="nav flex-column bg-info text-white">
+              <li class="nav flex-column">
+                <h6 class="text-center">Secretariado</h6>
+              </li>
+            </ul>
+            <ul class="nav flex-column">
+              <li class="nav flex-column">
+                <router-link
+                  class="nav-link w-100 me-3 text-white"
+                  :class="{ active: $route.name === 'Vehicles' }"
+                  :to="{ name: 'Vehicles' }"
+                  @click="clickMenuOption"
+                >
+                  <i class="bi bi-list-check"></i>
+                  Viaturas
+                </router-link>
+              </li>
+              <li class="nav flex-column">
+                <router-link
+                  class="nav-link w-100 me-3 text-white"
+                  :class="{ active: $route.name === 'Drivers' }"
+                  :to="{ name: 'Drivers' }"
+                  @click="clickMenuOption"
+                >
+                  <i class="bi bi-list-check"></i>
+                  Concorrentes
+                </router-link>
+              </li>
+              <li class="nav flex-column">
+                <router-link
+                  class="nav-link w-100 me-3 text-white"
+                  :class="{ active: $route.name === 'Users' }"
+                  :to="{ name: 'Users' }"
+                  @click="clickMenuOption"
+                >
+                  <i class="bi bi-list-check"></i>
+                  Utilizadores
+                </router-link>
+              </li>
+            </ul>
+            <ul class="nav flex-column bg-success text-white">
+              <li class="nav flex-column">
+                <br>
+              </li>
+            </ul>
+            <ul class="nav flex-column bg-success text-white">
+              <li class="nav flex-column">
+                <h6 class="text-center">Events</h6>
+              </li>
+            </ul>
+            <ul class="nav flex-column">
+              <li class="nav flex-column">
+                <router-link
+                  class="nav-link w-100 me-3 text-white"
+                  :class="{ active: $route.name === 'Events' }"
+                  :to="{ name: 'Events' }"
+                  @click="clickMenuOption"
+                >
+                  <i class="bi bi-list-check"></i>
+                  Provas
+                </router-link>
+              </li>
+            </ul>
+          </div>
+        </nav>
 
-  <div class="container-fluid" v-if="userStore.user && isBackendPage()">
-    <PrivatePage :clickMenuOption="clickMenuOption"></PrivatePage>
-  </div>
-  <div v-else>
-    <router-view></router-view>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+          <router-view></router-view>
+        </main>
+      </div>
+      <div class="row" v-else>
+        <router-view></router-view> 
+      </div>
+
+      
+        <!--div class="container-fluid" v-if="userStore.user && isBackendPage()">
+          <PrivatePage :clickMenuOption="clickMenuOption"></PrivatePage>
+        </!--div>
+        <div-- v-else>
+          <router-view></router-view>
+        </div-->
+
   </div>
 </template>
 

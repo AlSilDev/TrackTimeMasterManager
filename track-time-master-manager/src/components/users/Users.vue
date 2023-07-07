@@ -18,17 +18,16 @@
   const changeBlockValue = async (user) => {
     if (await userStore.changeBlockValue(user)) {
       if(user.blocked == 0){
-        toast.success("Utilizador " + user.name + " bloqueado")
-      }
-      if(user.blocked == 1){
         toast.success("Utilizador " + user.name + " desbloqueado")
       }
-      emit("changeBlockValue")
-      user.blocked = (user.blocked == 0 ? 1 : 0)
+      if(user.blocked == 1){
+        toast.success("Utilizador " + user.name + " bloqueado")
+      }
     } else {
       toast.error("Utilizador não foi bloqueado/desbloqueado")
     }
   }
+
 
   /*const totalUsers = computed(() => {
     return users.value.length

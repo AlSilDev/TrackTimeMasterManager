@@ -6,6 +6,7 @@
   const router = useRouter()  
   const axios = inject('axios')
   const toast = inject('toast')
+  const socket = inject("socket")
 
   const props = defineProps({
       id: {
@@ -64,15 +65,15 @@
           .then((response) => {
             driver.value = response.data.data
             originalValueStr = dataAsString()
-            toast.success('Driver #' + driver.value.id + ' was created successfully.')
+            toast.success('O condutor #' + driver.value.id + ' foi criado com sucesso.')
             router.push({name: 'Drivers'})
           })
           .catch((error) => {
             if (error.response.status == 422) {
-              toast.error('Driver was not created due to validation errors!')
+              toast.error('O condutor não foi criado devido a erros de validação.')
               errors.value = error.response.data.errors
             } else {
-              toast.error('Driver was not created due to unknown server error!')
+              toast.error('O condutor não foi criado devido a erro desconhecido.')
             }
           })
       }else{
@@ -81,19 +82,24 @@
           driver.value = response.data.data
           originalValueStr = dataAsString()
           console.log('new driver', driver.value)
-          toast.success('Driver #' + driver.value.id + ' was updated successfully.')
+          toast.success('Condutor #' + driver.value.id + ' atualizado com sucesso.')
+          socket.emit('updateDriver', driver.value);
           router.push({name: 'Drivers'})
         })
         .catch((error) => {
           if (error.response.status == 422) {
-              toast.error('Driver #' + props.id + ' was not updated due to validation errors!')
+              toast.error('Condutor #' + props.id + ' não atualizado devido a erros de validação.')
               errors.value = error.response.data.errors
             } else {
-              toast.error('Driver #' + props.id + ' was not updated due to unknown server error!')
+              toast.error('Condutor #' + props.id + ' não atualizado devido a erro desconhecido.')
             }
         })
       }
   }
+
+  socket.on('updateDriver', (driverUpdated) => {
+    driver.value = driverUpdated
+  })
 
   const cancel = () => {
     originalValueStr = dataAsString()

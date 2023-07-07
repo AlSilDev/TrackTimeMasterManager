@@ -4,6 +4,8 @@ import { BIconSave } from 'bootstrap-icons-vue';
 
 const axios = inject('axios')
 const toast = inject('toast')
+const socket = inject("socket")
+
 const props = defineProps({
     event_id: {
         type: Number,
@@ -71,15 +73,48 @@ const saveTime = (time) => {
         console.log(response)
         parseDates(response.data.data)
         times.value[time.run_order - 1] = response.data.data
-        //console.log(time)
+        console.log(time)
         console.log(times)
+        socket.emit('updateStageRunRaceTimeControlTime', response.data.data);
+        socket.emit('updateFinalTimeForTimeRun', response.data.data);
+        socket.emit('updateEventFinalTimeForTimeRun', response.data.data);
         toast.success(`O tempo do participante #${time.run_order} foi alterado com sucesso.`)
     })
     .catch((error) => {
         console.error(error)
         toast.error(error.response.data)
     })
+
+    //console.log(time_to_save)
+    //parseDates(time_to_save)
+    //times.value[time.run_order - 1] = time_to_save
+    //time
+    //console.log('time', time)
+    //console.log(times)
+    //socket.emit('updateStageRunRaceTimeControlTime', time);
+    //console.log('AQUIIIIIIIIIIIIIIIIIIII time log: ', time)
+    //toast.success(`O tempo do participante #${time.run_order} foi alterado com sucesso.`)
 }
+
+socket.on('updateStageRunRaceTimeControlTime', (timeUpdated) => {
+    console.log('timeUpdated', timeUpdated)
+    timeUpdated.end_date = new Date(timeUpdated.end_date)
+
+    const elementToUpdatedIdx = times.value.findIndex((element) => {
+        return element.id == timeUpdated.id
+    })
+    console.log('BEFORE times.value[elementToUpdatedIdx]', times.value[elementToUpdatedIdx].end_date)
+    console.log('timeUpdated.end_date', timeUpdated.end_date)
+    const auxDaterFinal = new Date(timeUpdated.end_date)
+    times.value[elementToUpdatedIdx].time_split.hours = auxDaterFinal.getHours()
+    times.value[elementToUpdatedIdx].time_split.minutes = auxDaterFinal.getMinutes()
+    times.value[elementToUpdatedIdx].time_split.seconds = auxDaterFinal.getSeconds()
+    times.value[elementToUpdatedIdx].time_mils = timeUpdated.time_mils
+    times.value[elementToUpdatedIdx].arrived = timeUpdated.arrived
+    times.value[elementToUpdatedIdx].time_points = timeUpdated.time_points
+    times.value[elementToUpdatedIdx].penalty = timeUpdated.penalty
+    console.log('AFTER times.value[elementToUpdatedIdx]', times.value[elementToUpdatedIdx])
+})
 
 watch(
     () => props.stage_run_id,
@@ -91,7 +126,7 @@ watch(
 </script>
 <template>
     <h1>TOMADA DE TEMPO</h1>
-    <div>
+    <div class="table-responsive">
         <table class="table table-striped table-hoverable">
             <thead class="table-dark" style="cursor: pointer">
                 <tr>

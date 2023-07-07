@@ -1,12 +1,13 @@
 <script setup>
-import { inject, ref, onMounted } from "vue";
+import { inject, ref, onMounted, toDisplayString } from "vue";
 import { useUserStore } from "../../stores/user.js"
 import avatarNoneUrl from '@/assets/avatar-none.png'
-import { BIconSearch, BIconArrowUp, BIconArrowDown } from 'bootstrap-icons-vue'
+import { BIconSearch, BIconArrowUp, BIconArrowDown, BIconShieldSlash, BIconShieldSlashFill, BIconPencil } from 'bootstrap-icons-vue'
 
 const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
 const axios = inject('axios')
+const socket = inject("socket")
 
 const props = defineProps({
   showId: {
@@ -54,6 +55,33 @@ const editClick = (user) => {
 const changeBlockValue = (user) => {
   emit("changeBlockValue", user);
 };
+
+socket.on('userBlockValueChange', (user) => {
+    //console.log(`user ${user.id} blocked value updated`)
+    const userUpdatedIdx = laravelData.value.data.findIndex((element) => {return element.id == user.id})
+    //userUpdatedIdx->indice do user atualizado
+    //console.log(`user updated(${laravelData.value.data[userUpdatedIdx].id}) => ${laravelData.value.data[userUpdatedIdx].name}, ${laravelData.value.data[userUpdatedIdx].blocked}`);
+    //console.log("old: ", laravelData.value.data[userUpdatedIdx].blocked)
+    if (userUpdatedIdx != -1)
+    {
+      laravelData.value.data[userUpdatedIdx].blocked = user.blocked
+    }
+    //console.log("new: ", user.blocked)
+    //console.log(`user updated(${laravelData.value.data[userUpdatedIdx].id}) => ${laravelData.value.data[userUpdatedIdx].name}, ${laravelData.value.data[userUpdatedIdx].blocked}`);
+    //console.log("users", laravelData.value.data)
+    //console.log("user 1 (blocked)", laravelData.value.data[user.id-1].blocked)
+    //console.log("user 1 (blocked)", user.blocked)
+    //laravelData.value.data[user.id-1] = user
+    //console.log("user 1 (blocked)", laravelData.value.data[user.id-1].blocked)
+})
+
+socket.on('updateUser', (userUpdated) => {
+    const userUpdatedIdx = laravelData.value.data.findIndex((element) => {return element.id == userUpdated.id})
+    if (userUpdatedIdx != -1)
+    {
+      laravelData.value.data[userUpdatedIdx] = userUpdated
+    }
+})
 
 const canViewUserDetailAndBlock = (userId) => {
   if (!userStore.user) {
@@ -160,69 +188,71 @@ onMounted(async ()=>{
       <button class="btn btn-outline-secondary" type="button" @click="restartSearch()">Reiniciar</button>
     </div>
   </div>
-
-  <table class="table table-hover table-striped">
-    <thead class="table-dark" style="cursor: pointer">
-      <tr>
-        <th v-if="showPhoto" class="align-middle">Foto</th>
-        <th class="align-middle" @click="sortByColumn('name')">Nome <span v-if="sortedColumn == 'name'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('email')">Email <span v-if="sortedColumn == 'email'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('type_id')">Tipo <span v-if="sortedColumn == 'type'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th class="align-middle" @click="sortByColumn('blocked')">Bloqueado<span v-if="sortedColumn == 'blocked'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-        <th></th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="user in laravelData.data" :key="user.id">
-        <td v-if="showPhoto" class="align-middle">
-          <img :src="photoFullUrl(user)" class="rounded-circle img_photo" />
-        </td>
-        <td class="align-middle">{{ user.name }}</td>
-        <td class="align-middle">{{ user.email }}</td>
-        <td class="align-middle">{{ getUserCategoryName(user.type_id) }}</td>
-        <td class="align-middle">{{ user.blocked == 0 ? "Não" : "Sim"}}</td>
-        <td class="text-end align-middle" v-if="showEditButton">
-          <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id)">
-            <button
-              class="btn btn-xs btn-light"
-              @click="editClick(user)"
-              title="Editar"
-            >
-              <BIconPencil/>
-            </button>
-          </div>
-        </td>
-        <td class="text-end align-middle" v-if="showBlockButton && !user.blocked && !isUserStore(user.id)">
-          <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id)">
+  <div class="table-responsive">
+    <table class="table table-hover table-striped">
+      <thead class="table-dark" style="cursor: pointer">
+        <tr>
+          <th v-if="showPhoto" class="align-middle">Foto</th>
+          <th class="align-middle" @click="sortByColumn('name')">Nome <span v-if="sortedColumn == 'name'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('email')">Email <span v-if="sortedColumn == 'email'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('type_id')">Tipo <span v-if="sortedColumn == 'type'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th class="align-middle" @click="sortByColumn('blocked')">Bloqueado<span v-if="sortedColumn == 'blocked'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="user in laravelData.data" :key="user.id">
+          <td v-if="showPhoto" class="align-middle">
+            <img :src="photoFullUrl(user)" class="rounded-circle img_photo" />
+          </td>
+          <td class="align-middle">{{ user.name }}</td>
+          <td class="align-middle">{{ user.email }}</td>
+          <td class="align-middle">{{ getUserCategoryName(user.type_id) }}</td>
+          <td class="align-middle">{{ user.blocked == 0 ? "Não" : "Sim"}}</td>
+          <td class="text-end align-middle" v-if="showEditButton">
+            <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id)">
               <button
                 class="btn btn-xs btn-light"
-                @click="changeBlockValue(user)"
-                title="Bloquear"
+                @click="editClick(user)"
+                title="Editar"
               >
-                <BIconShieldSlash/>
+                <BIconPencil/>
               </button>
-          </div>
-        </td>
-        <td class="text-end align-middle" v-if="showBlockButton && user.blocked && !isUserStore(user.id)">
-          <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id)">
-              <button
-                class="btn btn-xs btn-light"
-                @click="changeBlockValue(user)"
-                title="Desbloquear"
-              >
-                <BIconShieldSlashFill/>
-              </button>
-          </div>
-        </td>
-        <td class="text-end align-middle" v-if="showBlockButton && isUserStore(user.id)">
-          <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id)">
-            
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+            </div>
+          </td>
+          <td class="text-end align-middle" v-if="showBlockButton && !user.blocked && !isUserStore(user.id)">
+            <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id)">
+                <button
+                  class="btn btn-xs btn-light"
+                  @click="changeBlockValue(user)"
+                  title="Bloquear"
+                >
+                  <BIconShieldSlash/>
+                </button>
+            </div>
+          </td>
+          <td class="text-end align-middle" v-if="showBlockButton && user.blocked && !isUserStore(user.id)">
+            <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id)">
+                <button
+                  class="btn btn-xs btn-light"
+                  @click="changeBlockValue(user)"
+                  title="Desbloquear"
+                >
+                  <BIconShieldSlashFill/>
+                </button>
+            </div>
+          </td>
+          <td class="text-end align-middle" v-if="showBlockButton && isUserStore(user.id)">
+            <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id)">
+              
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
 
   <div>
     <ul class="pagination" style="cursor: pointer">
