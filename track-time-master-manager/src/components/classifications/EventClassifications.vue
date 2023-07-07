@@ -1,5 +1,6 @@
 <script setup>
 import { inject, onMounted, ref } from 'vue';
+//import CountryFlag from 'vue-country-flag-next'
 
 const axios = inject('axios')
 const toast = inject('toast')
@@ -107,8 +108,8 @@ onMounted(()=>{
                     <tr v-for="(c, index) in category">
                         <td class="align-middle">{{ index + 1 }}</td>
                         <td class="align-middle">{{ c.run_order }}</td>
-                        <td class="align-middle"><i :class="flag(c.first_driver_country)"></i> {{ c.first_driver_name }}</td>
-                        <td class="align-middle"><i :class="flag(c.second_driver_country)"></i> {{ c.second_driver_name }}</td>
+                        <td class="align-middle"><country-flag :country="c.first_driver_country" size="small"></country-flag> {{ c.first_driver_name }}</td>
+                        <td class="align-middle"><country-flag :country="c.second_driver_country" size="small"></country-flag> {{ c.second_driver_name }}</td>
                         <td class="align-middle">{{ c.vehicle_model }}</td>
                         <td class="align-middle">{{ c.vehicle_category }}</td>
                         <td class="align-middle">{{ c.vehicle_class }}</td>
