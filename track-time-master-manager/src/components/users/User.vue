@@ -137,8 +137,8 @@
   watch(
     () => props.id,
     (newValue) => {
-        loadUser(newValue)
-      },
+      loadUser(newValue)
+    },
     {immediate: true}  
     )
 
