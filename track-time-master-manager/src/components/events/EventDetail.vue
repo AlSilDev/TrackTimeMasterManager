@@ -237,7 +237,7 @@ const loadEventCategoriesArray = (async () => {
 onMounted(()=>{
   setTimeout(()=>{
     imageFullUrl.value = editingEvent.value.image_url
-      ? serverBaseUrl + "/storage/fotos/eventos/" + editingEvent.value.image_url
+      ? serverBaseUrl + "/storage/eventos/" + editingEvent.value.image_url
       : null
 
     console.log("image: " + imageFullUrl.value)
