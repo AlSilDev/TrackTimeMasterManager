@@ -39,6 +39,8 @@
     })
   }
 
+  const pathHaveWordHistory = ref(null)
+
   let originalValueStr = ''
   const loadDriver = (id) => {    
     originalValueStr = ''
@@ -47,7 +49,13 @@
         driver.value = newDriver()
         originalValueStr = dataAsString()
       } else {
-        axios.get('drivers/' + id)
+        const currentPath = router.currentRoute.value.fullPath
+        console.log('Path: ', currentPath)
+        pathHaveWordHistory.value = currentPath.includes('history')
+        console.log('pathHaveWordHistory.value', pathHaveWordHistory.value)
+
+        if (!pathHaveWordHistory.value){
+          axios.get('drivers/' + id)
           .then((response) => {
             driver.value = response.data.data
             originalValueStr = dataAsString()
@@ -55,50 +63,84 @@
           .catch((error) => {
             console.log(error)
           })
+        }else{
+          axios.get('driversHistory/' + id)
+          .then((response) => {
+            driver.value = response.data.data
+            originalValueStr = dataAsString()
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+        }
       }
   }
 
   const save = () => {
       errors.value = null
-      if (operation.value == "insert"){
-        axios.post('drivers', driver.value)
+      if (!pathHaveWordHistory.value){
+        if (operation.value == "insert"){
+          axios.post('drivers', driver.value)
+            .then((response) => {
+              driver.value = response.data.data
+              originalValueStr = dataAsString()
+              toast.success('O condutor #' + driver.value.id + ' foi criado com sucesso.')
+              router.push({name: 'Drivers'})
+            })
+            .catch((error) => {
+              if (error.response.status == 422) {
+                toast.error('O condutor não foi criado devido a erros de validação.')
+                errors.value = error.response.data.errors
+              } else {
+                toast.error('O condutor não foi criado devido a erro desconhecido.')
+              }
+            })
+        }else{
+          axios.put('drivers/' + props.id, driver.value)
           .then((response) => {
             driver.value = response.data.data
             originalValueStr = dataAsString()
-            toast.success('O condutor #' + driver.value.id + ' foi criado com sucesso.')
-            router.push({name: 'Drivers'})
+            console.log('new driver', driver.value)
+            toast.success('Condutor #' + driver.value.id + ' atualizado com sucesso.')
+            socket.emit('updateDriver', driver.value);
+            router.back()
           })
           .catch((error) => {
             if (error.response.status == 422) {
-              toast.error('O condutor não foi criado devido a erros de validação.')
-              errors.value = error.response.data.errors
-            } else {
-              toast.error('O condutor não foi criado devido a erro desconhecido.')
-            }
+                toast.error('Condutor #' + props.id + ' não atualizado devido a erros de validação.')
+                errors.value = error.response.data.errors
+              } else {
+                toast.error('Condutor #' + props.id + ' não atualizado devido a erro desconhecido.')
+              }
           })
+        }
       }else{
-        axios.put('drivers/' + props.id, driver.value)
-        .then((response) => {
-          driver.value = response.data.data
-          originalValueStr = dataAsString()
-          console.log('new driver', driver.value)
-          toast.success('Condutor #' + driver.value.id + ' atualizado com sucesso.')
-          socket.emit('updateDriver', driver.value);
-          router.push({name: 'Drivers'})
-        })
-        .catch((error) => {
-          if (error.response.status == 422) {
-              toast.error('Condutor #' + props.id + ' não atualizado devido a erros de validação.')
-              errors.value = error.response.data.errors
-            } else {
-              toast.error('Condutor #' + props.id + ' não atualizado devido a erro desconhecido.')
-            }
-        })
+        axios.put('driversHistory/' + props.id, driver.value)
+          .then((response) => {
+            driver.value = response.data.data
+            originalValueStr = dataAsString()
+            console.log('new driver', driver.value)
+            toast.success('Condutor #' + driver.value.id + ' atualizado com sucesso.')
+            socket.emit('updateDriver', driver.value);
+            router.back()
+          })
+          .catch((error) => {
+            if (error.response.status == 422) {
+                toast.error('Condutor #' + props.id + ' não atualizado devido a erros de validação.')
+                errors.value = error.response.data.errors
+              } else {
+                toast.error('Condutor #' + props.id + ' não atualizado devido a erro desconhecido.')
+              }
+          })
       }
   }
 
   socket.on('updateDriver', (driverUpdated) => {
-    driver.value = driverUpdated
+    if ((pathHaveWordHistory && driverUpdated.driver_id != null) || !pathHaveWordHistory && !driverUpdated.driver_id){
+      if (driver.value.id == driverUpdated.id){
+        driver.value = driverUpdated
+      }
+    }
   })
 
   const cancel = () => {

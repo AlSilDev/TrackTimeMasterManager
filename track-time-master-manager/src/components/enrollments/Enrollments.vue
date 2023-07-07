@@ -222,6 +222,7 @@ const loadEventToAdminVerifications = async ()=>{
     .then((response)=>{
         enrollmentsAdminVerifications.value = response.data
         //console.log(enrollmentsAdminVerifications.value)
+        console.log(enrollmentsAdminVerifications.value)
     })
     .catch((error)=>{
         //console.log(error)
@@ -708,6 +709,7 @@ socket.on('updateNotesForTechnicalVerification', (technicalVerUpdated) => {
 const AVUpdateDriver = (driver_id) => {
     //console.log('Driver_id', driver_id)
     router.push({ name: 'Driver', params: { id: driver_id } })
+    router.push({ name: 'DriverHistory', params: { id: driver_id } })
 }
 
 const TVUpdateVehicle = (vehicle_id) => {
@@ -715,6 +717,16 @@ const TVUpdateVehicle = (vehicle_id) => {
     router.push({ name: 'Vehicle', params: { id: vehicle_id } })
 }
 
+socket.on('updateDriver', (driverUpdated) => {
+    enrollmentsAdminVerifications.value.forEach((element) => {
+        if (element.first_driver_id == driverUpdated.driver_id) {
+            element.first_driver_name = driverUpdated.name
+        }
+        if (element.second_driver_id == driverUpdated.driver_id) {
+            element.second_driver_name = driverUpdated.name
+        }
+    });
+})
 </script>
 <template>
     <br>
