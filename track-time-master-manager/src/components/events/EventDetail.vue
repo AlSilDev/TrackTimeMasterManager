@@ -195,7 +195,9 @@ const addRegulationFile = async ()=>{
   await axios.post(`events/${editingEvent.value.id}/regulations`, formData, { headers: { 'Content-Type': 'multipart/form-data' }})
     .then((response)=>{
       //console.log(response.data)
-      regulation_file_input.value.files.splice(0, 1)
+      console.log('rfi', regulation_file_input.value.files)
+      //regulation_file_input.value.files = []
+      regulation_file_input.value = ''
       regulationName.value = ''
       toast.success(`O ficheiro ${pressName.value} foi adicionado com sucesso.`)
       regulationFiles.value.push(response.data)
