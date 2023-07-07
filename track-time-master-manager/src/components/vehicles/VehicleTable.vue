@@ -116,7 +116,7 @@ onMounted(async ()=>{
 </script>
 
 <template>
-  <div class="mb-2 justify-content-center">
+  <div class="mb-3 justify-content-center">
     <div class="input-group">
       <span class="input-group-text"><BIconSearch/></span>
       <input placeholder="Procurar..." type="string" id="search" class="form-control" ref="search" />
