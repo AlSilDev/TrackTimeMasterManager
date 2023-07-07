@@ -99,7 +99,7 @@ const getResultsFiltered = async (page = 1) => {
 
 const imageFullUrl = (event) => {
   return event.image_url
-    ? serverBaseUrl + "/storage/fotos/eventos/" + event.image_url
+    ? serverBaseUrl + "/storage/eventos/" + event.image_url
     : avatarNoneUrl;
 };
 
