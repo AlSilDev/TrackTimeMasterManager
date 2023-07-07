@@ -51,13 +51,13 @@ const driverTitle = computed(() => {
 
 const countries = ref([])
 const loadCountries = async ()=>{
-  await axios.get('https://restcountries.com/v3.1/all?fields=name,translations')
+  await axios.get('https://restcountries.com/v3.1/all?fields=name,translations,cca3')
   .then((response)=>{
     countries.value = response.data
     countries.value.sort((a, b)=>{
       return a.name.common.localeCompare(b.name.common);
     })
-    console.log(countries.value)
+    console.log('countries', countries.value)
   })
   .catch((error)=>{
     console.error(error)
@@ -112,8 +112,8 @@ onMounted(async ()=>{
         <div class="mb-3 px-1">
           <label for="inputCountry" class="form-label">País</label>
           <br>
-          <select class="form-select" name="country">
-              <option v-for="country in countries" v-bind:value="country.name" :selected="props.operationType == 'update' && country.name == editingDriver.country">{{country.name.common}}</option>
+          <select class="form-select" name="country" v-model="editingDriver.country">
+              <option v-for="country in countries" v-bind:value="country.cca3" :selected="props.operationType == 'update' && country.cca3 == editingDriver.country">{{country.name.common}}</option>
           </select>
           <!--field-error-message :errors="errors" fieldName="category"></field-error-message-->
         </div>

@@ -4,6 +4,7 @@ import { useUserStore } from "../../stores/user.js"
 import {useRouter} from 'vue-router'
 import { BIconArrowUp, BIconArrowDown, BIconBuildingCheck, BIconSearch, BIconArrowCounterclockwise, BIconTrash, BIconCheckLg, BIconXLg, BIconFileArrowDown,BIconDownload, BIconArrowLeftRight, BIconCircle, BIconCircleFill, BIconInfoCircle, BIconInfoSquare, BIconInfoLg, BIconXCircleFill, BIconXCircle, BIconX, BIconPencil, BIconArrowLeftCircleFill } from 'bootstrap-icons-vue';
 //import { html2pdf } from 'html2pdf.js';
+//import CountryFlag from "vue-country-flag-next"
 
 
 const router = useRouter()
@@ -146,8 +147,10 @@ const enrollCreated = ref({
     enroll_order: -1,
     run_order: -1,
     first_driver_name: null,
+    first_driver_country: null,
     first_driver_license: null,
     second_driver_name: null,
+    second_driver_country: null,
     second_driver_license: null,
     vehicle_model: null,
     vehicle_license_plate: null,
@@ -172,8 +175,10 @@ const enroll = async ()=>{
         enrollCreated.value.event_id = response.data.data.event_id;
         enrollCreated.value.run_order = response.data.data.run_order;
         enrollCreated.value.first_driver_name = selected_first_driver.value.name;
+        enrollCreated.value.first_driver_country = selected_first_driver.value.country;
         enrollCreated.value.first_driver_license = selected_first_driver.value.license_num;
         enrollCreated.value.second_driver_name = selected_second_driver.value.name;
+        enrollCreated.value.second_driver_country = selected_second_driver.value.country;
         enrollCreated.value.second_driver_license = selected_second_driver.value.license_num;
         enrollCreated.value.vehicle_model = selected_vehicle.value.model;
         enrollCreated.value.vehicle_license_plate = selected_vehicle.value.license_plate;
@@ -418,19 +423,19 @@ const enrollApprovedVT = async(enrollTechnicalVerification, boolApproved) => {
     {
         //approved
         const updatedVerifieds = {'verified': 1, 'verified_by': userId}
-        //console.log(updatedVerifieds)
-        //console.log('enrollmentsTechnicalVerifications', enrollmentsTechnicalVerifications)
-        //console.log('eventParticipants', eventParticipants)
-        //removeObjectWithId(enrollTechnicalVerification.id, enrollmentsTechnicalVerifications)
-        //addObject(enrollTechnicalVerification, eventParticipants)
-        //toast.success("Inscrição com verificação técnica aprovada!")
-        //socket.emit('approveTechnicalVerification', enrollTechnicalVerification);
+        console.log(updatedVerifieds)
+        /*console.log('enrollmentsTechnicalVerifications', enrollmentsTechnicalVerifications)
+        console.log('eventParticipants', eventParticipants)
+        removeObjectWithId(enrollTechnicalVerification.id, enrollmentsTechnicalVerifications)
+        addObject(enrollTechnicalVerification, eventParticipants)
+        toast.success("Inscrição com verificação técnica aprovada!")
+        socket.emit('approveTechnicalVerification', enrollTechnicalVerification);*/
         axios.put(`technicalVerifications/${enrollTechnicalVerification.id}/changeVerified`, updatedVerifieds, enrollTechnicalVerification)
         .then((response)=>{
             removeObjectWithId(enrollTechnicalVerification.id, enrollmentsTechnicalVerifications)
             addObject(enrollTechnicalVerification, eventParticipants)
-            eventParticipants.value = eventParticipants.value.slice().sort((a,b) => {
-                return a.run_order - b.run_order;
+            eventParticipants.value.sort((a, b)=>{
+                return a.run_order - b.run_order
             })
             toast.success("Inscrição com verificação técnica aprovada!")
             socket.emit('approveTechnicalVerification', enrollTechnicalVerification);
@@ -579,7 +584,7 @@ const participant = ref({
 
 const exportList = async (listName)=>{
     const date = new Date()
-    var element = document.getElementById(`pdf-${listName}`);
+    var element = document.getElementById(`pdf-${listName}`)
     var opt = {
         margin:       2,
         filename:     `${listName.toUpperCase()}_${event.value.name}_${date.getFullYear()}${date.getMonth()+1}${date.getDate()}${date.getHours()}${date.getMinutes()}.pdf`,
@@ -876,39 +881,7 @@ const TVUpdateVehicle = (vehicle_id) => {
             
             <div class="d-grid gap-3">
                 <button v-if="!enrollOpen && !eventStarted && havePermissionsS()" class="btn btn-dark" @click="updateRunOrder()">Guardar Alterações <BIconArrowLeftRight/></button>
-                <button class="btn btn-warning" @click="exportList('enrollments')">Exportar Lista de Inscritos <BIconDownload/></button>
             </div>
-        </div>
-        
-        <div id="pdf-enrollments" hidden>
-            <h2>Lista de Inscritos</h2>
-            <br>
-            <table class="table table-hover table-striped table-sm" style="font-size: 8pt;">
-                <thead class="table-dark" style="cursor: pointer">
-                    <tr>
-                        <th class="align-middle">Nº</th>
-                        <th class="align-middle">1º Condutor</th>
-                        <th class="align-middle">Lic. Nº</th>
-                        <th class="align-middle">2º Condutor</th>
-                        <th class="align-middle">Lic. Nº</th>
-                        <th class="align-middle">Modelo</th>
-                        <th class="align-middle">Categoria</th>
-                        <th class="align-middle">Classe</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="eventEnrollment in enrollments" :key="eventEnrollment.id">
-                        <td class="align-middle">{{ eventEnrollment.run_order }}</td>
-                        <td class="align-middle">{{ eventEnrollment.first_driver_name }}</td>
-                        <td class="align-middle">{{ eventEnrollment.first_driver_license }}</td>
-                        <td class="align-middle">{{ eventEnrollment.second_driver_name }}</td>
-                        <td class="align-middle">{{ eventEnrollment.second_driver_license }}</td>
-                        <td class="align-middle">{{ eventEnrollment.vehicle_model }}</td>
-                        <td class="align-middle">{{ eventEnrollment.vehicle_category }}</td>
-                        <td class="align-middle">{{ eventEnrollment.vehicle_class }}</td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
     </div>
     <div v-else-if="!eventStarted">
@@ -936,10 +909,10 @@ const TVUpdateVehicle = (vehicle_id) => {
                     </thead>
                     <tbody>
                         <tr v-for="eventEnrollmentsAdminVerification in enrollmentsAdminVerifications" :key="eventEnrollmentsAdminVerification.id">
-                            <td class="align-middle"> {{ eventEnrollmentsAdminVerification.enroll_order }}</td>
-                            <td class="align-middle"> {{ eventEnrollmentsAdminVerification.run_order }}</td>
-                            <td class="align-middle">{{ eventEnrollmentsAdminVerification.first_driver_name }}</td>
-                            <td class="align-middle">{{ eventEnrollmentsAdminVerification.second_driver_name }}</td>
+                            <td class="align-middle">{{ eventEnrollmentsAdminVerification.enroll_order }}</td>
+                            <td class="align-middle">{{ eventEnrollmentsAdminVerification.run_order }}</td>
+                            <td class="align-middle"><CountryFlag :country="eventEnrollmentsAdminVerification.first_driver_country" size="small"></CountryFlag> {{ eventEnrollmentsAdminVerification.first_driver_name }}</td>
+                            <td class="align-middle"><CountryFlag :country="eventEnrollmentsAdminVerification.second_driver_country" size="small"></CountryFlag> {{ eventEnrollmentsAdminVerification.second_driver_name }}</td>
                             <td class="align-middle">{{ eventEnrollmentsAdminVerification.vehicle_model }}</td>
                             <td class="align-middle">{{ eventEnrollmentsAdminVerification.vehicle_license_plate }}</td>
                             <td class="align-middle"><button class="btn btn-success" title="Aprovar" @click="enrollApprovedVA(eventEnrollmentsAdminVerification, 1)"><BIconCheckLg/></button></td>
@@ -1013,10 +986,10 @@ const TVUpdateVehicle = (vehicle_id) => {
                     </thead>
                     <tbody>
                         <tr v-for="eventEnrollmentsTechnicalVerification in enrollmentsTechnicalVerifications" :key="eventEnrollmentsTechnicalVerification.id">
-                            <td class="align-middle"> {{ eventEnrollmentsTechnicalVerification.enroll_order }}</td>
-                            <td class="align-middle"> {{ eventEnrollmentsTechnicalVerification.run_order }}</td>
-                            <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.first_driver_name }}</td>
-                            <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.second_driver_name }}</td>
+                            <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.enroll_order }}</td>
+                            <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.run_order }}</td>
+                            <td class="align-middle"><CountryFlag :country="eventEnrollmentsTechnicalVerification.first_driver_country" size="small"></CountryFlag> {{ eventEnrollmentsTechnicalVerification.first_driver_name }}</td>
+                            <td class="align-middle"><CountryFlag :country="eventEnrollmentsTechnicalVerification.second_driver_country" size="small"></CountryFlag> {{ eventEnrollmentsTechnicalVerification.second_driver_name }}</td>
                             <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.vehicle_model }}</td>
                             <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.vehicle_license_plate }}</td>
                             <td class="align-middle"><button class="btn btn-success" title="Aprovar" @click="enrollApprovedVT(eventEnrollmentsTechnicalVerification, 1)"><BIconCheckLg/></button></td>
@@ -1030,7 +1003,7 @@ const TVUpdateVehicle = (vehicle_id) => {
         </div>
     </div>
     <div v-else-if="eventStarted && havePermissionsVT()">
-        <h2>Inscritos - Verificações Técnias</h2>
+        <h2>Inscritos - Verificações Técnicas</h2>
         <h6>Sem inscritos para fazer verificações técnicas</h6>
     </div>
 
@@ -1088,53 +1061,86 @@ const TVUpdateVehicle = (vehicle_id) => {
                     <tr v-for="eventParticipant in eventParticipants" :key="eventParticipant.id">
                         <td class="align-middle">{{ eventParticipant.enroll_order }}</td>
                         <td class="align-middle">{{ eventParticipant.run_order }}</td>
-                        <td class="align-middle">{{ eventParticipant.first_driver_name }}</td>
-                        <td class="align-middle">{{ eventParticipant.second_driver_name }}</td>
+                        <td class="align-middle"><CountryFlag :country="eventParticipant.first_driver_country" size="small"></CountryFlag> {{ eventParticipant.first_driver_name }}</td>
+                        <td class="align-middle"><CountryFlag :country="eventParticipant.second_driver_country" size="small"></CountryFlag> {{ eventParticipant.second_driver_name }}</td>
                         <td class="align-middle">{{ eventParticipant.vehicle_model }}</td>
                         <td class="align-middle">{{ eventParticipant.vehicle_license_plate }}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        
-
-        <div id="pdf-participants" hidden>
-            <h2>Lista de Participantes</h2>
-            <br>
-            <table class="table table-hover table-striped table-sm" style="font-size: 8pt;">
-                <thead class="table-dark" style="cursor: pointer">
-                    <tr>
-                        <th class="align-middle">Nº</th>
-                        <th class="align-middle">1º Condutor</th>
-                        <th class="align-middle">Lic. Nº</th>
-                        <th class="align-middle">2º Condutor</th>
-                        <th class="align-middle">Lic. Nº</th>
-                        <th class="align-middle">Modelo</th>
-                        <th class="align-middle">Categoria</th>
-                        <th class="align-middle">Classe</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="eventParticipant in eventParticipants" :key="eventParticipant.id">
-                        <td class="align-middle">{{ eventParticipant.run_order }}</td>
-                        <td class="align-middle">{{ eventParticipant.first_driver_name }}</td>
-                        <td class="align-middle">{{ eventParticipant.first_driver_license_num }}</td>
-                        <td class="align-middle">{{ eventParticipant.second_driver_name }}</td>
-                        <td class="align-middle">{{ eventParticipant.second_driver_license_num }}</td>
-                        <td class="align-middle">{{ eventParticipant.vehicle_model }}</td>
-                        <td class="align-middle">{{ eventParticipant.vehicle_category }}</td>
-                        <td class="align-middle">{{ eventParticipant.vehicle_class }}</td>
-                    </tr>
-                </tbody>
-            </table>
-
-        </div>
-        <button class="btn btn-primary" @click="exportList('participants')">Exportar Lista de Participantes</button>
     </div>
     <!--div v-if="eventStarted"-->
     <div v-else-if="eventStarted">
         <h2>Participantes</h2>
         <h6>Sem Participantes</h6>
+    </div>
+
+    <div id="pdf-inscritos" hidden>
+        <h2>Lista de Inscritos</h2>
+        <br>
+        <table class="table table-hover table-striped table-sm" style="font-size: 9pt;">
+            <thead class="table-dark" style="cursor: pointer">
+                <tr>
+                    <th class="align-middle">Nº</th>
+                    <th class="align-middle">1º Condutor</th>
+                    <th class="align-middle">Lic. Nº</th>
+                    <th class="align-middle">2º Condutor</th>
+                    <th class="align-middle">Lic. Nº</th>
+                    <th class="align-middle">Modelo</th>
+                    <th class="align-middle">Categoria</th>
+                    <th class="align-middle">Classe</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="eventEnrollment in enrollments" :key="eventEnrollment.id">
+                    <td class="align-middle">{{ eventEnrollment.run_order }}</td>
+                    <td class="align-middle"><CountryFlag :country="eventEnrollment.first_driver_country" size="small"></CountryFlag> {{ eventEnrollment.first_driver_name }}</td>
+                    <td class="align-middle">{{ eventEnrollment.first_driver_license }}</td>
+                    <td class="align-middle"><CountryFlag :country="eventEnrollment.second_driver_country" size="small"></CountryFlag> {{ eventEnrollment.second_driver_name }}</td>
+                    <td class="align-middle">{{ eventEnrollment.second_driver_license }}</td>
+                    <td class="align-middle">{{ eventEnrollment.vehicle_model }}</td>
+                    <td class="align-middle">{{ eventEnrollment.vehicle_category }}</td>
+                    <td class="align-middle">{{ eventEnrollment.vehicle_class }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="pdf-participantes" hidden>
+        <h2>Lista de Participantes</h2>
+        <br>
+        <table class="table table-hover table-striped table-sm" style="font-size: 9pt;">
+            <thead class="table-dark" style="cursor: pointer">
+                <tr>
+                    <th class="align-middle">Nº</th>
+                    <th class="align-middle">1º Condutor</th>
+                    <th class="align-middle">Lic. Nº</th>
+                    <th class="align-middle">2º Condutor</th>
+                    <th class="align-middle">Lic. Nº</th>
+                    <th class="align-middle">Modelo</th>
+                    <th class="align-middle">Categoria</th>
+                    <th class="align-middle">Classe</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="eventParticipant in eventParticipants" :key="eventParticipant.id">
+                    <td class="align-middle">{{ eventParticipant.run_order }}</td>
+                    <td class="align-middle"><CountryFlag :country="eventParticipant.first_driver_country" size="small"></CountryFlag> {{ eventParticipant.first_driver_name }}</td>
+                    <td class="align-middle">{{ eventParticipant.first_driver_license_num }}</td>
+                    <td class="align-middle"><CountryFlag :country="eventParticipant.second_driver_country" size="small"></CountryFlag> {{ eventParticipant.second_driver_name }}</td>
+                    <td class="align-middle">{{ eventParticipant.second_driver_license_num }}</td>
+                    <td class="align-middle">{{ eventParticipant.vehicle_model }}</td>
+                    <td class="align-middle">{{ eventParticipant.vehicle_category }}</td>
+                    <td class="align-middle">{{ eventParticipant.vehicle_class }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-grid gap-3">
+        <button class="btn btn-warning" @click="exportList('inscritos')" v-if="enrollments">Exportar Lista de Inscritos <BIconDownload/></button>
+        <button class="btn btn-warning" @click="exportList('participantes')" v-if="eventParticipants.length > 0">Exportar Lista de Participantes <BIconDownload/></button>
     </div>
 </template>
 
