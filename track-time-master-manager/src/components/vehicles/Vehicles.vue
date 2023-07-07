@@ -27,9 +27,9 @@
     }*/
 
 
-  /*const editVehicle = (vehicle) => {
+  const editVehicle = (vehicle) => {
     router.push({ name: 'Vehicle', params: { id: vehicle.id } })
-  }*/
+  }
 
   const addVehicle = () => {
     router.push({ name: 'NewVehicle' })

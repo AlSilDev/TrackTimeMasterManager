@@ -45,6 +45,7 @@ const vehicleTitle = computed(() => {
 const validData = computed(()=>{
   console.log('valid?', editingVehicle.value)
   return (editingVehicle.value.model != ''
+          //&& editingVehicle.value.class_id != null
           && editingVehicle.value.class_id != null
           && editingVehicle.value.license_plate != '' 
           && editingVehicle.value.year != '' 
@@ -66,7 +67,9 @@ const classesCategoryId = ref([])
 const isCategoryNotNull = (categoryId) => {
   if(categoryId != 0){
     editingVehicle.value.category_id = categoryId;
+    //editingVehicle.value.class_id = 
     classesCategoryId.value.length = 0;
+    editingVehicle.value.class_id = null
     let i;
     for (i = 0; i < classes.value.length; i++) {
       if(((classes.value[i]).category_id) == categoryId){
@@ -107,32 +110,29 @@ onMounted (async () => {
   await loadCategories()
   await loadClasses()
 
+  console.log('props.vehicle.category', props.vehicle.category.id)
+  console.log('editingVehicle.value.category.id',editingVehicle.value.category.id)
   /* Carrega categoria default */
   if(categories.value.length != 0)
   {
-    isCategoryNotNull(categories.value[0].id)
+    //isCategoryNotNull(categories.value[0].id)
+    /*setTimeout(() => {
+      isCategoryNotNull(props.vehicle.category.id)
+    }, 1000);*/
+
+    isCategoryNotNull(props.vehicle.category.id)
+    //console.log('categories.value[0]', categories.value[0].name)
+    //console.log('vehicle', props.vehicle)
   }
-
-  /*console.log('categories', categories.value)
-  console.log('classes', classes.value)
-  console.log('editingVehicle', editingVehicle.value)*/
-  
-  /*if(props.operationType == 'update')
-  {
-    const cn = isCategoryNotNull(editingVehicle.value.class.category_id)
-    console.log('category not null:', cn)
-    console.log('classesCategoryId', classesCategoryId.value)
-
-  }*/
-
-  //isCategoryNotNull(vehicle.class_id)
+  //classesCategoryId
+  //editingVehicle.class.id
+  editingVehicle.value.class_id = editingVehicle.value.class.id
 })
 
 </script>
 
 <template>
   <form class="row g-3 needs-validation" novalidate @submit.prevent="save">
-    <!--h3 class="mt-5 mb-3">Vehicle #{{ editingVehicle.id }}</h3-->
     <h3 class="mt-5 mb-3">{{ vehicleTitle }}</h3>
     <hr />
     <div class="d-flex flex-wrap justify-content-center">
@@ -163,7 +163,7 @@ onMounted (async () => {
           <label for="inputClass" class="form-label">Classe</label>
           <br>
           <!--select name="class_id" v-model="editingVehicle.class_id"-->
-          <select class="form-select" name="class_id" v-model="editingVehicle.class_id" required>
+          <select class="form-select" name="class_id" v-model="editingVehicle.class_id" required><!----><!--editingVehicle.class_id-->
               <!--option v-for="classe in classes" v-bind:value="classe.id">{{classe.name}}</option-->
               <option v-for="(classe, index) in classesCategoryId" v-bind:value="classe.id" :selected="(props.operationType == 'update' && classe.id == editingVehicle.class.id) || index == 1">{{classe.name}}</option>
           </select>
@@ -248,7 +248,7 @@ onMounted (async () => {
       </div-->
     </div>
     <div class="mb-3 d-flex justify-content-center">
-      <button type="submit" class="btn btn-dark px-5" :disabled="!validData">Guardar</button>
+      <button type="submit" class="btn btn-dark px-5" :disabled="!validData">Guardar</button><!-- -->
       <button type="button" class="btn btn-light px-5" @click="cancel">Cancelar</button>
     </div>
   </form>
