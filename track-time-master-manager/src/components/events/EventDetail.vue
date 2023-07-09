@@ -368,7 +368,7 @@ onMounted(()=>{
 
         <div class="mb-3 px-1">
           <label for="inputCategory" class="form-label">Categoria: </label>
-          <select id="inputCategory" v-model="editingEvent.category_id">
+          <select id="inputCategory" class="form-select" v-model="editingEvent.category_id">
               <option v-for="eventCategory in eventCategories" v-bind:value="eventCategory.id">{{eventCategory.name}}</option>
           </select>
         </div>
