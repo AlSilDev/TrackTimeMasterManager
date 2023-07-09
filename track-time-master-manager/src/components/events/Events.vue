@@ -1,10 +1,12 @@
 <script setup>
   import { ref, computed, onMounted, inject } from 'vue'
   import {useRouter} from 'vue-router'
+  import { useUserStore } from '../../stores/user.js'
   import EventCards from "./EventCards.vue"
   import { BIconPlus, BIconTable } from 'bootstrap-icons-vue'
   
   const router = useRouter()
+  const userStore = useUserStore()
 
   const axios = inject('axios')
 
@@ -26,7 +28,7 @@
 
 <template>
   <h3 class="mt-5 mb-3">EVENTOS</h3>
-  <div class="container">
+  <div class="container" v-if="userStore.user.type_id == 1">
     <div class="d-flex justify-content-between">
       <div class="col-sm"><button type="button" class="btn btn-dark" @click="addEvent"><BIconPlus/> Novo Evento</button></div>
       <div class="col-sm"><button type="button" class="btn btn-dark" @click="showCategories"><BIconTable/> Categorias</button></div>

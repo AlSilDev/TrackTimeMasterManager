@@ -171,9 +171,8 @@ onMounted(async ()=>{
             </h2>
             <div :id="`collapseStage${stage.id}`" class="accordion-collapse collapse" :data-bs-parent="`#stage${stage.id}`">
                 <div class="accordion-body">
-                  <p>Nome da Etapa: {{ stage.name }}</p>
-                  <p><button class="btn btn-success" @click="editStage(stage)"><BIconPencilSquare></BIconPencilSquare> Editar Etapa</button></p>
-                  <p><button class="btn btn-success" @click="newStageRun(stage)"><BIconPlus></BIconPlus> Nova Partida</button></p>
+                  <p><button class="btn btn-success" @click="editStage(stage)" v-if="userStore.user.type_id == 1"><BIconPencilSquare></BIconPencilSquare> Editar Etapa</button></p>
+                  <p><button class="btn btn-success" @click="newStageRun(stage)" v-if="userStore.user.type_id == 1"><BIconPlus></BIconPlus> Nova Partida</button></p>
                   <p><button class="btn btn-info" @click="stageClassifications(stage)"><BIconTable></BIconTable> Classificações</button></p>
                   <div class="table-responsive table-scroll">
                     <table class="table table-striped table-hover">
@@ -182,9 +181,9 @@ onMounted(async ()=>{
                           <th class="align-middle">Partida #</th>
                           <th class="align-middle">Treino</th>
                           <th class="align-middle">Data de Início</th>
-                          <th class="align-middle"></th>
-                          <th class="align-middle"></th>
-                          <th class="align-middle"></th>
+                          <th class="align-middle" v-if="userStore.user.type_id == 1"></th>
+                          <th class="align-middle" v-if="userStore.user.type_id == 1 || userStore.user.type_id == 5"></th>
+                          <th class="align-middle" v-if="userStore.user.type_id == 1 || userStore.user.type_id == 6"></th>
                           <th class="align-middle"></th>
                         </tr>
                       </thead>
@@ -193,9 +192,9 @@ onMounted(async ()=>{
                           <td class="align-middle">{{ run.run_num }}</td>
                           <td class="align-middle">{{ run.practice == 0 ? 'Não' : 'Sim' }}</td>
                           <td class="align-middle">{{ run.date_start }}</td>
-                          <td class="align-middle"><button class="btn btn-success" @click="editStageRun(stage, run)"><BIconPencilSquare></BIconPencilSquare></button></td>
-                          <td class="align-middle"><button class="btn btn-success" @click="raceStartTimes(stage, run)"><BIconClock></BIconClock> Partidas</button></td>
-                          <td class="align-middle"><button class="btn btn-info" @click="raceTimeControl(stage, run)"><BIconClock></BIconClock> Tomada</button></td>
+                          <td class="align-middle" v-if="userStore.user.type_id == 1"><button class="btn btn-success" @click="editStageRun(stage, run)"><BIconPencilSquare></BIconPencilSquare></button></td>
+                          <td class="align-middle" v-if="userStore.user.type_id == 1 || userStore.user.type_id == 5"><button class="btn btn-success" @click="raceStartTimes(stage, run)"><BIconClock></BIconClock> Partidas</button></td>
+                          <td class="align-middle" v-if="userStore.user.type_id == 1 || userStore.user.type_id == 6"><button class="btn btn-info" @click="raceTimeControl(stage, run)"><BIconClock></BIconClock> Tomada</button></td>
                           <td class="align-middle"><button class="btn btn-info" @click="runClassifications(stage, run)"><BIconTable></BIconTable> Classificações</button></td>
                         </tr>
                       </tbody>
