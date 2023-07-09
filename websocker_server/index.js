@@ -24,11 +24,19 @@ io.on('connection', (socket) => {
     })
     socket.on('updateVehicle', (vehicle) => {
         socket.broadcast.emit('updateVehicle', vehicle)
-        console.log(`vehicle ${vehicle.id} has updated`)
+        if(!vehicle.vehicle_id){
+            console.log(`vehicle ${vehicle.id} has updated`)
+        }else{
+            console.log(`vehicle history ${vehicle.id} has updated`)
+        }
     })
     socket.on('updateDriver', (driver) => {
         socket.broadcast.emit('updateDriver', driver)
-        console.log(`driver ${driver.id} has updated`)
+        if(!driver.driver_id){
+            console.log(`driver ${driver.id} has updated`)
+        }else{
+            console.log(`driver history ${driver.id} has updated`)
+        }
     })
     socket.on('updateEvent', (event) => {
         socket.broadcast.emit('updateEvent', event)

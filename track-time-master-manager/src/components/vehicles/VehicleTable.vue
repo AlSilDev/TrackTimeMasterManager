@@ -51,7 +51,7 @@ const photoFullUrl = (user) => {
 };
 
 const editVehicles = (vehicle) => {
-  router.push({ name: 'Vehicle', params: { id: vehicle.id } })
+  emit("edit", vehicle);
 }
 
 const canViewUserDetail = (userId) => {
