@@ -1166,6 +1166,7 @@ socket.on('updateVehicle', (vehicleUpdated) => {
 
     <div id="pdf-inscritos" hidden>
         <h2>Lista de Inscritos</h2>
+        <p>{{ event.name }}</p>
         <br>
         <table class="table table-hover table-striped table-sm" style="font-size: 9pt;">
             <thead class="table-dark" style="cursor: pointer">
@@ -1197,6 +1198,7 @@ socket.on('updateVehicle', (vehicleUpdated) => {
 
     <div id="pdf-participantes" hidden>
         <h2>Lista de Participantes</h2>
+        <p>{{ event.name }}</p>
         <br>
         <table class="table table-hover table-striped table-sm" style="font-size: 9pt;">
             <thead class="table-dark" style="cursor: pointer">
@@ -1227,7 +1229,7 @@ socket.on('updateVehicle', (vehicleUpdated) => {
     </div>
 
     <div class="d-grid gap-3">
-        <button class="btn btn-warning" @click="exportList('inscritos')" v-if="enrollments">Exportar Lista de Inscritos <BIconDownload/></button>
+        <button class="btn btn-warning" @click="exportList('inscritos')" v-if="enrollments.length > 0">Exportar Lista de Inscritos <BIconDownload/></button>
         <button class="btn btn-warning" @click="exportList('participantes')" v-if="eventParticipants.length > 0">Exportar Lista de Participantes <BIconDownload/></button>
     </div>
 </template>
