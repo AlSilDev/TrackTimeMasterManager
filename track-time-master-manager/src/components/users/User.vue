@@ -46,25 +46,6 @@
       }
   }
 
-  /*const save = () => {
-      errors.value = null
-      axios.put('users/' + props.id, user.value)
-        .then((response) => {
-          user.value = response.data.data
-          originalValueStr = dataAsString()
-          toast.success('User #' + user.value.id + ' was updated successfully.')
-          router.back()
-        })
-        .catch((error) => {
-          if (error.response.status == 422) {
-              toast.error('User #' + props.id + ' was not updated due to validation errors!')
-              errors.value = error.response.data.errors
-            } else {
-              toast.error('User #' + props.id + ' was not updated due to unknown server error!')
-            }
-        })
-  }*/
-
   const save = (editingUserValue, photo_fileValue) => {
       errors.value = null
       const formData = new FormData()
@@ -83,7 +64,6 @@
         axios.post('users', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
           .then((response) => {
             user.value = response.data.data
-            originalValueStr = dataAsString()
             console.log(response.data)
             console.log(editingUserValue.name)
             toast.success('O utilizador ' +  editingUserValue.name + ' foi criado com sucesso.')
