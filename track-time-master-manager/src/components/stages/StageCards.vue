@@ -166,7 +166,7 @@ onMounted(async ()=>{
         <div class="accordion-item">
             <h2 class="accordion-header">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="`#collapseStage${stage.id}`" aria-expanded="false" :aria-controls="`collapseStage${stage.id}`">
-                    Etapa #{{ stage.id }}
+                    Etapa {{ stage.name }}
                 </button>
             </h2>
             <div :id="`collapseStage${stage.id}`" class="accordion-collapse collapse" :data-bs-parent="`#stage${stage.id}`">

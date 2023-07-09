@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, inject, VueElement} from 'vue'
 import { useUserStore } from "../../stores/user.js"
 import {useRouter} from 'vue-router'
-import { BIconArrowUp, BIconArrowDown, BIconBuildingCheck, BIconSearch, BIconArrowCounterclockwise, BIconTrash, BIconCheckLg, BIconXLg, BIconFileArrowDown,BIconDownload, BIconArrowLeftRight, BIconCircle, BIconCircleFill, BIconInfoCircle, BIconInfoSquare, BIconInfoLg, BIconXCircleFill, BIconXCircle, BIconX, BIconPencil, BIconArrowLeftCircleFill } from 'bootstrap-icons-vue';
+import { BIconArrowUp, BIconArrowDown, BIconBuildingCheck, BIconSearch, BIconArrowCounterclockwise, BIconTrash, BIconCheckLg, BIconXLg, BIconFileArrowDown,BIconDownload, BIconArrowLeftRight, BIconCircle, BIconCircleFill, BIconInfoCircle, BIconInfoSquare, BIconInfoLg, BIconXCircleFill, BIconXCircle, BIconX, BIconPencil, BIconArrowLeftCircleFill, BIconTelephoneOutboundFill } from 'bootstrap-icons-vue';
 //import { html2pdf } from 'html2pdf.js';
 //import CountryFlag from "vue-country-flag-next"
 
@@ -22,7 +22,10 @@ const props = defineProps({
 })
 const userId = useUserStore().userId
 
-const event = ref()
+const event = ref({
+    id: null,
+    name: ''
+})
 const enrollOpen = ref(false)
 const eventStarted = ref(false)
 const eventEnded = ref(false)
@@ -149,9 +152,11 @@ const enrollCreated = ref({
     first_driver_name: null,
     first_driver_country: null,
     first_driver_license: null,
+    first_driver_phone_num: null,
     second_driver_name: null,
     second_driver_country: null,
     second_driver_license: null,
+    second_driver_phone_num: null,
     vehicle_model: null,
     vehicle_license_plate: null,
     vehicle_class: null,
@@ -177,9 +182,11 @@ const enroll = async ()=>{
         enrollCreated.value.first_driver_name = selected_first_driver.value.name;
         enrollCreated.value.first_driver_country = selected_first_driver.value.country;
         enrollCreated.value.first_driver_license = selected_first_driver.value.license_num;
+        enrollCreated.value.first_driver_phone_num = selected_first_driver.value.phone_num;
         enrollCreated.value.second_driver_name = selected_second_driver.value.name;
         enrollCreated.value.second_driver_country = selected_second_driver.value.country;
         enrollCreated.value.second_driver_license = selected_second_driver.value.license_num;
+        enrollCreated.value.second_driver_phone_num = selected_second_driver.value.phone_num;
         enrollCreated.value.vehicle_model = selected_vehicle.value.model;
         enrollCreated.value.vehicle_license_plate = selected_vehicle.value.license_plate;
         enrollCreated.value.vehicle_class = selected_vehicle.value.class;
@@ -889,14 +896,37 @@ socket.on('updateVehicle', (vehicleUpdated) => {
                     </thead>
                     <tbody>
                         <tr v-for="eventEnrollment in enrollments" :key="eventEnrollment.id">
-                            <td v-if="!enrollOpen && !eventStarted && havePermissionsS()" class="align-middle"><button class="btn btn-link" :disabled="eventEnrollment.run_order==1 && enrollments[0].run_order==eventEnrollment.run_order" @click="sortRunOrder('up', eventEnrollment.id)"><BIconArrowUp/></button><button class="btn btn-link" :disabled="eventEnrollment.run_order==enrollments[enrollments.length-1].run_order" @click="sortRunOrder('down', eventEnrollment.id)"><BIconArrowDown/></button></td>
+                            <td v-if="!enrollOpen && !eventStarted && havePermissionsS()" class="align-middle">
+                                <button class="btn btn-link" :disabled="eventEnrollment.run_order==1 && enrollments[0].run_order==eventEnrollment.run_order" @click="sortRunOrder('up', eventEnrollment.id)">
+                                    <BIconArrowUp/>
+                                </button>
+                                <button class="btn btn-link" :disabled="eventEnrollment.run_order==enrollments[enrollments.length-1].run_order" @click="sortRunOrder('down', eventEnrollment.id)">
+                                    <BIconArrowDown/>
+                                </button>
+                            </td>
                             <td v-if="!enrollOpen && !eventStarted" class="align-middle">{{ eventEnrollment.run_order }}</td>
                             <td class="align-middle"> {{ eventEnrollment.enroll_order }}</td>
-                            <td class="align-middle">{{ eventEnrollment.first_driver_name }}</td>
-                            <td class="align-middle">{{ eventEnrollment.second_driver_name }}</td>
+                            <td class="align-middle">
+                                <CountryFlag :country="eventEnrollment.first_driver_country" size="small"></CountryFlag>
+                                 {{ eventEnrollment.first_driver_name }} 
+                                <a class="btn btn-success btn-sm" :href="`tel:${eventEnrollment.first_driver_phone_num}`">
+                                    <BIconTelephoneOutboundFill/>
+                                </a>
+                            </td>
+                            <td class="align-middle">
+                                <CountryFlag :country="eventEnrollment.second_driver_country" size="small"></CountryFlag> 
+                                 {{ eventEnrollment.second_driver_name }} 
+                                <a class="btn btn-success btn-sm" :href="`tel:${eventEnrollment.second_driver_phone_num}`">
+                                    <BIconTelephoneOutboundFill/>
+                                </a>
+                            </td>
                             <td class="align-middle">{{ eventEnrollment.vehicle_model }}</td>
                             <td class="align-middle">{{ eventEnrollment.vehicle_license_plate }}</td>
-                            <td class="align-middle" v-if="havePermissionsS() && enrollOpen"><button class="btn btn-danger" @click="cancelEnrollment(eventEnrollment)"><BIconTrash/></button></td>
+                            <td class="align-middle" v-if="havePermissionsS() && enrollOpen">
+                                <button class="btn btn-danger" @click="cancelEnrollment(eventEnrollment)">
+                                    <BIconTrash/>
+                                </button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -934,8 +964,20 @@ socket.on('updateVehicle', (vehicleUpdated) => {
                         <tr v-for="eventEnrollmentsAdminVerification in enrollmentsAdminVerifications" :key="eventEnrollmentsAdminVerification.id">
                             <td class="align-middle">{{ eventEnrollmentsAdminVerification.enroll_order }}</td>
                             <td class="align-middle">{{ eventEnrollmentsAdminVerification.run_order }}</td>
-                            <td class="align-middle"><CountryFlag :country="eventEnrollmentsAdminVerification.first_driver_country" size="small"></CountryFlag> {{ eventEnrollmentsAdminVerification.first_driver_name }}</td>
-                            <td class="align-middle"><CountryFlag :country="eventEnrollmentsAdminVerification.second_driver_country" size="small"></CountryFlag> {{ eventEnrollmentsAdminVerification.second_driver_name }}</td>
+                            <td class="align-middle">
+                                <CountryFlag :country="eventEnrollmentsAdminVerification.first_driver_country" size="small"></CountryFlag>
+                                 {{ eventEnrollmentsAdminVerification.first_driver_name }} 
+                                <a class="btn btn-success btn-sm" :href="`tel:${eventEnrollmentsAdminVerification.first_driver_phone_num}`">
+                                    <BIconTelephoneOutboundFill/>
+                                </a>
+                            </td>
+                            <td class="align-middle">
+                                <CountryFlag :country="eventEnrollmentsAdminVerification.second_driver_country" size="small"></CountryFlag> 
+                                 {{ eventEnrollmentsAdminVerification.second_driver_name }} 
+                                <a class="btn btn-success btn-sm" :href="`tel:${eventEnrollmentsAdminVerification.second_driver_phone_num}`">
+                                    <BIconTelephoneOutboundFill/>
+                                </a>
+                            </td>
                             <td class="align-middle">{{ eventEnrollmentsAdminVerification.vehicle_model }}</td>
                             <td class="align-middle">{{ eventEnrollmentsAdminVerification.vehicle_license_plate }}</td>
                             <td class="align-middle"><button class="btn btn-success" title="Aprovar" @click="enrollApprovedVA(eventEnrollmentsAdminVerification, 1)"><BIconCheckLg/></button></td>
@@ -1011,8 +1053,20 @@ socket.on('updateVehicle', (vehicleUpdated) => {
                         <tr v-for="eventEnrollmentsTechnicalVerification in enrollmentsTechnicalVerifications" :key="eventEnrollmentsTechnicalVerification.id">
                             <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.enroll_order }}</td>
                             <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.run_order }}</td>
-                            <td class="align-middle"><CountryFlag :country="eventEnrollmentsTechnicalVerification.first_driver_country" size="small"></CountryFlag> {{ eventEnrollmentsTechnicalVerification.first_driver_name }}</td>
-                            <td class="align-middle"><CountryFlag :country="eventEnrollmentsTechnicalVerification.second_driver_country" size="small"></CountryFlag> {{ eventEnrollmentsTechnicalVerification.second_driver_name }}</td>
+                            <td class="align-middle">
+                                <CountryFlag :country="eventEnrollmentsTechnicalVerification.first_driver_country" size="small"></CountryFlag>
+                                 {{ eventEnrollmentsTechnicalVerification.first_driver_name }} 
+                                <a class="btn btn-success btn-sm" :href="`tel:${eventEnrollmentsTechnicalVerification.first_driver_phone_num}`">
+                                    <BIconTelephoneOutboundFill/>
+                                </a>
+                            </td>
+                            <td class="align-middle">
+                                <CountryFlag :country="eventEnrollmentsTechnicalVerification.second_driver_country" size="small"></CountryFlag> 
+                                 {{ eventEnrollmentsTechnicalVerification.second_driver_name }} 
+                                <a class="btn btn-success btn-sm" :href="`tel:${eventEnrollmentsTechnicalVerification.second_driver_phone_num}`">
+                                    <BIconTelephoneOutboundFill/>
+                                </a>
+                            </td>
                             <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.vehicle_model }}</td>
                             <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.vehicle_license_plate }}</td>
                             <td class="align-middle"><button class="btn btn-success" title="Aprovar" @click="enrollApprovedVT(eventEnrollmentsTechnicalVerification, 1)"><BIconCheckLg/></button></td>
@@ -1084,9 +1138,20 @@ socket.on('updateVehicle', (vehicleUpdated) => {
                     <tr v-for="eventParticipant in eventParticipants" :key="eventParticipant.id">
                         <td class="align-middle">{{ eventParticipant.enroll_order }}</td>
                         <td class="align-middle">{{ eventParticipant.run_order }}</td>
-                        <td class="align-middle"><CountryFlag :country="eventParticipant.first_driver_country" size="small"></CountryFlag> {{ eventParticipant.first_driver_name }}</td>
-                        <td class="align-middle"><CountryFlag :country="eventParticipant.second_driver_country" size="small"></CountryFlag> {{ eventParticipant.second_driver_name }}</td>
-                        <td class="align-middle">{{ eventParticipant.vehicle_model }}</td>
+                        <td class="align-middle">
+                                <CountryFlag :country="eventParticipant.first_driver_country" size="small"></CountryFlag>
+                                 {{ eventParticipant.first_driver_name }} 
+                                <a class="btn btn-success btn-sm" :href="`tel:${eventParticipant.first_driver_phone_num}`">
+                                    <BIconTelephoneOutboundFill/>
+                                </a>
+                            </td>
+                            <td class="align-middle">
+                                <CountryFlag :country="eventParticipant.second_driver_country" size="small"></CountryFlag> 
+                                 {{ eventParticipant.second_driver_name }} 
+                                <a class="btn btn-success btn-sm" :href="`tel:${eventParticipant.second_driver_phone_num}`">
+                                    <BIconTelephoneOutboundFill/>
+                                </a>
+                            </td><td class="align-middle">{{ eventParticipant.vehicle_model }}</td>
                         <td class="align-middle">{{ eventParticipant.vehicle_license_plate }}</td>
                     </tr>
                 </tbody>
@@ -1101,6 +1166,7 @@ socket.on('updateVehicle', (vehicleUpdated) => {
 
     <div id="pdf-inscritos" hidden>
         <h2>Lista de Inscritos</h2>
+        <p>{{ event.name }}</p>
         <br>
         <table class="table table-hover table-striped table-sm" style="font-size: 9pt;">
             <thead class="table-dark" style="cursor: pointer">
@@ -1132,6 +1198,7 @@ socket.on('updateVehicle', (vehicleUpdated) => {
 
     <div id="pdf-participantes" hidden>
         <h2>Lista de Participantes</h2>
+        <p>{{ event.name }}</p>
         <br>
         <table class="table table-hover table-striped table-sm" style="font-size: 9pt;">
             <thead class="table-dark" style="cursor: pointer">
@@ -1162,7 +1229,7 @@ socket.on('updateVehicle', (vehicleUpdated) => {
     </div>
 
     <div class="d-grid gap-3">
-        <button class="btn btn-warning" @click="exportList('inscritos')" v-if="enrollments">Exportar Lista de Inscritos <BIconDownload/></button>
+        <button class="btn btn-warning" @click="exportList('inscritos')" v-if="enrollments.length > 0">Exportar Lista de Inscritos <BIconDownload/></button>
         <button class="btn btn-warning" @click="exportList('participantes')" v-if="eventParticipants.length > 0">Exportar Lista de Participantes <BIconDownload/></button>
     </div>
 </template>
