@@ -1,10 +1,12 @@
 <script setup>
   import { ref, computed, onMounted, inject } from 'vue'
   import {useRouter} from 'vue-router'
+  import { useUserStore } from '../../stores/user.js'
   import VehicleTable from "./VehicleTable.vue"
   import { BIconSearch, BIconPlus } from 'bootstrap-icons-vue'
   
   const router = useRouter()
+  const userStore = useUserStore()
 
   const axios = inject('axios')
 
@@ -41,7 +43,7 @@
   <h3 class="mt-5 mb-3">Viaturas</h3>
   <div class="container">
     <div class="d-flex justify-content-between">
-      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addVehicle"><BIconPlus/> Nova Viatura</button></div>
+      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addVehicle" v-if="userStore.user.type_id == 1"><BIconPlus/> Nova Viatura</button></div>
       <!--div class="col-sm"><button type="button" class="btn btn-dark">Importar Viatura(s)</button></div>
       <div-- class="col-sm"><button type="button" class="btn btn-dark">Exportar Viatura(s)</button></div-->
     </div>

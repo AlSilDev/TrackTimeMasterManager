@@ -1,10 +1,12 @@
 <script setup>
   import { ref, computed, onMounted, inject } from 'vue'
   import {useRouter} from 'vue-router'
+  import { useUserStore } from "../../stores/user.js"
   import StageCards from "./StageCards.vue"
   import { BIconPlus, BIconTable } from 'bootstrap-icons-vue'
   
   const router = useRouter()
+  const userStore = useUserStore()
 
   const axios = inject('axios')
 
@@ -33,7 +35,7 @@
   <h3 class="mt-5 mb-3">ETAPAS</h3>
   <div class="container">
     <div class="d-flex justify-content-between">
-      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addStage"><BIconPlus/> Nova Etapa</button></div>
+      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addStage" v-if="userStore.user.type_id == 1"><BIconPlus/> Nova Etapa</button></div>
       <div class="col-sm"><button type="button" class="btn btn-dark" @click="classifications"><BIconTable/> Classificações Gerais</button></div>
     </div>
   </div>

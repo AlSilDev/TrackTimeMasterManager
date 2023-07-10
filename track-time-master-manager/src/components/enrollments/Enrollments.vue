@@ -1196,6 +1196,32 @@ socket.on('updateVehicle', (vehicleUpdated) => {
         </table>
     </div>
 
+    <div id="pdf-seguranca_inscritos" hidden>
+        <h2>Segurança/Contacto dos Inscritos</h2>
+        <p>{{ event.name }}</p>
+        <br>
+        <table class="table table-hover table-striped table-sm" style="font-size: 9pt;">
+            <thead class="table-dark" style="cursor: pointer">
+                <tr>
+                    <th class="align-middle">Nº</th>
+                    <th class="align-middle">1º Condutor</th>
+                    <th class="align-middle">Contacto Telefónico</th>
+                    <th class="align-middle">2º Condutor</th>
+                    <th class="align-middle">Contacto Telefónico</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="eventEnrollment in enrollments" :key="eventEnrollment.id">
+                    <td class="align-middle">{{ eventEnrollment.run_order }}</td>
+                    <td class="align-middle"><CountryFlag :country="eventEnrollment.first_driver_country" size="small"></CountryFlag> {{ eventEnrollment.first_driver_name }}</td>
+                    <td class="align-middle">{{ eventEnrollment.first_driver_phone_num }}</td>
+                    <td class="align-middle"><CountryFlag :country="eventEnrollment.second_driver_country" size="small"></CountryFlag> {{ eventEnrollment.second_driver_name }}</td>
+                    <td class="align-middle">{{ eventEnrollment.second_driver_phone_num }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
     <div id="pdf-participantes" hidden>
         <h2>Lista de Participantes</h2>
         <p>{{ event.name }}</p>
@@ -1228,9 +1254,37 @@ socket.on('updateVehicle', (vehicleUpdated) => {
         </table>
     </div>
 
+    <div id="pdf-seguranca_participantes" hidden>
+        <h2>Segurança/Contacto dos Participantes</h2>
+        <p>{{ event.name }}</p>
+        <br>
+        <table class="table table-hover table-striped table-sm" style="font-size: 9pt;">
+            <thead class="table-dark" style="cursor: pointer">
+                <tr>
+                    <th class="align-middle">Nº</th>
+                    <th class="align-middle">1º Condutor</th>
+                    <th class="align-middle">Contacto Telefónico</th>
+                    <th class="align-middle">2º Condutor</th>
+                    <th class="align-middle">Contacto Telefónico</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="eventParticipant in eventParticipants" :key="eventParticipant.id">
+                    <td class="align-middle">{{ eventParticipant.run_order }}</td>
+                    <td class="align-middle"><CountryFlag :country="eventParticipant.first_driver_country" size="small"></CountryFlag> {{ eventParticipant.first_driver_name }}</td>
+                    <td class="align-middle">{{ eventParticipant.first_driver_phone_num }}</td>
+                    <td class="align-middle"><CountryFlag :country="eventParticipant.second_driver_country" size="small"></CountryFlag> {{ eventParticipant.second_driver_name }}</td>
+                    <td class="align-middle">{{ eventParticipant.second_driver_phone_num }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
     <div class="d-grid gap-3">
         <button class="btn btn-warning" @click="exportList('inscritos')" v-if="enrollments.length > 0">Exportar Lista de Inscritos <BIconDownload/></button>
         <button class="btn btn-warning" @click="exportList('participantes')" v-if="eventParticipants.length > 0">Exportar Lista de Participantes <BIconDownload/></button>
+        <button class="btn btn-warning" @click="exportList('seguranca_inscritos')" v-if="enrollments.length > 0">Exportar Folha de Segurança de Inscritos <BIconDownload/></button>
+        <button class="btn btn-warning" @click="exportList('seguranca_participantes')" v-if="eventParticipants.length > 0">Exportar Folha de Segurança de Participantes <BIconDownload/></button>
     </div>
 </template>
 

@@ -66,8 +66,8 @@
   <h3 class="mt-5 mb-3">Utilizadores</h3>
   <div class="container">
     <div class="d-flex justify-content-between">
-      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addUser"><BIconPlus/> Novo Utilizador</button></div>
-      <div class="col-sm"><button type="button" class="btn btn-dark" @click="showCategories"><BIconTable/> Categorias</button></div>
+      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addUser" v-if="userStore.user.type_id == 1"><BIconPlus/> Novo Utilizador</button></div>
+      <div class="col-sm"><button type="button" class="btn btn-dark" @click="showCategories" v-if="userStore.user.type_id == 1"><BIconTable/> Categorias</button></div>
     </div>
   </div>
   <hr>
