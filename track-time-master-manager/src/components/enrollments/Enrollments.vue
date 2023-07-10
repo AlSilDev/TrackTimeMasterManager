@@ -1009,7 +1009,7 @@ socket.on('updateVehicle', (vehicleUpdated) => {
                     <table>
                         <tr>
                             <td><p class="modal-title" id="exampleModalLabel"><b>1º Condutor: </b> {{ VAInformationModal.first_driver_name }}</p></td>
-                            <td><button type="button" data-bs-dismiss="modal" @click="AVUpdateDriver(VAInformationModal.first_driver_id)"><BIconPencil/></button></td>
+                            <!--td><button type="button" data-bs-dismiss="modal" @click="AVUpdateDriver(VAInformationModal.first_driver_id)"><BIconPencil/></button></td-->
                         </tr>
                         <tr>
                             <td><p class="modal-title" id="exampleModalLabel"><b>2º Condutor: </b> {{ VAInformationModal.second_driver_name }}</p></td>

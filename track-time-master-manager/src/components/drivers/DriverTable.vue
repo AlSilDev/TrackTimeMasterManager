@@ -155,7 +155,7 @@ onMounted(async ()=>{
           <td class="align-middle">{{ driver.email }}</td>
           <td class="align-middle">{{ driver.license_num }}</td>
           <td class="align-middle">{{ driver.license_expiry }}</td>
-          <td class="align-middle">{{ driver.phone_num }}</td>
+          <td class="align-middle"><a class="text-dark" :href="`tel:${driver.phone_num}`">{{ driver.phone_num }}</a></td>
           <td class="align-middle">{{ driver.affiliate_num }}</td>
           <td class="text-end align-middle" v-if="userStore.user.type_id == 1 || userStore.user.type_id == 2">
               <button

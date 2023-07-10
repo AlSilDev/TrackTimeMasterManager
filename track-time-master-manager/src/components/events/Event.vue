@@ -7,6 +7,7 @@
   const axios = inject('axios')
   const toast = inject('toast')
   const socket = inject("socket")
+  const moment = inject('moment')
 
   const props = defineProps({
       id: {
@@ -50,6 +51,12 @@
       }
   }
 
+  const formatDate = (value)=>{
+    if (value) {
+      return moment(String(value)).format()
+    }
+  }
+
   const save = (editingEventValue, imageFileValue, courseFileValue) => {
     errors.value = null
     const formData = new FormData()
@@ -60,10 +67,10 @@
         formData.append('image_file', imageFileValue)
     }
     formData.append('name', editingEventValue.name)
-    formData.append('date_start_enrollments', editingEventValue.date_start_enrollments)
-    formData.append('date_end_enrollments', editingEventValue.date_end_enrollments)
-    formData.append('date_start_event', editingEventValue.date_start_event)
-    formData.append('date_end_event', editingEventValue.date_end_event)
+    formData.append('date_start_enrollments', formatDate(editingEventValue.date_start_enrollments))
+    formData.append('date_end_enrollments', formatDate(editingEventValue.date_end_enrollments))
+    formData.append('date_start_event', formatDate(editingEventValue.date_start_event))
+    formData.append('date_end_event', formatDate(editingEventValue.date_end_event))
     formData.append('category_id', editingEventValue.category_id)
     formData.append('base_penalty', editingEventValue.base_penalty)
     formData.append('point_calc_reason', editingEventValue.point_calc_reason)

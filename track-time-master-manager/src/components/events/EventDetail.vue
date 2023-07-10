@@ -1,12 +1,12 @@
 <script setup>
 import { ref, watch, computed, inject, onMounted } from "vue";
 import avatarNoneUrl from '@/assets/avatar-none.png'
-import moment from 'moment'
 import { BIconArrowRight, BIconArrowDown, BIconTrash } from "bootstrap-icons-vue";
 
 const serverBaseUrl = inject("serverBaseUrl");
 const axios = inject('axios')
 const toast = inject('toast')
+const moment = inject('moment')
 
 const props = defineProps({
   event: {
@@ -24,7 +24,7 @@ const emit = defineEmits(["save", "cancel"]);
 //https://stackoverflow.com/questions/46708110/convert-date-format-in-javascript-using-vuejs
 const formatDate = (value)=>{
   if (value) {
-    return moment(String(value)).format('DD/MM/YYYY hh:mm:ss a')
+    return moment(String(value)).format('DD/MM/YYYY HH:mm:ss')
   }
 }
 
