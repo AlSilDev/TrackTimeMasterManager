@@ -4,6 +4,7 @@ import axios from 'axios'
 import Toaster from "@meforma/vue-toaster";
 import html2pdf from 'html2pdf.js';
 import { io } from "socket.io-client"
+import moment from 'moment'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap'
@@ -47,5 +48,6 @@ app.use(createPinia())
 app.use(router)
 app.provide('html2pdf', html2pdf)
 app.use(CountryFlag)
+app.provide('moment', moment)
 
 app.mount('#app')
