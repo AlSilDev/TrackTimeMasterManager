@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, watch } from 'vue';
+import { inject, onMounted, ref, watch } from 'vue';
 import { BIconSave } from 'bootstrap-icons-vue';
 
 const axios = inject('axios')
@@ -38,6 +38,17 @@ const loadTimesRun = (stage_run_id) => {
         times.value.forEach((element) => {
             parseDates(element)
         })
+    })
+    .catch((error)=>{
+        console.error(error)
+    })
+}
+
+const stageRunEnded = ref(false)
+const loadStageRun = () => {
+    axios.get(`stageRuns/${props.stage_run_id}`)
+    .then((response)=>{
+        stageRunEnded.value = response.data.data.ended
     })
     .catch((error)=>{
         console.error(error)
@@ -101,6 +112,10 @@ watch(
       },
     {immediate: true}
 )
+
+onMounted(()=>{
+    loadStageRun(props.stage_run_id)
+})
 </script>
 <template>
     <h1>TOMADA DE TEMPO</h1>
@@ -115,7 +130,7 @@ watch(
                     <th class="align-middle">Pontos</th>
                     <th class="align-middle">Penalização</th>
                     <th class="align-middle">Finalizou</th>
-                    <th></th>
+                    <th v-if="!stageRunEnded"></th>
                 </tr>
             </thead>
             <tbody>
@@ -123,7 +138,7 @@ watch(
                     <td class="align-middle">{{ time.run_order }}</td>
                     <td class="align-middle">{{ time.start_date.getHours() + ':' +  time.start_date.getMinutes() + ':' + time.start_date.getSeconds() }}</td>
                     <td class="align-middle">{{ time.started == 1 ? 'Sim' : 'Não' }}</td>
-                    <td class="align-middle">
+                    <td class="align-middle" v-if="!stageRunEnded">
                         <input
                             type="number"
                             id="inputStartHours"
@@ -163,10 +178,11 @@ watch(
                             v-model="time.time_mils"
                         />
                     </td>
+                    <td class="align-middle" v-else>{{ `${time.time_split.hours}:${time.time_split.minutes}:${time.time_split.seconds}` }}</td>
                     <td class="align-middle">{{ time.time_points }}</td>
                     <td class="align-middle">{{ time.penalty }}</td>
                     <td class="align-middle">{{ time.arrived == 1 ? 'Sim' : 'Não' }}</td>
-                    <td class="align-middle"><button class="btn btn-info" @click="saveTime(time)"><BIconSave></BIconSave></button></td>
+                    <td class="align-middle" v-if="!stageRunEnded"><button class="btn btn-info" @click="saveTime(time, index)"><BIconSave></BIconSave></button></td>
                 </tr>
             </tbody>
         </table>

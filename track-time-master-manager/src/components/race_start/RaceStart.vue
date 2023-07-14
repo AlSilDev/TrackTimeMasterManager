@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, watch } from 'vue';
+import { inject, ref, watch, onMounted } from 'vue';
 import { BIconSave } from 'bootstrap-icons-vue';
 import moment from 'moment'
 
@@ -39,6 +39,17 @@ const loadTimesRun = (stage_run_id) => {
         times.value.forEach((element) => {
             parseDates(element)
         })
+    })
+    .catch((error)=>{
+        console.error(error)
+    })
+}
+
+const stageRunEnded = ref(false)
+const loadStageRun = () => {
+    axios.get(`stageRuns/${props.stage_run_id}`)
+    .then((response)=>{
+        stageRunEnded.value = response.data.data.ended
     })
     .catch((error)=>{
         console.error(error)
@@ -103,6 +114,10 @@ watch(
       },
     {immediate: true}
 )
+
+onMounted(()=>{
+    loadStageRun(props.stage_run_id)
+})
 </script>
 <template>
     <h1>PARTIDAS</h1>
@@ -120,7 +135,7 @@ watch(
             <tbody>
                 <tr v-for="time in times" :key="time.id">
                     <td class="align-middle">{{ time.run_order }}</td>
-                    <td class="align-middle">
+                    <td class="align-middle" v-if="!stageRunEnded">
                         <input
                             type="number"
                             id="inputStartHours"
@@ -161,9 +176,10 @@ watch(
                             @change="updateTime(time, time.time_split.milliseconds, 'mil')"
                         /-->
                     </td>
+                    <td class="align-middle" v-else>{{ `${time.time_split.hours}:${time.time_split.minutes}:${time.time_split.seconds}` }}</td>
                     <td class="align-middle">{{ time.started == 1 ? 'Sim' : 'Não' }}</td>
                     <td class="align-middle">{{ time.arrived == 1 ? 'Sim' : 'Não' }}</td>
-                    <td class="align-middle"><button class="btn btn-info" @click="saveTime(time)"><BIconSave></BIconSave></button></td>
+                    <td class="align-middle" v-if="!stageRunEnded"><button class="btn btn-info" @click="saveTime(time, index)"><BIconSave></BIconSave></button></td>
                 </tr>
             </tbody>
         </table>
