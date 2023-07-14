@@ -17,7 +17,6 @@ const loadClassifications = () => {
     axios.get(`events/${props.event_id}/classifications`)
     .then((response) => {
         classifications.value = response.data.classifications
-        console.log('classifications', classifications.value)
     })
     .catch((error) => {
         console.error(error)
