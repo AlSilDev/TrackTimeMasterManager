@@ -96,9 +96,17 @@ socket.on('updateStageRunRaceStartTime', (timeUpdated) => {
     })
     
     const auxDaterFinal = new Date(timeUpdated.start_date)
+    times.value[elementToUpdatedIdx].started = timeUpdated.started
     times.value[elementToUpdatedIdx].time_split.hours = auxDaterFinal.getHours()
     times.value[elementToUpdatedIdx].time_split.minutes = auxDaterFinal.getMinutes()
     times.value[elementToUpdatedIdx].time_split.seconds = auxDaterFinal.getSeconds()
+})
+
+socket.on('updateStageRunRaceTimeControlTime', (timeUpdated) => {
+    const elementToUpdatedIdx = times.value.findIndex((element) => {
+        return element.id == timeUpdated.id
+    })
+    times.value[elementToUpdatedIdx].arrived = timeUpdated.arrived
 })
 
 const formatDate = (value)=>{
