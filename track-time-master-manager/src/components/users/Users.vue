@@ -48,6 +48,10 @@
     router.push({ name: 'User', params: { id: user.id } })
   }
 
+  const changePassword = (user) => {
+    router.push({ name: 'ChangePassword', params: { id: user.id } })
+  }
+
   /*onMounted (() => {
     loadUsers()
   })*/
@@ -73,6 +77,7 @@
   <user-table
     :showId="false"
     @edit="editUser"
+    @changePassword="changePassword"
     @changeBlockValue="changeBlockValue"
   ></user-table>
 </template>

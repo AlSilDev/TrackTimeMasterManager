@@ -120,17 +120,17 @@ const userTitle = computed(() => {
         <div class="mb-3 px-1">
           <label for="inputCategory" class="form-label">Categoria: </label>
           <br>
-          <select id="inputCategory" v-model="editingUser.type_id">
+          <select id="inputCategory" class="form-select" v-model="editingUser.type_id">
               <option v-for="userCategory in userCategories" v-bind:value="userCategory.id">{{userCategory.name}} ({{userCategory.abv}})</option>
           </select>
         </div>
 
         <div class="mb-3 px-1" v-if="props.operationType == 'insert'">
-          <label for="inputEmail" class="form-label">Password</label>
+          <label for="inputPassword" class="form-label">Password</label>
           <input
             type="password"
             class="form-control"
-            id="inputEmail"
+            id="inputPassword"
             placeholder="Password"
             required
             v-model="editingUser.password"

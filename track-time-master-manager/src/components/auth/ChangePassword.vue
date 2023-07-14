@@ -1,5 +1,6 @@
 <script setup>
   import { ref, watch, inject, onMounted } from "vue"
+  import avatarNoneUrl from '@/assets/avatar-none.png'
   import { useUserStore } from "../../stores/user.js"
   import { useRouter, onBeforeRouteLeave } from "vue-router"
 
@@ -21,7 +22,7 @@
       id: null,
       name: '',
       email: '',
-      type: '',
+      type_id: null,
       blocked: null,
       password: '',
       photo_url: null
@@ -82,13 +83,13 @@
   const emit = defineEmits(['changedPassword'])
 
   const changePassword = async () => {
-      if (passwords.value.password != passwords.value.password_confirmation) {
+      if (passwords.value.password != passwords.value.password_confirmation && userStore.user.type_id != 1) {
         toast.warning('"Current Password" and "Password Confirmation" are not the same!')
         passwords.value.password_confirmation = ""
         passwordConfirmation.value.focus()
         return
       }
-      if (await userStore.changePassword(passwords.value)) {
+      if (await userStore.changePassword(user.value.id, passwords.value)) {
         toast.success("Password atualizada com sucesso.")
         emit("changedPassword")
         router.back()
@@ -132,7 +133,7 @@
       </div>
     </div>
     
-    <div class="mb-3">
+    <div class="mb-3" v-if="userStore.user.type_id != 1">
       <div class="mb-3">
         <label for="inputCurrentPassword" class="form-label">Atual Password</label>
         <input
@@ -158,7 +159,7 @@
     </div>
     <div class="mb-3">
       <div class="mb-3">
-        <label for="inputPasswordConfirm" class="form-label">Nova Password</label>
+        <label for="inputPasswordConfirm" class="form-label">Confirme a Nova Password</label>
         <input
           type="password"
           class="form-control"
