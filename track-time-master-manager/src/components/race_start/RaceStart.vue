@@ -78,8 +78,8 @@ const saveTime = (time, index) => {
     axios.put(`stageRuns/${props.stage_run_id}/times/${time.id}/start`, time_to_save)
     .then((response) => {
         parseDates(response.data.data)
-        socket.emit('updateStageRunRaceStartTime', time);
         times.value[index] = response.data.data
+        socket.emit('updateStageRunRaceStartTime', times.value[time.run_order - 1]);
         toast.success(`O tempo do participante #${time.run_order} foi alterado com sucesso.`)
     })
     .catch((error) => {
