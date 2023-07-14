@@ -71,15 +71,15 @@ const updateTime = (time, value, type) => {
     }
 }
 
-const saveTime = (time) => {
+const saveTime = (time, index) => {
     var time_to_save = Object.assign({}, time)
     time_to_save.start_date = formatDate(time.start_date.toISOString())
     time_to_save.started = true
     axios.put(`stageRuns/${props.stage_run_id}/times/${time.id}/start`, time_to_save)
     .then((response) => {
         parseDates(response.data.data)
-        times.value[time.run_order - 1] = response.data.data
         socket.emit('updateStageRunRaceStartTime', time);
+        times.value[index] = response.data.data
         toast.success(`O tempo do participante #${time.run_order} foi alterado com sucesso.`)
     })
     .catch((error) => {
@@ -133,7 +133,7 @@ onMounted(()=>{
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="time in times" :key="time.id">
+                <tr v-for="(time, index) in times" :key="time.id">
                     <td class="align-middle">{{ time.run_order }}</td>
                     <td class="align-middle" v-if="!stageRunEnded">
                         <input

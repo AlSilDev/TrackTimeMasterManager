@@ -71,7 +71,6 @@ const updateTime = (time, value, type) => {
     }
 }
 
-const saveTime = (time) => {
 const formatDateShow = (value)=>{
     if (value) {
         return moment(String(value)).format('DD/MM/YYYY HH:mm:ss')
@@ -84,6 +83,7 @@ const formatDate = (value)=>{
     }
 }
 
+const saveTime = (time, index) => {
     var time_to_save = Object.assign({}, time)
     time_to_save.end_date = formatDate(time.end_date.toISOString())
     time_to_save.time_secs = Math.abs((time.start_date.getTime() - time.end_date.getTime()) / 1000)
@@ -91,7 +91,7 @@ const formatDate = (value)=>{
     axios.put(`stageRuns/${props.stage_run_id}/times/${time.id}/end`, time_to_save)
     .then((response) => {
         parseDates(response.data.data)
-        times.value[time.run_order - 1] = response.data.data
+        times.value[index] = response.data.data
         socket.emit('updateStageRunRaceTimeControlTime', response.data.data);
         socket.emit('updateFinalTimeForTimeRun', response.data.data);
         socket.emit('updateEventFinalTimeForTimeRun', response.data.data);
@@ -148,7 +148,7 @@ onMounted(()=>{
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="time in times" :key="time.id">
+                <tr v-for="(time, index) in times" :key="time.id">
                     <td class="align-middle">{{ time.run_order }}</td>
                     <td class="align-middle">{{ time.start_date.getHours() + ':' +  time.start_date.getMinutes() + ':' + time.start_date.getSeconds() }}</td>
                     <td class="align-middle">{{ time.started == 1 ? 'Sim' : 'Não' }}</td>
