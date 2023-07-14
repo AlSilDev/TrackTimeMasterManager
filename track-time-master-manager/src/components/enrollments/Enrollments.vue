@@ -347,26 +347,18 @@ const enrollApprovedVA = async(enrollAdminVerification, boolApproved) => {
         
     }else{
         //repproved
-        messageNotesVA.value = prompt("Notas: ")
-        //console.log('enrollAdminVerification.notes', enrollAdminVerification.notes)
-        if(messageNotesVA.value.length == 0 &&  enrollAdminVerification.notes == null)
-        {
-            toast.error("Erro - tem de mencionar o motivo de não aprovar o inscrito")
-        }else{
-            adminVerification.value.verified = boolApproved
-            adminVerification.value.notes = messageNotesVA.value
-            //console.log(adminVerification.value)
-            const updatedVerifiedsAndNotes = {'verified': boolApproved, 'verified_by': userId, 'notes': messageNotesVA.value}
-            axios.put(`adminVerifications/${enrollAdminVerification.id}/changeVerifiedAndNotes`, updatedVerifiedsAndNotes, enrollAdminVerification)
-            .then((response)=>{
-                removeObjectWithId(enrollAdminVerification.id, enrollmentsAdminVerifications)
-                toast.success("Inscrição com verificação administrativa não aprovada!")
-                socket.emit('repproveAdminVerification', enrollAdminVerification);
-            })
-            .catch((error)=>{
-                toast.error("Problemas ao reprovar. Contacte o admin")
-            })
-            }
+        adminVerification.value.verified = boolApproved
+        const updatedVerifieds = {'verified': boolApproved, 'verified_by': userId}
+        axios.put(`adminVerifications/${enrollAdminVerification.id}/changeVerified`, updatedVerifieds, enrollAdminVerification)
+        .then((response)=>{
+            removeObjectWithId(enrollAdminVerification.id, enrollmentsAdminVerifications)
+            toast.success("Inscrição com verificação administrativa não aprovada!")
+            socket.emit('repproveAdminVerification', enrollAdminVerification);
+        })
+        .catch((error)=>{
+            toast.error("Problemas ao reprovar. Contacte o admin")
+        })
+        
     }
 }
 
@@ -403,26 +395,17 @@ const enrollApprovedVT = async(enrollTechnicalVerification, boolApproved) => {
         
     }else{
         //repproved
-        messageNotesVT.value = prompt("Notas: ")
-        if(messageNotesVT.value == "" || messageNotesVT.value == null)
-        {
-            toast.error("Erro - tem de mencionar o motivo de não aprovar o inscrito")
-        }else{
-            technicalVerification.value.verified = boolApproved
-            technicalVerification.value.notes = messageNotesVT.value
-            //console.log(technicalVerification.value)
-            const updatedVerifiedsAndNotes = {'verified': boolApproved, 'verified_by': userId, 'notes': messageNotesVT.value}
-            //console.log(updatedVerifiedsAndNotes)
-            axios.put(`technicalVerifications/${enrollTechnicalVerification.id}/changeVerifiedAndNotes`, updatedVerifiedsAndNotes, enrollTechnicalVerification)
-            .then((response)=>{
-                removeObjectWithId(enrollTechnicalVerification.id, enrollmentsTechnicalVerifications)
-                toast.success("Inscrição com verificação técnica não aprovada!")
-                socket.emit('repproveTechnicalVerification', enrollTechnicalVerification);
-            })
-            .catch((error)=>{
-                toast.error("Problemas ao aprovar. Contacte o admin")
-            })
-        }
+        technicalVerification.value.verified = boolApproved
+        const updatedVerifieds = {'verified': boolApproved, 'verified_by': userId}
+        axios.put(`technicalVerifications/${enrollTechnicalVerification.id}/changeVerified`, updatedVerifieds, enrollTechnicalVerification)
+        .then((response)=>{
+            removeObjectWithId(enrollTechnicalVerification.id, enrollmentsTechnicalVerifications)
+            toast.success("Inscrição com verificação técnica não aprovada!")
+            socket.emit('repproveTechnicalVerification', enrollTechnicalVerification);
+        })
+        .catch((error)=>{
+            toast.error("Problemas ao aprovar. Contacte o admin")
+        })
     }
 }
 
