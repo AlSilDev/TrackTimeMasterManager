@@ -42,7 +42,7 @@ const stageTitle = computed(() => {
   if (!editingStage.value){
     return ""
   }
-  return props.operationType == "insert" ? "Nova Etapa" : "Etapa #" + editingStage.value.id;
+  return props.operationType == "insert" ? "Nova Etapa" : "Editar Etapa";
 })
 
 const save = () => {
