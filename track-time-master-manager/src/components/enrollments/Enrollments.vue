@@ -782,7 +782,9 @@ socket.on('updateVehicle', (vehicleUpdated) => {
                             <th v-if="!enrollOpen && !eventStarted" class="align-middle"># Porta</th>
                             <th class="align-middle"># Inscrição</th>
                             <th class="align-middle">1º Condutor</th>
+                            <th class="align-middle"></th>
                             <th class="align-middle">2º Condutor</th>
+                            <th class="align-middle"></th>
                             <th class="align-middle">Modelo</th>
                             <th class="align-middle">Matrícula</th>
                             <th class="align-middle" v-if="havePermissionsS() && enrollOpen"></th>
@@ -802,14 +804,18 @@ socket.on('updateVehicle', (vehicleUpdated) => {
                             <td class="align-middle"> {{ eventEnrollment.enroll_order }}</td>
                             <td class="align-middle">
                                 <CountryFlag :country="eventEnrollment.first_driver_country" size="small"></CountryFlag>
-                                 {{ eventEnrollment.first_driver_name }} 
+                                 {{ eventEnrollment.first_driver_name }}
+                            </td>
+                            <td class="align-middle">
                                 <a class="btn btn-success btn-sm" :href="`tel:${eventEnrollment.first_driver_phone_num}`">
                                     <BIconTelephoneOutboundFill/>
                                 </a>
                             </td>
                             <td class="align-middle">
                                 <CountryFlag :country="eventEnrollment.second_driver_country" size="small"></CountryFlag> 
-                                 {{ eventEnrollment.second_driver_name }} 
+                                 {{ eventEnrollment.second_driver_name }}
+                            </td>
+                            <td class="align-middle">
                                 <a class="btn btn-success btn-sm" :href="`tel:${eventEnrollment.second_driver_phone_num}`">
                                     <BIconTelephoneOutboundFill/>
                                 </a>
@@ -846,7 +852,9 @@ socket.on('updateVehicle', (vehicleUpdated) => {
                             <th class="align-middle"># Inscrição</th>
                             <th class="align-middle"># Porta</th>
                             <th class="align-middle">1º Condutor</th>
+                            <th class="align-middle"></th>
                             <th class="align-middle">2º Condutor</th>
+                            <th class="align-middle"></th>
                             <th class="align-middle">Modelo</th>
                             <th class="align-middle">Matrícula</th>
                             <th class="align-middle"></th>
@@ -860,14 +868,18 @@ socket.on('updateVehicle', (vehicleUpdated) => {
                             <td class="align-middle">{{ eventEnrollmentsAdminVerification.run_order }}</td>
                             <td class="align-middle">
                                 <CountryFlag :country="eventEnrollmentsAdminVerification.first_driver_country" size="small"></CountryFlag>
-                                 {{ eventEnrollmentsAdminVerification.first_driver_name }} 
+                                 {{ eventEnrollmentsAdminVerification.first_driver_name }}
+                            </td>
+                            <td class="align-middle">
                                 <a class="btn btn-success btn-sm" :href="`tel:${eventEnrollmentsAdminVerification.first_driver_phone_num}`">
                                     <BIconTelephoneOutboundFill/>
                                 </a>
                             </td>
                             <td class="align-middle">
                                 <CountryFlag :country="eventEnrollmentsAdminVerification.second_driver_country" size="small"></CountryFlag> 
-                                 {{ eventEnrollmentsAdminVerification.second_driver_name }} 
+                                 {{ eventEnrollmentsAdminVerification.second_driver_name }}
+                            </td>
+                            <td class="align-middle">
                                 <a class="btn btn-success btn-sm" :href="`tel:${eventEnrollmentsAdminVerification.second_driver_phone_num}`">
                                     <BIconTelephoneOutboundFill/>
                                 </a>
@@ -935,7 +947,9 @@ socket.on('updateVehicle', (vehicleUpdated) => {
                             <th class="align-middle"># Inscrição</th>
                             <th class="align-middle"># Porta</th>
                             <th class="align-middle">1º Condutor</th>
+                            <th class="align-middle"></th>
                             <th class="align-middle">2º Condutor</th>
+                            <th class="align-middle"></th>
                             <th class="align-middle">Modelo</th>
                             <th class="align-middle">Matrícula</th>
                             <th class="align-middle"></th>
@@ -949,14 +963,18 @@ socket.on('updateVehicle', (vehicleUpdated) => {
                             <td class="align-middle">{{ eventEnrollmentsTechnicalVerification.run_order }}</td>
                             <td class="align-middle">
                                 <CountryFlag :country="eventEnrollmentsTechnicalVerification.first_driver_country" size="small"></CountryFlag>
-                                 {{ eventEnrollmentsTechnicalVerification.first_driver_name }} 
-                                <a class="btn btn-success btn-sm" :href="`tel:${eventEnrollmentsTechnicalVerification.first_driver_phone_num}`">
+                                 {{ eventEnrollmentsTechnicalVerification.first_driver_name }}
+                            </td>
+                            <td class="align-middle">
+                                <a class="btn btn-success btn-sm" :href="`tel:${eventEnrollmentsTechnicalVerification.second_driver_phone_num}`">
                                     <BIconTelephoneOutboundFill/>
                                 </a>
                             </td>
                             <td class="align-middle">
                                 <CountryFlag :country="eventEnrollmentsTechnicalVerification.second_driver_country" size="small"></CountryFlag> 
-                                 {{ eventEnrollmentsTechnicalVerification.second_driver_name }} 
+                                 {{ eventEnrollmentsTechnicalVerification.second_driver_name }}
+                            </td>
+                            <td class="align-middle">
                                 <a class="btn btn-success btn-sm" :href="`tel:${eventEnrollmentsTechnicalVerification.second_driver_phone_num}`">
                                     <BIconTelephoneOutboundFill/>
                                 </a>
@@ -1023,7 +1041,9 @@ socket.on('updateVehicle', (vehicleUpdated) => {
                         <th class="align-middle"># Inscrição</th>
                         <th class="align-middle"># Porta</th>
                         <th class="align-middle">1º Condutor</th>
+                        <th class="align-middle"></th>
                         <th class="align-middle">2º Condutor</th>
+                        <th class="align-middle"></th>
                         <th class="align-middle">Modelo</th>
                         <th class="align-middle">Matrícula</th>
                     </tr>
@@ -1033,19 +1053,24 @@ socket.on('updateVehicle', (vehicleUpdated) => {
                         <td class="align-middle">{{ eventParticipant.enroll_order }}</td>
                         <td class="align-middle">{{ eventParticipant.run_order }}</td>
                         <td class="align-middle">
-                                <CountryFlag :country="eventParticipant.first_driver_country" size="small"></CountryFlag>
-                                 {{ eventParticipant.first_driver_name }} 
-                                <a class="btn btn-success btn-sm" :href="`tel:${eventParticipant.first_driver_phone_num}`">
-                                    <BIconTelephoneOutboundFill/>
-                                </a>
-                            </td>
-                            <td class="align-middle">
-                                <CountryFlag :country="eventParticipant.second_driver_country" size="small"></CountryFlag> 
-                                 {{ eventParticipant.second_driver_name }} 
-                                <a class="btn btn-success btn-sm" :href="`tel:${eventParticipant.second_driver_phone_num}`">
-                                    <BIconTelephoneOutboundFill/>
-                                </a>
-                            </td><td class="align-middle">{{ eventParticipant.vehicle_model }}</td>
+                            <CountryFlag :country="eventParticipant.first_driver_country" size="small"></CountryFlag>
+                                {{ eventParticipant.first_driver_name }}
+                        </td>
+                        <td class="align-middle">
+                            <a class="btn btn-success btn-sm" :href="`tel:${eventParticipant.first_driver_phone_num}`">
+                                <BIconTelephoneOutboundFill/>
+                            </a>
+                        </td>
+                        <td class="align-middle">
+                            <CountryFlag :country="eventParticipant.second_driver_country" size="small"></CountryFlag> 
+                                {{ eventParticipant.second_driver_name }}
+                        </td>
+                        <td class="align-middle">
+                            <a class="btn btn-success btn-sm" :href="`tel:${eventParticipant.second_driver_phone_num}`">
+                                <BIconTelephoneOutboundFill/>
+                            </a>
+                        </td>
+                        <td class="align-middle">{{ eventParticipant.vehicle_model }}</td>
                         <td class="align-middle">{{ eventParticipant.vehicle_license_plate }}</td>
                     </tr>
                 </tbody>
