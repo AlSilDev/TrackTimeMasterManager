@@ -2,6 +2,7 @@
 import { ref, watch, computed, inject, onMounted } from "vue";
 import avatarNoneUrl from '@/assets/avatar-none.png'
 import { useRouter } from 'vue-router' 
+import FieldErrorMessage from '../global/FieldErrorMessage.vue'
 
 const router = useRouter()  
 const axios = inject('axios')
@@ -103,6 +104,7 @@ const userTitle = computed(() => {
             required
             v-model="editingUser.name"
           />
+          <field-error-message :errors="props.errors" fieldName="name"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -115,6 +117,7 @@ const userTitle = computed(() => {
             required
             v-model="editingUser.email"
           />
+          <field-error-message :errors="props.errors" fieldName="email"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -123,6 +126,7 @@ const userTitle = computed(() => {
           <select id="inputCategory" class="form-select" v-model="editingUser.type_id">
               <option v-for="userCategory in userCategories" v-bind:value="userCategory.id">{{userCategory.name}} ({{userCategory.abv}})</option>
           </select>
+          <field-error-message :errors="props.errors" fieldName="category"></field-error-message>
         </div>
 
         <div class="mb-3 px-1" v-if="props.operationType == 'insert'">
@@ -135,6 +139,7 @@ const userTitle = computed(() => {
             required
             v-model="editingUser.password"
           />
+          <field-error-message :errors="props.errors" fieldName="password"></field-error-message>
         </div>
 
         <!--div class="mb-3 px-1">
@@ -157,6 +162,7 @@ const userTitle = computed(() => {
             <img :src="photoFullUrl" class="w-100" />
           </div>
           <input type="file" ref="image" class="form-control" name="image" v-on:change="uploadImage()"/>
+          <field-error-message :errors="props.errors" fieldName="photo_url"></field-error-message>
         </div>
       </div>
     </div>

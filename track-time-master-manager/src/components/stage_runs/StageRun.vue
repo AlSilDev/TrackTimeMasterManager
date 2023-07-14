@@ -1,7 +1,7 @@
 <script setup>
-  import { ref, watch, computed, inject, onMounted } from 'vue'
+  import { ref, watch, computed, inject } from 'vue'
   import StageRunDetail from "./StageRunDetail.vue"
-  import { useRouter, onBeforeRouteLeave } from 'vue-router'  
+  import { useRouter } from 'vue-router'  
   
   const router = useRouter()  
   const axios = inject('axios')
@@ -123,6 +123,7 @@
   <stage-run-detail
     :stageRun="stageRun"
     :operationType="operation"
+    :errors="errors"
     @save="save"
     @cancel="cancel"
   ></stage-run-detail>

@@ -142,6 +142,7 @@
   <event-detail
     :event="event"
     :operationType="operation"
+    :errors="errors"
     @save="save"
     @cancel="cancel"
   ></event-detail>

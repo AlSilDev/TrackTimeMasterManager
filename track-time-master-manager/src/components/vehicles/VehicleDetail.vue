@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch, computed, onMounted, inject } from "vue";
+import FieldErrorMessage from '../global/FieldErrorMessage.vue'
 
 const axios = inject("axios")
 const toast = inject("toast")
@@ -173,7 +174,7 @@ onMounted (async () => {
             required
             v-model="editingVehicle.model"
           />
-          <!--field-error-message :errors="errors" fieldName="model"></field-error-message-->
+          <field-error-message :errors="props.errors" fieldName="model"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -182,7 +183,7 @@ onMounted (async () => {
           <select class="form-select" name="category" @change="isCategoryNotNull($event.target.value)" ref="selectedCategory">
               <option v-for="category in categories" v-bind:value="category.id" :selected="props.operationType == 'update' && category.id == editingVehicle.class.category_id">{{category.name}}</option>
           </select>
-          <!--field-error-message :errors="errors" fieldName="category"></field-error-message-->
+          <field-error-message :errors="props.errors" fieldName="category"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -193,7 +194,7 @@ onMounted (async () => {
               <!--option v-for="classe in classes" v-bind:value="classe.id">{{classe.name}}</option-->
               <option v-for="(classe, index) in classesCategoryId" v-bind:value="classe.id" :selected="(props.operationType == 'update' && classe.id == editingVehicle.class.id) || index == 1">{{classe.name}}</option>
           </select>
-          <!--field-error-message :errors="errors" fieldName="class"></field-error-message-->
+          <field-error-message :errors="props.errors" fieldName="class_id"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -206,7 +207,7 @@ onMounted (async () => {
             required
             v-model="editingVehicle.license_plate"
           />
-          <!--field-error-message :errors="errors" fieldName="license_plate"></field-error-message-->
+          <field-error-message :errors="props.errors" fieldName="license_plate"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -219,7 +220,7 @@ onMounted (async () => {
             required
             v-model="editingVehicle.year"
           />
-          <!--field-error-message :errors="errors" fieldName="year"></field-error-message-->
+          <field-error-message :errors="props.errors" fieldName="year"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -232,7 +233,7 @@ onMounted (async () => {
             required
             v-model="editingVehicle.engine_capacity"
           />
-          <!--field-error-message :errors="errors" fieldName="engine_capacity"></field-error-message-->
+          <field-error-message :errors="props.errors" fieldName="engine_capacity"></field-error-message>
         </div>
       </div>
     </div>

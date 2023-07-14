@@ -2,6 +2,7 @@
 import { ref, watch, computed, inject, onMounted } from "vue";
 import avatarNoneUrl from '@/assets/avatar-none.png'
 import { BIconArrowRight, BIconArrowDown, BIconTrash } from "bootstrap-icons-vue";
+import FieldErrorMessage from '../global/FieldErrorMessage.vue'
 
 const serverBaseUrl = inject("serverBaseUrl");
 const axios = inject('axios')
@@ -17,6 +18,10 @@ const props = defineProps({
     type: String,
     default: "insert", // insert / update
   },
+  errors: {
+    type: Object,
+    required: false
+  }
 })
 
 const emit = defineEmits(["save", "cancel"]);
@@ -105,6 +110,10 @@ const addPressFile = async ()=>{
     })
     .catch((error)=>{
       toast.error('Ocorreu um erro no servidor')
+      if (error.response.status == 422)
+      {
+        props.errors = error.response.data.errors
+      }
       console.error(error)
     })
 }
@@ -131,6 +140,10 @@ const loadVideoLinks = async ()=>{
     })
     .catch((error)=>{
       console.error(error)
+      if (error.response.status == 422)
+      {
+        props.errors = error.response.data.errors
+      }
     })
 }
 
@@ -143,6 +156,10 @@ const addVideoLink = async ()=>{
     })
     .catch((error)=>{
       toast.error('Ocorreu um erro no servidor')
+      if (error.response.status == 422)
+      {
+        props.errors = error.response.data.errors
+      }
       console.error(error)
     })
 }
@@ -255,6 +272,7 @@ onMounted(()=>{
             v-model="editingEvent.name"
           />
         </div>
+        <field-error-message :errors="props.errors" fieldName="name"></field-error-message>
 
         <div class="mb-3 px-1">
           <label for="inputDateStartEnrollments" class="form-label">Data de Início de Inscrições</label>
@@ -265,6 +283,7 @@ onMounted(()=>{
             required
             v-model="editingEvent.date_start_enrollments"
           />
+          <field-error-message :errors="props.errors" fieldName="date_start_enrollments"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -276,6 +295,7 @@ onMounted(()=>{
             required
             v-model="editingEvent.date_end_enrollments"
           />
+          <field-error-message :errors="props.errors" fieldName="date_end_enrollments"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -287,6 +307,7 @@ onMounted(()=>{
             required
             v-model="editingEvent.date_start_event"
           />
+          <field-error-message :errors="props.errors" fieldName="date_start_event"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -298,6 +319,7 @@ onMounted(()=>{
             required
             v-model="editingEvent.date_end_event"
           />
+          <field-error-message :errors="props.errors" fieldName="date_end_event"></field-error-message>
         </div>
 
         <!--div class="mb-3 px-1">
@@ -321,6 +343,7 @@ onMounted(()=>{
             </div>
             <input type="file" ref="image_file_input" class="form-control" name="image" v-on:change="uploadImage()"/>
           </div>
+          <field-error-message :errors="props.errors" fieldName="image_file"></field-error-message>
         </div>
 
         <div class="w-25">
@@ -331,6 +354,7 @@ onMounted(()=>{
             </div>
             <input type="file" ref="file_input" class="form-control" name="file" v-on:change="uploadCourse()"/>
           </div>
+          <field-error-message :errors="props.errors" fieldName="course_file"></field-error-message>
         </div>
 
         <!--div class="mb-3 px-1">
@@ -347,6 +371,7 @@ onMounted(()=>{
           <select id="inputCategory" class="form-select" v-model="editingEvent.category_id">
               <option v-for="eventCategory in eventCategories" v-bind:value="eventCategory.id">{{eventCategory.name}}</option>
           </select>
+          <field-error-message :errors="props.errors" fieldName="category_id"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -360,6 +385,7 @@ onMounted(()=>{
             required
             v-model="editingEvent.base_penalty"
           />
+          <field-error-message :errors="props.errors" fieldName="base_penalty"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -375,6 +401,7 @@ onMounted(()=>{
             required
             v-model="editingEvent.point_calc_reason"
           />
+          <field-error-message :errors="props.errors" fieldName="point_calc_reason"></field-error-message>
         </div>
       </div>
     </div>
@@ -405,12 +432,14 @@ onMounted(()=>{
                   required
                   v-model="pressName"
                 />
+                <field-error-message :errors="props.errors" fieldName="name"></field-error-message>
               </div>
             </div>
             <div class="w-25">
               <div class="mb-3">
                 <label class="form-label">Ficheiro</label>
                 <input type="file" ref="press_file_input" class="form-control" name="press" v-on:change="uploadPress()"/>
+                <field-error-message :errors="props.errors" fieldName="press_file"></field-error-message>
               </div>
             </div>
           </div>
@@ -458,6 +487,7 @@ onMounted(()=>{
               required
               v-model="videoLinkToUpload.video_url"
             />
+            <field-error-message :errors="props.errors" fieldName="video_url"></field-error-message>
           </div>
           <div class="col-sm"><button type="button" class="btn btn-dark" :disabled="!videoLinkToUpload.video_url.length" @click="addVideoLink()">Adicionar Vídeo</button></div>
         </form>
@@ -505,12 +535,14 @@ onMounted(()=>{
                   required
                   v-model="regulationName"
                 />
+                <field-error-message :errors="props.errors" fieldName="name"></field-error-message>
               </div>
             </div>
             <div class="w-25">
               <div class="mb-3">
                 <label class="form-label">Ficheiro</label>
                 <input type="file" ref="regulation_file_input" class="form-control" name="regulation"/>
+                <field-error-message :errors="props.errors" fieldName="regulation_file"></field-error-message>
               </div>
             </div>
           </div>

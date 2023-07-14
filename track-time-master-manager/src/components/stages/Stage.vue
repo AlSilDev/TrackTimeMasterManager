@@ -107,6 +107,7 @@
   <stage-detail
     :stage="stage"
     :operationType="operation"
+    :errors="errors"
     @save="save"
     @cancel="cancel"
   ></stage-detail>

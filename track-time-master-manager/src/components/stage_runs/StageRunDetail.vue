@@ -3,6 +3,7 @@ import { ref, watch, computed, inject, onMounted } from "vue";
 import avatarNoneUrl from '@/assets/avatar-none.png'
 import moment from 'moment'
 import { BIconArrowRight, BIconArrowDown, BIconTrash } from "bootstrap-icons-vue";
+import FieldErrorMessage from '../global/FieldErrorMessage.vue'
 
 const serverBaseUrl = inject("serverBaseUrl");
 const axios = inject('axios')
@@ -17,6 +18,10 @@ const props = defineProps({
     type: String,
     default: "insert", // insert / update
   },
+  errors: {
+    type: Object,
+    required: false
+  }
 })
 
 const emit = defineEmits(["save", "cancel"]);
@@ -74,6 +79,7 @@ onMounted(()=>{
             required
             v-model="editingStageRun.date_start"
           />
+          <field-error-message :errors="props.errors" fieldName="date_start"></field-error-message>
         </div>
         
         <div class="mb-3 px-1">
@@ -88,6 +94,7 @@ onMounted(()=>{
             v-model="editingStageRun.practice"
             :checked="editingStageRun.practice"
           />
+          <field-error-message :errors="props.errors" fieldName="practice"></field-error-message>
         </div>
     </div>
 

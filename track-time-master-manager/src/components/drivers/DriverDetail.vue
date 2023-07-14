@@ -77,7 +77,7 @@ const cancel = () => {
             required
             v-model="editingDriver.name"
           />
-          <field-error-message :errors="errors" fieldName="name"></field-error-message>
+          <field-error-message :errors="props.errors" fieldName="name"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -90,7 +90,7 @@ const cancel = () => {
             required
             v-model="editingDriver.email"
           />
-          <field-error-message :errors="errors" fieldName="email"></field-error-message>
+          <field-error-message :errors="props.errors" fieldName="email"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -99,7 +99,7 @@ const cancel = () => {
           <select class="form-select" name="country" ref="selectedCountry">
               <option v-for="country in props.countries" v-bind:value="country.cca3" :selected="props.operationType == 'update' && country.cca3.localeCompare(editingDriver.country.toUpperCase()) == 0">{{country.name.common}}</option>
           </select>
-          <!--field-error-message :errors="errors" fieldName="category"></field-error-message-->
+          <field-error-message :errors="errors" fieldName="country"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -112,7 +112,7 @@ const cancel = () => {
             required
             v-model="editingDriver.license_num"
           />
-          <field-error-message :errors="errors" fieldName="license_num"></field-error-message>
+          <field-error-message :errors="props.errors" fieldName="license_num"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -126,7 +126,7 @@ const cancel = () => {
             required
             v-model="editingDriver.license_expiry"
           />
-          <field-error-message :errors="errors" fieldName="license_expiry"></field-error-message>
+          <field-error-message :errors="props.errors" fieldName="license_expiry"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -139,7 +139,7 @@ const cancel = () => {
             required
             v-model="editingDriver.phone_num"
           />
-          <field-error-message :errors="errors" fieldName="phone_num"></field-error-message>
+          <field-error-message :errors="props.errors" fieldName="phone_num"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -152,7 +152,7 @@ const cancel = () => {
             required
             v-model="editingDriver.affiliate_num"
           />
-          <field-error-message :errors="errors" fieldName="affiliate_num"></field-error-message>
+          <field-error-message :errors="props.errors" fieldName="affiliate_num"></field-error-message>
         </div>
       </div>
     </div>
