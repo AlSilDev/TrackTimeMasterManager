@@ -8,6 +8,7 @@ const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
 const axios = inject('axios')
 const socket = inject("socket")
+const moment = inject('moment')
 
 const props = defineProps({
   showId: {
@@ -269,7 +270,7 @@ onMounted(async ()=>{
     <ul class="pagination" style="cursor: pointer">
       <li v-if="currentPage != 1" class="page-item"><a class="page-link text-dark" @click="getResultsFiltered(currentPage-1)">&laquo;</a></li>
       <li v-for="(link, index) in filteredPages" class="page-item" :class="{active: currentPage == filteredPages[index].label}" @click="getResultsFiltered(index+1)"><a class="page-link text-dark">{{filteredPages[index].label}}</a></li>
-      <li v-if="currentPage != laravelData.last_page" class="page-item"><a class="page-link text-dark" @click="getResults(currentPage+1)">&raquo;</a></li>
+      <li v-if="currentPage != laravelData.last_page" class="page-item"><a class="page-link text-dark" @click="getResultsFiltered(currentPage+1)">&raquo;</a></li>
     </ul>
   </div>
 </template>
