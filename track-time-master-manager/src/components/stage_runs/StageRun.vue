@@ -56,7 +56,7 @@
     errors.value = null
     if (operation.value == "insert")
     {
-      axios.post(`stageRuns`, editingStageRunValue)
+      axios.post(`stages/${props.stage_id}/stageRuns`, editingStageRunValue)
         .then((response) => {
           stageRun.value = response.data.data
           toast.success('Partida criada com sucesso!')
