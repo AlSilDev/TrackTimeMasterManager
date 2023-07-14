@@ -78,7 +78,7 @@
           axios.post('drivers', driver.value)
             .then((response) => {
               driver.value = response.data.data
-              toast.success('O condutor #' + driver.value.id + ' foi criado com sucesso.')
+              toast.success('O condutor ' + driver.value.name + ' foi criado com sucesso.')
               router.push({name: 'Drivers'})
             })
             .catch((error) => {
@@ -93,16 +93,16 @@
           axios.put('drivers/' + props.id, driver.value)
           .then((response) => {
             driver.value = response.data.data
-            toast.success('Condutor #' + driver.value.id + ' atualizado com sucesso.')
+            toast.success('Condutor ' + driver.value.name + ' atualizado com sucesso.')
             socket.emit('updateDriver', driver.value);
             router.back()
           })
           .catch((error) => {
             if (error.response.status == 422) {
-                toast.error('Condutor #' + props.id + ' não atualizado devido a erros de validação.')
+                toast.error('Condutor não atualizado devido a erros de validação.')
                 errors.value = error.response.data.errors
               } else {
-                toast.error('Condutor #' + props.id + ' não atualizado devido a erro desconhecido.')
+                toast.error('Condutor não atualizado devido a erro desconhecido.')
               }
           })
         }
@@ -110,16 +110,16 @@
         axios.put('driversHistory/' + props.id, driver.value)
           .then((response) => {
             driver.value = response.data.data
-            toast.success('Condutor #' + driver.value.id + ' atualizado com sucesso.')
+            toast.success('Condutor ' + driver.value.name + ' atualizado com sucesso.')
             socket.emit('updateDriver', driver.value);
             router.back()
           })
           .catch((error) => {
             if (error.response.status == 422) {
-                toast.error('Condutor #' + props.id + ' não atualizado devido a erros de validação.')
+                toast.error('Condutor não atualizado devido a erros de validação.')
                 errors.value = error.response.data.errors
               } else {
-                toast.error('Condutor #' + props.id + ' não atualizado devido a erro desconhecido.')
+                toast.error('Condutor não atualizado devido a erro desconhecido.')
               }
           })
       }

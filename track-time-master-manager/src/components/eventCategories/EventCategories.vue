@@ -68,14 +68,14 @@
     errors.value = null
     await axios.delete('eventCategories/' + eventCategory.id)
         .then((response) => {
-          toast.success('Categoria ' + eventCategory.name + '(#' +eventCategory.id+ ') apagada com sucesso!')
+          toast.success('Categoria ' + eventCategory.name + ' apagada com sucesso!')
         })
         .catch((error) => {
           if (error.response.status == 422) {
-              toast.error('Categoria ' + eventCategory.name + '(#' +eventCategory.id+ ') não apagada devido a erros de validação!')
+              toast.error('Categoria ' + eventCategory.name + ' não apagada devido a erros de validação!')
               errors.value = error.response.data.errors
             } else {
-              toast.error('Categoria ' + eventCategory.name + '(#' +eventCategory.id+ ') não apagada devido a erro(s) desconhecido para o servidor!')
+              toast.error('Categoria ' + eventCategory.name + ' não apagada devido a erro(s) desconhecido para o servidor!')
             }
         });
         
@@ -85,14 +85,14 @@
     errors.value = null
     await axios.get('eventCategories/restore/' + eventCategory.id)
         .then((response) => {
-          toast.success('Categoria de evento #' + eventCategory.id + ' restaurada com sucesso!')
+          toast.success('Categoria restaurada com sucesso!')
         })
         .catch((error) => {
           if (error.response.status == 422) {
-              toast.error('Categoria de evento #' + props.id + ' não restaurada devido a erros de validação!')
+              toast.error('Categoria de evento não restaurada devido a erros de validação!')
               errors.value = error.response.data.errors
             } else {
-              toast.error('Categoria de evento #' + eventCategory.id + ' não restaurada devido a erro(s) desconhecido para o servidor!')
+              toast.error('Categoria de evento não restaurada devido a erro(s) desconhecido para o servidor!')
             }
         });
         

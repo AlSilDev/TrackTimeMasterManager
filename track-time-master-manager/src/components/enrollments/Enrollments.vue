@@ -178,7 +178,7 @@ const enroll = async ()=>{
         enrollCreated.value.vehicle_category = selected_vehicle.value.category;
         enrollments.value.push({ ...enrollCreated.value })
 
-        toast.success(`A inscrição #${enrollCreated.value.id} foi efetuada com sucesso.`)
+        toast.success(`A inscrição #${enrollCreated.value.enroll_order} foi efetuada com sucesso.`)
         socket.emit('createNewEventEnrollment', enrollCreated.value);
         restartSelected()
     })
@@ -245,7 +245,7 @@ const cancelEnrollment = async (enrollment)=>{
         for (let i = index; i < enrollments.value.length; i++) {
             enrollments.value[i].run_order--;
         }
-        toast.success(`A inscrição #${enrollment.id} foi cancelada com sucesso.`)
+        toast.success(`A inscrição #${enrollment.enroll_order} foi cancelada com sucesso.`)
         socket.emit('removeEventEnrollment', enrollment);
         restartDriversSearch()
         restartVehiclesSearch()

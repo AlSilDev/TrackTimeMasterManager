@@ -54,15 +54,17 @@
       axios.post(`events/${props.event_id}/stages`, editingStageValue)
         .then((response) => {
           stage.value = response.data.data
-          toast.success('Etapa ' + stage.value.name + '(#' +stage.value.id+ ') criada com sucesso!')
+          toast.success('Etapa ' + stage.value.name + ' criada com sucesso!')
           router.push({name: 'Stages', params: { event_id: props.event_id }})
         })
         .catch((error) => {
           if (error.response.status == 422) {
-            toast.error('Etapa ' + stage.value.name + '(#' +stage.value.id+ ') não criada devido a erros de validação!')
+            toast.error('Etapa não criada devido a erros de validação!')
             errors.value = error.response.data.errors
+          } else if (error.response.status == 401) {
+            toast.error(error.response.data)
           } else {
-            toast.error('Etapa ' + stage.value.name + '(#' +stage.value.id+ ') não criada devido a erro desconhecido!')
+            toast.error('Etapa não criada devido a erro desconhecido!')
           }
         })
     }
@@ -71,15 +73,15 @@
       axios.put(`events/${props.event_id}/stages/${props.stage_id}`, editingStageValue)
       .then((response) => {
         stage.value = response.data.data
-        toast.success('Etapa #' + stage.value.id + ' foi atualizada com sucesso!')
+        toast.success('Etapa ' + stage.value.name + ' foi atualizada com sucesso!')
         router.push({name: 'Stages', params: { event_id: props.event_id }})
       })
       .catch((error) => {
         if (error.response.status == 422) {
-            toast.error('Etapa #' + props.id + ' não atualizada devido a erros de validação!')
+            toast.error('Etapa não atualizada devido a erros de validação!')
             errors.value = error.response.data.errors
           } else {
-            toast.error('Etapa #' + props.id + ' não atualizada devido a erro desconhecido!')
+            toast.error('Etapa não atualizada devido a erro desconhecido!')
           }
       })
     }

@@ -80,7 +80,7 @@ const deleteClick = (async (eventCategory) => {
     addObject(eventCategory, props.eventCategoriesOnlyTrashed);
   }
   else{
-    toast.error('Categoria ' + eventCategory.name + '(#' +eventCategory.id+ ') tem ' + eventsWithEventCategory.value.length + ' evento(s) associado(s)!')
+    toast.error('Categoria ' + eventCategory.name + ' tem ' + eventsWithEventCategory.value.length + ' evento(s) associado(s)!')
     return;
   }
 })

@@ -45,30 +45,30 @@
         axios.post('eventCategories', eventCategory.value)
           .then((response) => {
             eventCategory.value = response.data.data
-            toast.success('Categoria ' + eventCategory.value.name + '(#' +eventCategory.value.id+ ') criada com sucesso!')
+            toast.success('Categoria ' + eventCategory.value.name + ' criada com sucesso!')
             router.push({name: 'EventCategories'})
           })
           .catch((error) => {
             if (error.response.status == 422) {
-              toast.error('Categoria ' + eventCategory.value.name + '(#' +eventCategory.value.id+ ') não apagada devido a erros de validação!')
+              toast.error('Categoria ' + eventCategory.value.name + ' não apagada devido a erros de validação!')
               errors.value = error.response.data.errors
             } else {
-              toast.error('Categoria ' + eventCategory.value.name + '(#' +eventCategory.value.id+ ') não apagada devido a erro(s) desconhecido para o servidor!')
+              toast.error('Categoria ' + eventCategory.value.name + ' não apagada devido a erro(s) desconhecido para o servidor!')
             }
           })
       }else{
         axios.put('eventCategories/' + props.id, eventCategory.value)
         .then((response) => {
           eventCategory.value = response.data.data
-          toast.success('Categoria de evento #' + eventCategory.value.id + ' atualizada com sucesso!')
+          toast.success('Categoria atualizada com sucesso!')
           router.push({name: 'EventCategories'})
         })
         .catch((error) => {
           if (error.response.status == 422) {
-              toast.error('Categoria de evento #' + props.id + ' não atualizada devido a erros de validação!')
+              toast.error('Categoria não atualizada devido a erros de validação!')
               errors.value = error.response.data.errors
             } else {
-              toast.error('Categoria de evento #' + eventCategory.id + ' não atualizada devido a erro(s) desconhecido para o servidor!')
+              toast.error('Categoria não atualizada devido a erro(s) desconhecido para o servidor!')
             }
         })
       }

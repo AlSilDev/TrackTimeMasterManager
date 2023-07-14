@@ -59,7 +59,7 @@
       axios.post(`stageRuns`, editingStageRunValue)
         .then((response) => {
           stageRun.value = response.data.data
-          toast.success('Partida #' + stageRun.value.id + ' criada com sucesso!')
+          toast.success('Partida criada com sucesso!')
           //TODO
           router.push({name: 'Stages', params: { event_id: props.event_id }})
         })
@@ -77,17 +77,20 @@
       axios.put(`stageRuns/${props.stage_run_id}`, editingStageRunValue)
       .then((response) => {
         stageRun.value = response.data.data
-        toast.success('Partida #' + stageRun.value.id + ' foi atualizada com sucesso!')
+        toast.success('Partida atualizada com sucesso!')
         //TODO
         socket.emit('updateStageRun', stageRun.value);
         router.push({name: 'Stages', params: { event_id: props.event_id }})
       })
       .catch((error) => {
         if (error.response.status == 422) {
-            toast.error('Partida #' + props.stageRun + ' não atualizada devido a erros de validação!')
+            toast.error('Partida não atualizada devido a erros de validação!')
             errors.value = error.response.data.errors
-          } else {
-            toast.error('Partida #' + props.stageRun + ' não atualizada devido a erro desconhecido!')
+          } else if (error.response.status == 401) {
+            toast.error(error.response.data)
+          }
+          else {
+            toast.error('Partida não atualizada devido a erro desconhecido!')
           }
       })
     }

@@ -65,7 +65,7 @@
             router.push({name: 'Users'})
           })
           .catch((error) => {
-            if (error.status == 422) {
+            if (error.response.status == 422) {
               toast.error('Utilizador não criado devido a erros de validação.')
               errors.value = error.response.data.errors
             } else {
@@ -77,16 +77,16 @@
         axios.post('users/' + props.id, formData)
         .then((response) => {
           user.value = response.data.data
-          toast.success('O utilizador #' + user.value.id + ' foi atualizado com sucesso.')
+          toast.success('O utilizador ' + user.value.name + ' foi atualizado com sucesso.')
           socket.emit('updateUser', user.value);
           router.push({name: 'Users'})
         })
         .catch((error) => {
-          if (error.status == 422) {
-              toast.error('O utilizador #' + props.id + ' não foi atualizado devido a erros de validação.')
+          if (error.response.status == 422) {
+              toast.error('O utilizador não foi atualizado devido a erros de validação.')
               errors.value = error.response.data.errors
             } else {
-              toast.error('O utilizador #' + props.id + ' não foi atualizado devido a erro desconhecido.')
+              toast.error('O utilizador não foi atualizado devido a erro desconhecido.')
             }
         })
       }

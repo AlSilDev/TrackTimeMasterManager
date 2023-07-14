@@ -70,7 +70,7 @@
           axios.post('vehicles', vehicle.value)
             .then((response) => {
               vehicle.value = response.data.data
-              toast.success('Veículo #' + vehicle.value.id + ' criado com sucesso')
+              toast.success('Veículo criado com sucesso')
               router.push({name: 'Vehicles'})
             })
             .catch((error) => {
@@ -85,7 +85,7 @@
           await axios.put('vehicles/' + props.id, vehicle.value)
           .then((response) => {
             vehicle.value = response.data.data
-            toast.success('Veículo #' + vehicle.value.id + ' atualizado com sucesso.')
+            toast.success('Veículo atualizado com sucesso.')
             vehicle.value.category = category.name
             vehicle.value.class = vehicle.value.class.name
             socket.emit('updateVehicle', vehicle.value);
@@ -93,10 +93,10 @@
           })
           .catch((error) => {
             if (error.response.status == 422) {
-                toast.error('Veículo #' + props.id + ' não atualizado devido a erros de validação.')
+                toast.error('Veículo não atualizado devido a erros de validação.')
                 errors.value = error.response.data.errors
               } else {
-                toast.error('Veículo #' + props.id + ' não atualizado devido a erro desconhecido.')
+                toast.error('Veículo não atualizado devido a erro desconhecido.')
               }
           })
           router.go(-1)
@@ -106,7 +106,7 @@
           .then((response) => {
             vehicle.value = response.data.data
             //originalValueStr = dataAsString()
-            toast.success('Veículo #' + vehicle.value.id + ' atualizado com sucesso.')
+            toast.success('Veículo atualizado com sucesso.')
             vehicle.value.category = category.name
             vehicle.value.class = vehicle.value.class.name
             socket.emit('updateVehicle', vehicle.value);
@@ -114,10 +114,10 @@
           })
           .catch((error) => {
             if (error.response.status == 422) {
-                toast.error('Veículo #' + props.id + ' não atualizado devido a erros de validação.')
+                toast.error('Veículo não atualizado devido a erros de validação.')
                 errors.value = error.response.data.errors
               } else {
-                toast.error('Veículo #' + props.id + ' não atualizado devido a erro desconhecido.')
+                toast.error('Veículo não atualizado devido a erro desconhecido.')
               }
           })
       }

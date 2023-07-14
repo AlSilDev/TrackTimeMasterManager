@@ -80,7 +80,7 @@ const deleteClick = (async (userCategory) => {
     addObject(userCategory, props.userCategoriesOnlyTrashed);
   }
   else{
-    toast.error('Categoria ' + userCategory.name + '(#' +userCategory.id+ ') tem ' + usersWithUserCategory.value.length + ' utilizador(es) associado(s)!')
+    toast.error('Categoria ' + userCategory.name + ' tem ' + usersWithUserCategory.value.length + ' utilizador(es) associado(s)!')
     return;
   }
 })
