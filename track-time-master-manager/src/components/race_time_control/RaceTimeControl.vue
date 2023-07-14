@@ -119,6 +119,15 @@ socket.on('updateStageRunRaceTimeControlTime', (timeUpdated) => {
     times.value[elementToUpdatedIdx].penalty = timeUpdated.penalty
 })
 
+socket.on('updateStageRunRaceStartTime', (timeUpdated) => {
+    const elementToUpdatedIdx = times.value.findIndex((element) => {
+        return element.id == timeUpdated.id
+    })
+    times.value[elementToUpdatedIdx].start_date = new Date(timeUpdated.start_date)
+    times.value[elementToUpdatedIdx].started = timeUpdated.started
+    times.value[elementToUpdatedIdx].penalty = timeUpdated.penalty 
+})
+
 watch(
     () => props.stage_run_id,
     (newValue) => {
