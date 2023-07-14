@@ -32,9 +32,12 @@
 
   const countries = ref([])
   const loadCountries = async ()=>{
-    await axios.get('https://restcountries.com/v3.1/all?fields=name,translations')
+    await axios.get('https://restcountries.com/v3.1/all?fields=name,translations,cca3')
     .then((response)=>{
       countries.value = response.data
+      countries.value.sort((a, b) => {
+        return a.name.common > b.name.common
+      })
     })
   }
 
@@ -156,6 +159,7 @@
     :driver="driver"
     :errors="errors"
     :countries="countries"
+    :operation-type="operation"
     @save="save"
     @cancel="cancel"
   ></driver-detail>
