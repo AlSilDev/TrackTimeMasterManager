@@ -52,6 +52,7 @@ const validData = computed(()=>{
 })
 
 const save = () => {
+  editingVehicle.value.class_id = selectedClass.value.value
   emit("save", categories.value.find((element) => {return element.id == editingVehicle.value.category_id}));
 };
 
@@ -104,16 +105,54 @@ const loadClasses = (async()  => {
         })
 })
 
+const selectedCategory = ref()
+const selectedClass = ref()
+
 onMounted (async () => {
   await loadCategories()
   await loadClasses()
 
   /* Carrega categoria default */
-  if(categories.value.length != 0)
+  if (editingVehicle.value.class.id)
   {
+    if(categories.value.length != 0)
+    {
       isCategoryNotNull(props.vehicle.category.id)
+    }
+    editingVehicle.value.class_id = editingVehicle.value.class.id
+    //selectedClass.value.value = editingVehicle.value.class.id
   }
-  editingVehicle.value.class_id = editingVehicle.value.class.id
+  else {
+    isCategoryNotNull(selectedCategory.value.value)
+
+    for (var i = 0; i < classes.value.length; i++)
+    {
+      if(classes.value[i].category_id == selectedCategory.value.value)
+      {
+        editingVehicle.value.class_id = classes.value[i].id
+        break
+      }  
+    }
+  }
+  /*
+  if (editingVehicle.value.class.id)
+  {
+    if(categories.value.length != 0)
+    {
+      isCategoryNotNull(props.vehicle.category.id)
+    }
+    //editingVehicle.value.class_id = editingVehicle.value.class.id
+    //selectedClass.value.value = editingVehicle.value.class.id
+  }
+  else {
+    isCategoryNotNull(selectedCategory.value.value)
+    for (var i = 0; i < classes.value.length; i++)
+    {
+      if(classes.value[i].category_id == selectedCategory.value.value)
+        editingVehicle.value.class_id = classes.value[i].id
+    }
+  }*/
+  
 })
 
 </script>
@@ -140,7 +179,7 @@ onMounted (async () => {
         <div class="mb-3 px-1">
           <label for="inputCategory" class="form-label">Categoria</label>
           <br>
-          <select class="form-select" name="category" @change="isCategoryNotNull($event.target.value)">
+          <select class="form-select" name="category" @change="isCategoryNotNull($event.target.value)" ref="selectedCategory">
               <option v-for="category in categories" v-bind:value="category.id" :selected="props.operationType == 'update' && category.id == editingVehicle.class.category_id">{{category.name}}</option>
           </select>
           <!--field-error-message :errors="errors" fieldName="category"></field-error-message-->
@@ -150,7 +189,7 @@ onMounted (async () => {
           <label for="inputClass" class="form-label">Classe</label>
           <br>
           <!--select name="class_id" v-model="editingVehicle.class_id"-->
-          <select class="form-select" name="class_id" v-model="editingVehicle.class_id" required><!----><!--editingVehicle.class_id-->
+          <select class="form-select" name="class_id" ref="selectedClass" v-model="editingVehicle.class_id" required><!----><!--editingVehicle.class_id-->
               <!--option v-for="classe in classes" v-bind:value="classe.id">{{classe.name}}</option-->
               <option v-for="(classe, index) in classesCategoryId" v-bind:value="classe.id" :selected="(props.operationType == 'update' && classe.id == editingVehicle.class.id) || index == 1">{{classe.name}}</option>
           </select>
@@ -198,7 +237,7 @@ onMounted (async () => {
       </div>
     </div>
     <div class="mb-3 d-flex justify-content-center">
-      <button type="submit" class="btn btn-dark px-5" :disabled="!validData">Guardar</button><!-- -->
+      <button type="submit" class="btn btn-dark px-5" :disabled="!validData">Guardar</button>
       <button type="button" class="btn btn-light px-5" @click="cancel">Cancelar</button>
     </div>
   </form>
