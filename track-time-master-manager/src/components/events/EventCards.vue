@@ -159,7 +159,7 @@ onMounted(async ()=>{
 
   <div class="row">
     <div class="card" style="width: 18rem; margin: 10px;" v-for="event in laravelData.data" :key="event.id">
-      <img class="card-img-top d-flex h-75" :src="imageFullUrl(event)" alt="Imagem do evento">
+      <img class="card-img-top d-flex" :src="imageFullUrl(event)" alt="Imagem do evento"/>
       <div class="card-body">
         <h5 class="card-title d-flex justify-content-center"><b>{{ event.name }}</b></h5>
         <div class="d-grid gap-3">
@@ -204,5 +204,12 @@ button {
   color:white !important;
   background-color: dimgrey !important;
   border-color: black;
+}
+
+.card-img-top {
+  /*https://stackoverflow.com/questions/37287153/how-to-get-images-in-bootstraps-card-to-be-the-same-height-width*/
+  width: 100%;
+  height: 15vw;
+  object-fit: cover;
 }
 </style>
