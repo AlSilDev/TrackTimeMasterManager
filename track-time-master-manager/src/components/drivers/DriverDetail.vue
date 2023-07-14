@@ -49,32 +49,16 @@ const driverTitle = computed(() => {
   return props.operationType == "insert" ? "Novo Concorrente" : "Concorrente #" + editingDriver.value.id;
 })
 
-const countries = ref([])
-const loadCountries = async ()=>{
-  await axios.get('https://restcountries.com/v3.1/all?fields=name,translations,cca3')
-  .then((response)=>{
-    countries.value = response.data
-    countries.value.sort((a, b)=>{
-      return a.name.common.localeCompare(b.name.common);
-    })
-    console.log('countries', countries.value)
-  })
-  .catch((error)=>{
-    console.error(error)
-  })
-}
+const selectedCountry = ref()
 
 const save = () => {
+  editingDriver.value.country = selectedCountry.value.value
   emit("save", editingDriver.value);
 }
 
 const cancel = () => {
   emit("cancel", editingDriver.value);
 }
-
-onMounted(async ()=>{
-  await loadCountries()
-})
 </script>
 
 <template>
@@ -112,8 +96,8 @@ onMounted(async ()=>{
         <div class="mb-3 px-1">
           <label for="inputCountry" class="form-label">País</label>
           <br>
-          <select class="form-select" name="country" v-model="editingDriver.country">
-              <option v-for="country in countries" v-bind:value="country.cca3" :selected="props.operationType == 'update' && country.cca3 == editingDriver.country">{{country.name.common}}</option>
+          <select class="form-select" name="country" ref="selectedCountry">
+              <option v-for="country in props.countries" v-bind:value="country.cca3" :selected="props.operationType == 'update' && country.cca3.localeCompare(editingDriver.country.toUpperCase()) == 0">{{country.name.common}}</option>
           </select>
           <!--field-error-message :errors="errors" fieldName="category"></field-error-message-->
         </div>
