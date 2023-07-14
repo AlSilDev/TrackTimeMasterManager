@@ -5,6 +5,7 @@ import { BIconSave } from 'bootstrap-icons-vue';
 const axios = inject('axios')
 const toast = inject('toast')
 const socket = inject("socket")
+const moment = inject('moment')
 
 const props = defineProps({
     event_id: {
@@ -71,8 +72,21 @@ const updateTime = (time, value, type) => {
 }
 
 const saveTime = (time) => {
+const formatDateShow = (value)=>{
+    if (value) {
+        return moment(String(value)).format('DD/MM/YYYY HH:mm:ss')
+    }
+}
+
+const formatDate = (value)=>{
+    if (value) {
+        return moment(String(value)).format()
+    }
+}
+
     var time_to_save = Object.assign({}, time)
-    time_to_save.end_date = time.end_date.toISOString().replace('T', ' ').replace('Z', '')
+    time_to_save.end_date = formatDate(time.end_date.toISOString())
+    time_to_save.time_secs = Math.abs((time.start_date.getTime() - time.end_date.getTime()) / 1000)
     time_to_save.arrived = true
     axios.put(`stageRuns/${props.stage_run_id}/times/${time.id}/end`, time_to_save)
     .then((response) => {

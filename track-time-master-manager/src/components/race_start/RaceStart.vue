@@ -1,11 +1,11 @@
 <script setup>
 import { inject, ref, watch, onMounted } from 'vue';
 import { BIconSave } from 'bootstrap-icons-vue';
-import moment from 'moment'
 
 const axios = inject('axios')
 const toast = inject('toast')
 const socket = inject("socket")
+const moment = inject('moment')
 
 const props = defineProps({
     event_id: {
@@ -73,7 +73,7 @@ const updateTime = (time, value, type) => {
 
 const saveTime = (time) => {
     var time_to_save = Object.assign({}, time)
-    time_to_save.start_date = time.start_date.toISOString().replace('T', ' ').replace('Z', '')
+    time_to_save.start_date = formatDate(time.start_date.toISOString())
     time_to_save.started = true
     axios.put(`stageRuns/${props.stage_run_id}/times/${time.id}/start`, time_to_save)
     .then((response) => {
@@ -103,7 +103,7 @@ socket.on('updateStageRunRaceStartTime', (timeUpdated) => {
 
 const formatDate = (value)=>{
   if (value) {
-    return moment(String(value)).format('DD/MM/YYYY hh:mm:ss')
+    return moment(String(value)).format()
   }
 }
 
