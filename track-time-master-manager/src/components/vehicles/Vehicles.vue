@@ -43,7 +43,7 @@
   <h3 class="mt-5 mb-3">Viaturas</h3>
   <div class="container">
     <div class="d-flex justify-content-between">
-      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addVehicle" v-if="userStore.user.type_id == 1"><BIconPlus/> Nova Viatura</button></div>
+      <div class="col-sm"><button type="button" class="btn btn-dark" @click="addVehicle" v-if="userStore.user.type_id == 1 ||userStore.user.type_id == 2"><BIconPlus/> Nova Viatura</button></div>
       <!--div class="col-sm"><button type="button" class="btn btn-dark">Importar Viatura(s)</button></div>
       <div-- class="col-sm"><button type="button" class="btn btn-dark">Exportar Viatura(s)</button></div-->
     </div>
