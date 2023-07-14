@@ -74,15 +74,12 @@ const addObject = (eventCategoryToAdd, arrayToUpdated) => {
   
 const deleteClick = (async (eventCategory) => {
   await getEventsWithEventCategory(eventCategory.id);
-  console.log("Eventos com categoria " + eventCategory.id + " : " + eventsWithEventCategory.value.length)
   if (eventsWithEventCategory.value.length == 0){
-    //console.log("Pode ser eliminado")
     emit("deleteCategory", eventCategory);
     removeObjectWithId(eventCategory.id);
     addObject(eventCategory, props.eventCategoriesOnlyTrashed);
   }
   else{
-    //console.log("Nao pode ser eliminado")
     toast.error('Categoria ' + eventCategory.name + '(#' +eventCategory.id+ ') tem ' + eventsWithEventCategory.value.length + ' evento(s) associado(s)!')
     return;
   }
@@ -99,10 +96,9 @@ const getEventsWithEventCategory = (async (eventcategoryId) => {
   await axios.get('events/withEventCategory/' + eventcategoryId)
       .then((response) => {
         eventsWithEventCategory.value = response.data
-        //console.log("Eventos com categoria " + eventcategoryId + " : " + eventsWithEventCategory.value.length)
       })
       .catch((error) => {
-        console.log(error)
+        console.error(error)
       })
 })
 

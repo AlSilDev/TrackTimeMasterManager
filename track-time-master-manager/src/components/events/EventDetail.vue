@@ -85,7 +85,6 @@ const pressFiles = ref([])
 const loadPressFiles = async ()=>{
   await axios.get(`events/${editingEvent.value.id}/press`)
     .then((response)=>{
-      console.log(response.data)
       pressFiles.value = response.data
     })
     .catch((error)=>{
@@ -99,12 +98,10 @@ const addPressFile = async ()=>{
   formData.append('name', pressName.value)
   await axios.post(`events/${editingEvent.value.id}/press`, formData, { headers: { 'Content-Type': 'multipart/form-data' }})
     .then((response)=>{
-      //console.log(response.data)
       press_file_input.value = ''
       pressName.value = ''
       toast.success(`O ficheiro ${pressName.value} foi adicionado com sucesso.`)
       pressFiles.value.push(response.data)
-      //console.log(pressFiles.value)
     })
     .catch((error)=>{
       toast.error('Ocorreu um erro no servidor')
@@ -114,11 +111,8 @@ const addPressFile = async ()=>{
 const deletePressFile = async (pressFile)=>{
   await axios.delete(`press/${pressFile.id}`)
     .then((response)=>{
-      //console.log(response.data)
       toast.success(`O ficheiro ${pressFile.name} foi eliminado com sucesso.`)
-      console.log('index: ' + pressFiles.value.indexOf(pressFile))
       pressFiles.value.splice(pressFiles.value.indexOf(pressFile), 1)
-      //console.log(pressFiles.value)
     })
     .catch((error)=>{
       toast.error('Ocorreu um erro no servidor')
@@ -133,7 +127,6 @@ const videoLinks = ref([])
 const loadVideoLinks = async ()=>{
   await axios.get(`events/${editingEvent.value.id}/videos`)
     .then((response)=>{
-      console.log(response.data)
       videoLinks.value = response.data
     })
     .catch((error)=>{
@@ -144,11 +137,9 @@ const loadVideoLinks = async ()=>{
 const addVideoLink = async ()=>{
   await axios.post(`events/${editingEvent.value.id}/videos`, videoLinkToUpload.value)
     .then((response)=>{
-      //console.log(response.data)
       videoLinkToUpload.video_url = ''
       toast.success(`O vídeo foi adicionado com sucesso.`)
       videoLinks.value.push(response.data)
-      //console.log(pressFiles.value)
     })
     .catch((error)=>{
       toast.error('Ocorreu um erro no servidor')
@@ -159,11 +150,8 @@ const addVideoLink = async ()=>{
 const deleteVideoLink = async (video)=>{
   await axios.delete(`videos/${video.id}`)
     .then((response)=>{
-      //console.log(response.data)
       toast.success(`O vídeo foi eliminado com sucesso.`)
-      console.log('index: ' + videoLinks.value.indexOf(video))
       videoLinks.value.splice(videoLinks.value.indexOf(video), 1)
-      //console.log(pressFiles.value)
     })
     .catch((error)=>{
       toast.error('Ocorreu um erro no servidor')
@@ -180,7 +168,6 @@ const regulationFiles = ref([])
 const loadRegulationFiles = async ()=>{
   await axios.get(`events/${editingEvent.value.id}/regulations`)
     .then((response)=>{
-      console.log(response.data)
       regulationFiles.value = response.data
     })
     .catch((error)=>{
@@ -194,14 +181,10 @@ const addRegulationFile = async ()=>{
   formData.append('name', regulationName.value)
   await axios.post(`events/${editingEvent.value.id}/regulations`, formData, { headers: { 'Content-Type': 'multipart/form-data' }})
     .then((response)=>{
-      //console.log(response.data)
-      console.log('rfi', regulation_file_input.value.files)
-      //regulation_file_input.value.files = []
       regulation_file_input.value = ''
       regulationName.value = ''
       toast.success(`O ficheiro ${pressName.value} foi adicionado com sucesso.`)
       regulationFiles.value.push(response.data)
-      //console.log(pressFiles.value)
     })
     .catch((error)=>{
       toast.error('Ocorreu um erro no servidor')
@@ -212,11 +195,8 @@ const addRegulationFile = async ()=>{
 const deleteRegulationFile = async (regulation)=>{
   await axios.delete(`regulations/${regulation.id}`)
     .then((response)=>{
-      //console.log(response.data)
       toast.success(`O ficheiro ${regulation.name} foi eliminado com sucesso.`)
-      console.log('index: ' + regulationFiles.value.indexOf(regulation))
       regulationFiles.value.splice(regulationFiles.value.indexOf(regulation), 1)
-      //console.log(pressFiles.value)
     })
     .catch((error)=>{
       toast.error('Ocorreu um erro no servidor')
@@ -232,7 +212,7 @@ const loadEventCategoriesArray = (async () => {
         eventCategories.value = response.data
       })
       .catch((error) => {
-        console.log(error)
+        console.error(error)
       })
 })
 
@@ -242,14 +222,10 @@ onMounted(()=>{
       ? serverBaseUrl + "/storage/eventos/" + editingEvent.value.image_url
       : null
 
-    console.log("image: " + imageFullUrl.value)
-
     fileFullUrl.value = editingEvent.value.course_url
       ? serverBaseUrl + "/storage/circuitos/" + editingEvent.value.course_url
       : null
 
-    console.log("course: " + editingEvent.value.course_url)
-    console.log("course url: " + fileFullUrl.value)
     if (props.operationType == "update")
     {
       loadPressFiles()

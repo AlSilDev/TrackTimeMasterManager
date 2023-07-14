@@ -53,10 +53,6 @@ const uploadImage =  ()=>{
 
 const photoFullUrl = ref()
 
-/*const save = () => {
-  emit("save", editingUser.value);
-}*/
-
 const userCategories = ref([])
 const loadUserCategories = (async() => {
     await axios.get('userCategories')
@@ -64,71 +60,16 @@ const loadUserCategories = (async() => {
           userCategories.value = response.data
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
         })
   })
 
 onMounted(()=>{
   setTimeout(()=>{
     photoFullUrl.value = editingUser.value.photo_url ? serverBaseUrl + "/storage/fotos/" + editingUser.value.photo_url : avatarNoneUrl;
-    //console.log("Photo: " + photoFullUrl.value)
-    //console.log("Photo: " + editingUser.value.photo_url)
-    //console.log("Photo props: " + props.user.photo_file)
   },1000);
   loadUserCategories()
 })
-
-/*const save = () => {
-      errors.value = null
-      const formData = new FormData()
-      if(photo_file.value){
-          formData.append('photo_file', photo_file.value)
-      }
-      formData.append('name', editingUser.value.name)
-      formData.append('email', editingUser.value.email)
-      formData.append('password', editingUser.value.password)
-      formData.append('type', editingUser.value.type)
-
-      console.log('FormData:' + formData.values())
-
-      if (props.operationType == "insert"){
-        axios.post('users', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-          .then((response) => {
-            //user.value = response.data.data
-            //originalValueStr = dataAsString()
-            console.log(response.data)
-            console.log(editingUser.value.name)
-            toast.success('User ' +  editingUser.value.name + ' was created successfully.')
-            router.push({name: 'Users'})
-            //emit("save", editingUser.value);
-          })
-          .catch((error) => {
-            if (error.response.status == 422) {
-              toast.error('User was not created due to validation errors!')
-              //errors.value = error.response.data.errors
-            } else {
-              toast.error('User was not created due to unknown server error!')
-            }
-          })
-      }else{
-        console.log("Put method not implemented yet!")
-        axios.put('vehicles/' + props.id, user.value)
-        .then((response) => {
-          vehicle.value = response.data.data
-          originalValueStr = dataAsString()
-          toast.success('Vehicle #' + vehicle.value.id + ' was updated successfully.')
-          router.push({name: 'Vehicles'})
-        })
-        .catch((error) => {
-          if (error.response.status == 422) {
-              toast.error('Vehicle #' + props.id + ' was not updated due to validation errors!')
-              errors.value = error.response.data.errors
-            } else {
-              toast.error('Vehicle #' + props.id + ' was not updated due to unknown server error!')
-            }
-        })
-      }
-  }*/
 
 const save = () => {
   emit("save", editingUser.value, photo_file.value);

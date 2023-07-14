@@ -40,12 +40,11 @@
           console.log(users.value)
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
         })
     }*/
 
   const editUser = (user) => {
-    console.log("Chegou " + user.id)
     router.push({ name: 'User', params: { id: user.id } })
   }
 

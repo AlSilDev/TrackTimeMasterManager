@@ -20,10 +20,9 @@
     await axios.get('eventCategories')
         .then((response) => {
           eventCategories.value = response.data
-          console.log("Event Categories: " + eventCategories.value)
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
         })
   })
 
@@ -31,10 +30,9 @@
     await axios.get('eventCategories')
         .then((response) => {
           eventCategoriesListAux.value = response.data
-          console.log("Event Categories: " + eventCategories.value)
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
         })
   })
 
@@ -42,10 +40,9 @@
     await axios.get('eventCategories/onlyTrashed')
         .then((response) => {
           eventCategoriesOnlyTrashed.value = response.data
-          console.log("Event Categories only trashed: " + eventCategoriesOnlyTrashed.value)
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
         })
   })
 
@@ -53,10 +50,9 @@
     await axios.get('eventCategories/withTrashed')
         .then((response) => {
           eventCategoriesWithTrashed.value = response.data
-          console.log("Event Categories with trashed: " + eventCategoriesWithTrashed.value)
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
         })
   })
 

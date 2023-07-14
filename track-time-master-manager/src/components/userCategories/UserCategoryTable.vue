@@ -74,15 +74,12 @@ const addObject = (userCategoryToAdd, arrayToUpdated) => {
   
 const deleteClick = (async (userCategory) => {
   await getUsersWithUserCategory(userCategory.id);
-  console.log("Eventos com categoria " + userCategory.id + " : " + usersWithUserCategory.value.length)
   if (usersWithUserCategory.value.length == 0){
-    //console.log("Pode ser eliminado")
     emit("deleteCategory", userCategory);
     removeObjectWithId(userCategory.id);
     addObject(userCategory, props.userCategoriesOnlyTrashed);
   }
   else{
-    //console.log("Nao pode ser eliminado")
     toast.error('Categoria ' + userCategory.name + '(#' +userCategory.id+ ') tem ' + usersWithUserCategory.value.length + ' utilizador(es) associado(s)!')
     return;
   }
@@ -99,10 +96,9 @@ const getUsersWithUserCategory = (async (usercategoryId) => {
   await axios.get('users/withUserCategory/' + usercategoryId)
       .then((response) => {
         usersWithUserCategory.value = response.data
-        //console.log("Eventos com categoria " + usercategoryId + " : " + usersWithUserCategory.value.length)
       })
       .catch((error) => {
-        console.log(error)
+        console.error(error)
       })
 })
 

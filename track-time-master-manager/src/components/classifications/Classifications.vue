@@ -28,12 +28,10 @@ const num_runs = ref(null)
 const loadClassifications = (id) => {
     axios.get(`${props.c_type}s/${id}/classifications`)
     .then((response) => {
-        console.log(response.data)
         if (props.c_type == 'stage')
         {
             classifications.value = response.data.classifications
             num_runs.value = response.data.num_runs
-            console.log('num runs', num_runs.value)
         }
         else
             classifications.value = response.data
@@ -57,13 +55,10 @@ const timeInMinutes = (time_secs) => {
 }
 
 socket.on('updateFinalTimeForTimeRun', (classificationUpdated) => {
-    console.log('timeUpdated', classificationUpdated)
-
     const elementToUpdatedIdx = classifications.value.findIndex((element) => {
         return element.id == classificationUpdated.id
     })
 
-    console.log('BEFOPRE classifications.value[elementToUpdatedIdx]', classifications.value[elementToUpdatedIdx])
     classifications.value[elementToUpdatedIdx].penalty = classificationUpdated.penalty
     classifications.value[elementToUpdatedIdx].time_mils = classificationUpdated.time_mils
     classifications.value[elementToUpdatedIdx].points = classificationUpdated.time_points

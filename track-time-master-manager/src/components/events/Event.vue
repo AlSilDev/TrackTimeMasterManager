@@ -46,7 +46,7 @@
             event.value = response.data.data
           })
           .catch((error) => {
-            console.log(error)
+            console.error(error)
           })
       }
   }
@@ -91,7 +91,6 @@
               }
             })
         }else{
-          console.log("PUT Method")
           formData.append('_method', 'put')
           axios.post('events/' + props.id, formData, { headers: { 'Content-Type': 'multipart/form-data' }})
           .then((response) => {

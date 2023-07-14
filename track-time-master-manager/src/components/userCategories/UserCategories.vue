@@ -22,7 +22,7 @@
           userCategories.value = response.data
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
         })
   })
 
@@ -32,7 +32,7 @@
           userCategoriesListAux.value = response.data
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
         })
   })
 
@@ -42,7 +42,7 @@
           userCategoriesOnlyTrashed.value = response.data
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
         })
   })
 
@@ -52,7 +52,7 @@
           userCategoriesWithTrashed.value = response.data
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
         })
   })
 

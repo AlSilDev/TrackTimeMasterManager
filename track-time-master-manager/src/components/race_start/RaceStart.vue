@@ -29,14 +29,12 @@ const parseDates = (element) => {
     element.time_split.hours = element.start_date.getHours()
     element.time_split.minutes = element.start_date.getMinutes()
     element.time_split.seconds = element.start_date.getSeconds()
-    console.log(`element ${element.run_order}`, element)
 }
 
 const times = ref([])
 const loadTimesRun = (stage_run_id) => {
     axios.get(`stageRuns/${stage_run_id}/times`)
     .then((response)=>{
-        console.log(response)
         times.value = response.data
         times.value.forEach((element) => {
             parseDates(element)
@@ -60,18 +58,14 @@ const updateTime = (time, value, type) => {
             time.start_date.setSeconds(value)
             break
     }
-    console.log('updatedTime', time.start_date)
 }
 
 const saveTime = (time) => {
     var time_to_save = Object.assign({}, time)
     time_to_save.start_date = time.start_date.toISOString().replace('T', ' ').replace('Z', '')
     time_to_save.started = true
-    console.log('tts', time_to_save)
-    //console.log('before send', time)
     axios.put(`stageRuns/${props.stage_run_id}/times/${time.id}/start`, time_to_save)
     .then((response) => {
-        console.log(response)
         parseDates(response.data.data)
         times.value[time.run_order - 1] = response.data.data
         socket.emit('updateStageRunRaceStartTime', time);
@@ -80,42 +74,20 @@ const saveTime = (time) => {
     .catch((error) => {
         console.error(error)
     })
-    //console.log('time_to_save', time_to_save)
-    //parseDates(time_to_save)
-    //times.value[time.run_order - 1] = time_to_save
-    //toast.success(`O tempo do participante #${time.run_order} foi alterado com sucesso.`)
-    //socket.emit('updateStageRunRaceStartTime', time);
 }
 
 socket.on('updateStageRunRaceStartTime', (timeUpdated) => {
     //atualizar elemento com timeUpdated nos times
-    console.log('timeUpdated', timeUpdated)
-    //const auxDater = new Date(timeUpdated.start_date)
-    //console.log('auxDater', auxDater)
     timeUpdated.start_date = new Date(timeUpdated.start_date)
 
     const elementToUpdatedIdx = times.value.findIndex((element) => {
         return element.id == timeUpdated.id
     })
-    console.log('BEFORE times.value[elementToUpdatedIdx]', times.value[elementToUpdatedIdx].start_date)
-    console.log('timeUpdated.start_date', timeUpdated.start_date)
+    
     const auxDaterFinal = new Date(timeUpdated.start_date)
     times.value[elementToUpdatedIdx].time_split.hours = auxDaterFinal.getHours()
     times.value[elementToUpdatedIdx].time_split.minutes = auxDaterFinal.getMinutes()
     times.value[elementToUpdatedIdx].time_split.seconds = auxDaterFinal.getSeconds()
-    console.log('AFTER times.value[elementToUpdatedIdx]', times.value[elementToUpdatedIdx])
-    //const timeUpdatedAux = new Date(timeUpdated.start_date)
-    //const timeToUpdate = new Date(times.value[elementToUpdatedIdx].start_date)
-    /*updateTime(times.value[elementToUpdatedIdx], timeUpdatedAux.getHours(), 'h');
-    updateTime(times.value[elementToUpdatedIdx], timeUpdatedAux.getMinutes(), 'm');
-    updateTime(times.value[elementToUpdatedIdx], timeUpdatedAux.getSeconds(), 's');*/
-    //console.log('times.value[elementToUpdatedIdx].start_date', times.value[elementToUpdatedIdx].start_date)
-    //console.log('timeToUpdate', timeToUpdate)
-    //console.log('timeUpdatedAux.getHours()', timeUpdatedAux.getHours())
-    //timeToUpdate.setHours(timeUpdatedAux.getHours())
-    //timeToUpdate.setMinutes(timeUpdatedAux.getMinutes())
-    //timeToUpdate.setSeconds(timeUpdatedAux.getSeconds())
-    //console.log('timeToUpdate', timeToUpdate)
 })
 
 const formatDate = (value)=>{

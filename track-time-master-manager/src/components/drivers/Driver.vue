@@ -34,43 +34,35 @@
   const loadCountries = async ()=>{
     await axios.get('https://restcountries.com/v3.1/all?fields=name,translations')
     .then((response)=>{
-      console.log(response.data)
       countries.value = response.data
     })
   }
 
   const pathHaveWordHistory = ref(null)
 
-  let originalValueStr = ''
-  const loadDriver = (id) => {    
-    originalValueStr = ''
+  const loadDriver = (id) => {
       errors.value = null
       if (!id || (id < 0)) {
         driver.value = newDriver()
-        originalValueStr = dataAsString()
       } else {
         const currentPath = router.currentRoute.value.fullPath
-        console.log('Path: ', currentPath)
         pathHaveWordHistory.value = currentPath.includes('history')
-        console.log('pathHaveWordHistory.value', pathHaveWordHistory.value)
 
         if (!pathHaveWordHistory.value){
           axios.get('drivers/' + id)
           .then((response) => {
             driver.value = response.data.data
-            originalValueStr = dataAsString()
           })
           .catch((error) => {
-            console.log(error)
+            console.error(error)
           })
         }else{
           axios.get('driversHistory/' + id)
           .then((response) => {
             driver.value = response.data.data
-            originalValueStr = dataAsString()
           })
           .catch((error) => {
-            console.log(error)
+            console.error(error)
           })
         }
       }
@@ -83,7 +75,6 @@
           axios.post('drivers', driver.value)
             .then((response) => {
               driver.value = response.data.data
-              originalValueStr = dataAsString()
               toast.success('O condutor #' + driver.value.id + ' foi criado com sucesso.')
               router.push({name: 'Drivers'})
             })
@@ -99,8 +90,6 @@
           axios.put('drivers/' + props.id, driver.value)
           .then((response) => {
             driver.value = response.data.data
-            originalValueStr = dataAsString()
-            console.log('new driver', driver.value)
             toast.success('Condutor #' + driver.value.id + ' atualizado com sucesso.')
             socket.emit('updateDriver', driver.value);
             router.back()
@@ -118,8 +107,6 @@
         axios.put('driversHistory/' + props.id, driver.value)
           .then((response) => {
             driver.value = response.data.data
-            originalValueStr = dataAsString()
-            console.log('new driver', driver.value)
             toast.success('Condutor #' + driver.value.id + ' atualizado com sucesso.')
             socket.emit('updateDriver', driver.value);
             router.back()
@@ -144,30 +131,8 @@
   })
 
   const cancel = () => {
-    originalValueStr = dataAsString()
     router.push({name: 'Drivers'})
   }
-
-  const dataAsString = () => {
-      return JSON.stringify(driver.value)
-  }
-
-  let nextCallBack = null
-  const leaveConfirmed = () => {
-      if (nextCallBack) {
-        nextCallBack()
-      }
-  }
-
-  onBeforeRouteLeave((to, from, next) => {
-    nextCallBack = null
-    let newValueStr = dataAsString()
-    if (originalValueStr != newValueStr) {
-      nextCallBack = next
-    } else {
-      next()
-    }
-  })  
 
   const driver = ref(newDriver())
   const errors = ref(null)

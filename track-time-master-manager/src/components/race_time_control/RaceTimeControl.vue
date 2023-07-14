@@ -30,12 +30,10 @@ const parseDates = (element) => {
     element.time_split.hours = element.end_date.getHours()
     element.time_split.minutes = element.end_date.getMinutes()
     element.time_split.seconds = element.end_date.getSeconds()
-    console.log(`element ${element.run_order}`, element)
 }
 const loadTimesRun = (stage_run_id) => {
     axios.get(`stageRuns/${stage_run_id}/times`)
     .then((response)=>{
-        console.log(response)
         times.value = response.data
         times.value.forEach((element) => {
             parseDates(element)
@@ -59,22 +57,16 @@ const updateTime = (time, value, type) => {
             time.end_date.setSeconds(value)
             break
     }
-    console.log('updatedTime', time.end_date)
 }
 
 const saveTime = (time) => {
     var time_to_save = Object.assign({}, time)
     time_to_save.end_date = time.end_date.toISOString().replace('T', ' ').replace('Z', '')
     time_to_save.arrived = true
-    console.log('tts', time_to_save)
-    //console.log('before send', time)
     axios.put(`stageRuns/${props.stage_run_id}/times/${time.id}/end`, time_to_save)
     .then((response) => {
-        console.log(response)
         parseDates(response.data.data)
         times.value[time.run_order - 1] = response.data.data
-        console.log(time)
-        console.log(times)
         socket.emit('updateStageRunRaceTimeControlTime', response.data.data);
         socket.emit('updateFinalTimeForTimeRun', response.data.data);
         socket.emit('updateEventFinalTimeForTimeRun', response.data.data);
@@ -84,27 +76,14 @@ const saveTime = (time) => {
         console.error(error)
         toast.error(error.response.data)
     })
-
-    //console.log(time_to_save)
-    //parseDates(time_to_save)
-    //times.value[time.run_order - 1] = time_to_save
-    //time
-    //console.log('time', time)
-    //console.log(times)
-    //socket.emit('updateStageRunRaceTimeControlTime', time);
-    //console.log('AQUIIIIIIIIIIIIIIIIIIII time log: ', time)
-    //toast.success(`O tempo do participante #${time.run_order} foi alterado com sucesso.`)
 }
 
 socket.on('updateStageRunRaceTimeControlTime', (timeUpdated) => {
-    console.log('timeUpdated', timeUpdated)
     timeUpdated.end_date = new Date(timeUpdated.end_date)
 
     const elementToUpdatedIdx = times.value.findIndex((element) => {
         return element.id == timeUpdated.id
     })
-    console.log('BEFORE times.value[elementToUpdatedIdx]', times.value[elementToUpdatedIdx].end_date)
-    console.log('timeUpdated.end_date', timeUpdated.end_date)
     const auxDaterFinal = new Date(timeUpdated.end_date)
     times.value[elementToUpdatedIdx].time_split.hours = auxDaterFinal.getHours()
     times.value[elementToUpdatedIdx].time_split.minutes = auxDaterFinal.getMinutes()
@@ -113,7 +92,6 @@ socket.on('updateStageRunRaceTimeControlTime', (timeUpdated) => {
     times.value[elementToUpdatedIdx].arrived = timeUpdated.arrived
     times.value[elementToUpdatedIdx].time_points = timeUpdated.time_points
     times.value[elementToUpdatedIdx].penalty = timeUpdated.penalty
-    console.log('AFTER times.value[elementToUpdatedIdx]', times.value[elementToUpdatedIdx])
 })
 
 watch(

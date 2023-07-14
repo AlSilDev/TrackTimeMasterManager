@@ -70,14 +70,11 @@ const attribute = ref()
 const search = ref()
 
 const getResultsFiltered = async (page = 1) => {
-  console.log('endpoint: ', `vehicles?page=${page}&column=${sortedColumn.value}&order=${order.value}&attribute=${attribute.value.value}&search=${search.value.value}`)
   await axios.get(`vehicles?page=${page}&column=${sortedColumn.value}&order=${order.value}&attribute=${attribute.value.value}&search=${search.value.value}`)
     .then((response) => {
       laravelData.value = response.data
       currentPage.value = page
       filteredPages.value = laravelData.value.links.slice(1, laravelData.value.last_page+1)
-      console.log(laravelData.value)
-      console.log(filteredPages.value)
     })
     .catch((error)=>{
       console.error(error)

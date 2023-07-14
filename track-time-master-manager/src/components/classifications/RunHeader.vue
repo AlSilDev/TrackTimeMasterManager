@@ -5,10 +5,6 @@ const props = defineProps({
         required: true
     }
 })
-
-onMounted(()=>{
-    console.log('header', props.n)
-})
 </script>
 <template>
     <th class="align-middle">{{ props.n }}ª Passagem</th>

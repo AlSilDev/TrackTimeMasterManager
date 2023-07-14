@@ -43,7 +43,6 @@ const vehicleTitle = computed(() => {
 })
 
 const validData = computed(()=>{
-  console.log('valid?', editingVehicle.value)
   return (editingVehicle.value.model != ''
           //&& editingVehicle.value.class_id != null
           && editingVehicle.value.class_id != null
@@ -75,7 +74,7 @@ const isCategoryNotNull = (categoryId) => {
       if(((classes.value[i]).category_id) == categoryId){
         classesCategoryId.value.push(classes.value[i])
         if(props.operationType == 'update' && classes.value[i].id == editingVehicle.value.class.id){
-          console.log('found select', classes.value[i])
+          //console.log('found select', classes.value[i])
         }
       }
     }
@@ -87,11 +86,10 @@ const isCategoryNotNull = (categoryId) => {
 const loadCategories = (async()  => {
     await axios.get('vehicles/categories')
         .then((response) => {
-          //laravelData.value = response.data
           categories.value = response.data
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
         })
 })
 
@@ -102,7 +100,7 @@ const loadClasses = (async()  => {
           classes.value = response.data
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
         })
 })
 
@@ -110,22 +108,11 @@ onMounted (async () => {
   await loadCategories()
   await loadClasses()
 
-  console.log('props.vehicle.category', props.vehicle.category.id)
-  console.log('editingVehicle.value.category.id',editingVehicle.value.category.id)
   /* Carrega categoria default */
   if(categories.value.length != 0)
   {
-    //isCategoryNotNull(categories.value[0].id)
-    /*setTimeout(() => {
       isCategoryNotNull(props.vehicle.category.id)
-    }, 1000);*/
-
-    isCategoryNotNull(props.vehicle.category.id)
-    //console.log('categories.value[0]', categories.value[0].name)
-    //console.log('vehicle', props.vehicle)
   }
-  //classesCategoryId
-  //editingVehicle.class.id
   editingVehicle.value.class_id = editingVehicle.value.class.id
 })
 
@@ -170,35 +157,6 @@ onMounted (async () => {
           <!--field-error-message :errors="errors" fieldName="class"></field-error-message-->
         </div>
 
-        <!--div class="mb-3 px-1" v-if="editingVehicle.category == 'CL'"-->
-        <!--div class="mb-3 px-1" v-if="isCategoryCL(editingVehicle.category)">
-          <label for="inputClass" class="form-label">Class</label>
-          <br>
-          <select name="category" v-model="editingVehicle.class">
-              <option value="A3">A3</option>
-              <option value="C09">C09</option>
-              <option value="C10">C10</option>
-              <option value="C11">C11</option>
-              <option value="C12">C12</option>
-          </select>
-          <field-error-message :errors="errors" fieldName="class"></field-error-message>
-        </div-->
-
-        <!--div class="mb-3 px-1" v-if="isCategoryDP(editingVehicle.category)">
-          <label for="inputClass" class="form-label">Classe</label>
-          <br>
-          <select name="category" v-model="editingVehicle.class">
-              <option value="D14">D14</option>
-              <option value="D15">D15</option>
-              <option value="D16">D16</option>
-              <option value="E18">E18</option>
-              <option value="E19">E19</option>
-              <option value="E20">E20</option>
-              <option value="F24">F24</option>
-          </select>
-          <field-error-message :errors="errors" fieldName="class"></field-error-message>
-        </div-->
-
         <div class="mb-3 px-1">
           <label for="inputLicensePlate" class="form-label">Matricula</label>
           <input
@@ -238,14 +196,6 @@ onMounted (async () => {
           <!--field-error-message :errors="errors" fieldName="engine_capacity"></field-error-message-->
         </div>
       </div>
-      <!--div class="w-25">
-        <div class="mb-3">
-          <label class="form-label">Photo</label>
-          <div class="form-control text-center">
-            <img :src="photoFullUrl" class="w-100" />
-          </div>
-        </div>
-      </div-->
     </div>
     <div class="mb-3 d-flex justify-content-center">
       <button type="submit" class="btn btn-dark px-5" :disabled="!validData">Guardar</button><!-- -->

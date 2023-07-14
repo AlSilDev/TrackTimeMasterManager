@@ -20,10 +20,9 @@
     axios.get('drivers')
         .then((response) => {
           drivers.value = response.data.data
-          console.log(drivers.value)
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
         })
     }
 

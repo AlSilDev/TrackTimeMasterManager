@@ -40,15 +40,10 @@ const clickMenuOption = () => {
 }
 
 const isBackendPage = () =>  {
-  //console.log("Route: ", router.currentRoute.value)
   const myArray = router.currentRoute.value.fullPath.split('/')
-  //console.log("Route path trim: ", myArray)
-  //console.log("Route path 1: ", myArray[1])
   if (myArray[1] == "backend"){
-    //console.log("True")
     return true;
   }
-  //console.log("False")
   return false;
 }
 
@@ -60,9 +55,6 @@ watch (
   () => router.currentRoute.value,
   () => {
     isBackendPage();
-  },
-  (buttonSidebarExpand) => {
-    console.log(buttonSidebarExpand.value)
   }
 )
 

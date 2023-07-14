@@ -52,12 +52,6 @@ const save = () => {
 const cancel = () => {
   emit("cancel", editingStage.value);
 }
-
-
-onMounted(()=>{
-  
-})
-
 </script>
 
 <template>

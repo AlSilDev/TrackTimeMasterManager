@@ -39,7 +39,6 @@
   const stageRun = ref(newStageRun())
 
   const loadStageRun = (stage_run_id) => {    
-    console.log(stage_run_id)
       errors.value = null
       if (!stage_run_id || (stage_run_id < 0)) {
         stageRun.value = newStageRun()
@@ -47,17 +46,14 @@
         axios.get(`stageRuns/${stage_run_id}`)
           .then((response) => {
             stageRun.value = response.data.data
-            console.log('stageRun', stageRun.value)
           })
           .catch((error) => {
-            console.log(error)
           })
       }
   }
 
   const save = (editingStageRunValue) => {
     errors.value = null
-    console.log('stageRun save', editingStageRunValue)
     if (operation.value == "insert")
     {
       axios.post(`stageRuns`, editingStageRunValue)
@@ -78,10 +74,8 @@
     }
     else
     {
-      console.log("PUT Method", editingStageRunValue)
       axios.put(`stageRuns/${props.stage_run_id}`, editingStageRunValue)
       .then((response) => {
-        //console.log(response.data.data)
         stageRun.value = response.data.data
         toast.success('Partida #' + stageRun.value.id + ' foi atualizada com sucesso!')
         //TODO
@@ -89,7 +83,6 @@
         router.push({name: 'Stages', params: { event_id: props.event_id }})
       })
       .catch((error) => {
-        console.error(error)
         if (error.response.status == 422) {
             toast.error('Partida #' + props.stageRun + ' não atualizada devido a erros de validação!')
             errors.value = error.response.data.errors
@@ -114,11 +107,6 @@
       },
     {immediate: true}  
     )
-
-  onMounted(()=>{
-    //console.log('params', router.currentRoute.value.params)
-  })
-
 </script>
 
 <template>

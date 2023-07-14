@@ -57,22 +57,11 @@ const changeBlockValue = (user) => {
 };
 
 socket.on('userBlockValueChange', (user) => {
-    //console.log(`user ${user.id} blocked value updated`)
     const userUpdatedIdx = laravelData.value.data.findIndex((element) => {return element.id == user.id})
-    //userUpdatedIdx->indice do user atualizado
-    //console.log(`user updated(${laravelData.value.data[userUpdatedIdx].id}) => ${laravelData.value.data[userUpdatedIdx].name}, ${laravelData.value.data[userUpdatedIdx].blocked}`);
-    //console.log("old: ", laravelData.value.data[userUpdatedIdx].blocked)
     if (userUpdatedIdx != -1)
     {
       laravelData.value.data[userUpdatedIdx].blocked = user.blocked
     }
-    //console.log("new: ", user.blocked)
-    //console.log(`user updated(${laravelData.value.data[userUpdatedIdx].id}) => ${laravelData.value.data[userUpdatedIdx].name}, ${laravelData.value.data[userUpdatedIdx].blocked}`);
-    //console.log("users", laravelData.value.data)
-    //console.log("user 1 (blocked)", laravelData.value.data[user.id-1].blocked)
-    //console.log("user 1 (blocked)", user.blocked)
-    //laravelData.value.data[user.id-1] = user
-    //console.log("user 1 (blocked)", laravelData.value.data[user.id-1].blocked)
 })
 
 socket.on('updateUser', (userUpdated) => {
@@ -110,14 +99,12 @@ const search = ref()
 const getResultsFiltered = async (page = 1) => {
   if (attribute.value.value === "type")
     search.value.value = search.value.value.charAt(0)
-  console.log('endpoint: ', `users?page=${page}&column=${sortedColumn.value}&order=${order.value}&attribute=${attribute.value.value}&search=${search.value.value}`)
+    
   await axios.get(`users?page=${page}&column=${sortedColumn.value}&order=${order.value}&attribute=${attribute.value.value}&search=${search.value.value}`)
     .then((response) => {
       laravelData.value = response.data
       currentPage.value = page
       filteredPages.value = laravelData.value.links.slice(1, laravelData.value.last_page+1)
-      console.log(laravelData.value)
-      console.log(filteredPages.value)
     })
     .catch((error)=>{
       console.error(error)

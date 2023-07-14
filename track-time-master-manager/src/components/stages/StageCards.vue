@@ -47,7 +47,6 @@ const props = defineProps({
 const stages = ref({})
 
 const editStage = (stage) => {
-  console.log('stage cards id', stage.id)
   router.push({ name: 'Stage', params: { event_id: router.currentRoute.value.params['event_id'], stage_id: stage.id } })
 }
 
@@ -59,11 +58,9 @@ const isAdmin = () => {
 }
 
 const loadStages = async () => {
-  console.log('endpoint: ', `events/${router.currentRoute.value.params['event_id']}/stages`)
   await axios.get(`events/${router.currentRoute.value.params['event_id']}/stages`)
     .then((response) => {
       stages.value = response.data
-      console.log(stages.value)
     })
     .catch((error)=>{
       console.error(error)
@@ -84,15 +81,11 @@ const deleteStage = async (stage) => {
 const loadStageRuns = (stage) => {
   axios.get(`stages/${stage.id}/runs`)
   .then((response)=>{
-    console.log(`stage ${stage.id} response`, response.data)
     stage.runs = response.data
   })
-
-  console.log(`stage ${stage.id}`, stage)
 }
 
 const editStageRun = (stage, stage_run) => {
-  console.log('stage run edit', stage_run)
   router.push({ name: 'StageRun', params: { event_id: router.currentRoute.value.params['event_id'], stage_id: stage.id, stage_run_id: stage_run.id } })
 }
 
@@ -117,13 +110,10 @@ const stageClassifications = (stage) => {
 }
 
 socket.on('updateStageRun', (stageRunUpdated) => {
-  console.log('stages', stages.value)
   const stageRunToUpdate = stages.value[0].runs.find((element) => {
     return element.id == stageRunUpdated.id
   })
-  console.log('stageRunUpdated', stageRunUpdated)
-  console.log('stageRunToUpdate', stageRunToUpdate)
-  //stageRunToUpdate.date_start = (stageRunUpdated.date_start, 'YYYY-MM-DDThh:mm').format('YYYY-MM-DD hh:mm:ss');
+
   stageRunToUpdate.date_start = formatDate(stageRunUpdated.date_start);
   stageRunToUpdate.practice = stageRunUpdated.practice;
 })

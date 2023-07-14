@@ -31,25 +31,16 @@ const eventStarted = ref(false)
 const eventEnded = ref(false)
 
 const loadEvent = async ()=>{
-    //console.log(props)
     await axios.get(`events/${props.id}`)
     .then((response)=>{
         event.value = response.data.data
         
-        //console.log(event.value)
-        //console.log('date_start_enrollments: ', Date.parse(event.value.date_start_enrollments).valueOf())
-        //console.log('date_now: ', Date.now())
-        //console.log('date_end_enrollments: ', Date.parse(event.value.date_end_enrollments).valueOf())
-        //console.log('date_start_event: ', Date.parse(event.value.date_start_event).valueOf())
-        
         enrollOpen.value = Date.parse(event.value.date_start_enrollments).valueOf() < Date.now() && Date.parse(event.value.date_end_enrollments).valueOf()  > Date.now()
-        //console.log('enrollments open: ', enrollOpen.value)
         eventStarted.value = Date.parse(event.value.date_start_event).valueOf() < Date.now()
-        //console.log('event started', eventStarted.value)
         eventEnded.value = Date.parse(event.value.date_end_event).valueOf() > Date.now()
     })
     .catch((error)=>{
-        //console.error(error)
+        console.error(error)
         toast.error('Ocorreu um erro ao procurar o evento.')
     })
 }
@@ -58,7 +49,6 @@ const driverName = ref('')
 const drivers = ref([])
 
 const loadDriversByName = async ()=>{
-    //console.log('driver name: ' + driverName.value.value)
     await axios.get(`drivers/canDrive/byName/${props.id}/${driverName.value.value}`)
     .then((response)=>{
         if(response.data.length != 0)
@@ -68,10 +58,9 @@ const loadDriversByName = async ()=>{
         else{
             toast.error('Não existem condutores com essa correspondência.')
         }
-        //console.log(drivers.value)
     })
     .catch((error)=>{
-        //console.error(error)
+        console.error(error)
         toast.error('Ocorreu um erro ao procurar os condutores.')
     })
 }
@@ -90,7 +79,7 @@ const loadVehiclesByLicensePlate = async ()=>{
         }
     })
     .catch((error)=>{
-        //console.error(error)
+        console.error(error)
         toast.error('Ocorreu um erro ao procurar os veiculos.')
     })
 }
@@ -163,17 +152,13 @@ const enrollCreated = ref({
     vehicle_category: null
 })
 const enroll = async ()=>{
-    //console.log(enrollment.value)
     await axios.post(`enrollments`, enrollment.value)
     .then((response)=>{
-        //console.log('enroll', response.data)
         if(enrollments.value.length == 0)
         {
             enrollCreated.value.enroll_order = 1
         }else{
             const lastEnrollNumber = enrollments.value[enrollments.value.length - 1].enroll_order
-            //console.log('lastEnrollNumber', lastEnrollNumber)
-            //const lastIndex = enrollments.value.findIndex((element) => {return element.id == enrollments.value[enrollments.value.length-1].id})
             enrollCreated.value.enroll_order = (lastEnrollNumber + 1);
         }
         enrollCreated.value.id = response.data.data.id;
@@ -195,75 +180,59 @@ const enroll = async ()=>{
 
         toast.success(`A inscrição #${enrollCreated.value.id} foi efetuada com sucesso.`)
         socket.emit('createNewEventEnrollment', enrollCreated.value);
-        //console.log("Enrollment created POST: ", enrollCreated.value);
-        /*restartDriversSearch()
-        restartVehiclesSearch()*/
         restartSelected()
-        //console.log('enrollments after push: ', enrollments.value)
-        //loadEnrollments()
     })
     .catch((error)=>{
-        //console.error(error)
+        console.error(error)
     })
 }
 
 socket.on('createNewEventEnrollment', (enrollmentCreated) => {
-    //console.log("ENROLL: ", enrollmentCreated)
-    //console.log("Enrollments before: ", enrollments)
     enrollments.value.push(enrollmentCreated)
-    //console.log("Enrollments after: ", enrollments)
 })
 
 const enrollments = ref([])
 const loadEventEnrollments = async ()=>{
-    //console.log("Event id: " + props.id)
     await axios.get('events/' + props.id+ '/enrollments')
     .then((response)=>{
         enrollments.value = response.data
     })
     .catch((error)=>{
-        //console.log(error)
+        console.error(error)
     })
-    //console.log("Inscrições: " + enrollments.value.length)
 }
 
 const enrollmentsAdminVerifications = ref([])
 const loadEventToAdminVerifications = async ()=>{
-    //console.log("Event id: " + props.id)
     await axios.get('events/' + props.id+ '/adminVerifications/canBeVerified')
     .then((response)=>{
         enrollmentsAdminVerifications.value = response.data
-        console.log(enrollmentsAdminVerifications.value)
     })
     .catch((error)=>{
-        //console.log(error)
+        console.error(error)
     })
 }
 
 const enrollmentsTechnicalVerifications = ref([])
 const loadEventToTechnicalVerifications = async ()=>{
-    //console.log("Event id: " + props.id)
     await axios.get('events/' + props.id+ '/technicalVerifications/canBeVerified')
     .then((response)=>{
         enrollmentsTechnicalVerifications.value = response.data
-        //console.log(enrollmentsTechnicalVerifications.value )
     })
     .catch((error)=>{
-        //console.log(error)
+        console.error(error)
     })
 }
 
 
 const eventParticipants = ref([])
 const loadEventParticipants = async ()=>{
-    //console.log("Event id: " + props.id)
     await axios.get('events/' + props.id + '/participants/canCompete')
     .then((response)=>{
-        //console.log(response.data)
         eventParticipants.value = response.data
     })
     .catch((error)=>{
-        //console.error(error)
+        console.error(error)
     })
 }
     
@@ -295,11 +264,8 @@ const sortRunOrder = (type, id) => {
     let aux = null
     switch(type){
         case 'up':
-            //console.log('up')
             selected = enrollments.value.findIndex((element) => {return element.id == id})
-            //console.log('selected', enrollments.value[selected])
             const up = enrollments.value.findIndex((element) => {return element.run_order == enrollments.value[selected-1].run_order})
-            //console.log('up', enrollments.value[up])
 
             const selectedNewRunOrderForUpCase = enrollments.value[up].run_order
             const upNewRunOrderForUpCase = enrollments.value[selected].run_order
@@ -310,14 +276,10 @@ const sortRunOrder = (type, id) => {
             enrollments.value[up] = enrollments.value[selected]
             enrollments.value[selected] = aux
 
-            //console.log('new enrollments', enrollments.value)
             break
         case 'down':
-            //console.log('down')
             selected = enrollments.value.findIndex((element) => {return element.id == id})
-            //console.log('selected', enrollments.value[selected])
             const down = enrollments.value.findIndex((element) => {return element.run_order == enrollments.value[selected+1].run_order})
-            //console.log('down', enrollments.value[down])
 
             const selectedNewRunOrderForDownCase = enrollments.value[down].run_order
             const downNewRunOrderForDownCase = enrollments.value[selected].run_order
@@ -327,11 +289,8 @@ const sortRunOrder = (type, id) => {
             aux = enrollments.value[down]
             enrollments.value[down] = enrollments.value[selected]
             enrollments.value[selected] = aux
-
-            //console.log('new enrollments', enrollments.value)
             break
         default:
-            //console.log('invalid sort type', type)
     }
 
 }
@@ -412,13 +371,11 @@ const enrollApprovedVA = async(enrollAdminVerification, boolApproved) => {
 }
 
 socket.on('approveAdminVerification', (updatedValuesVAapp) => {
-    //console.log(updatedValuesVAapp);
     removeObjectWithId(updatedValuesVAapp.id, enrollmentsAdminVerifications)
     addObject(updatedValuesVAapp, enrollmentsTechnicalVerifications)
 })
 
 socket.on('repproveAdminVerification', (updatedValuesVArep) => {
-    //console.log(updatedValuesVArep);
     removeObjectWithId(updatedValuesVArep.id, enrollmentsAdminVerifications)
 })
 
@@ -430,13 +387,6 @@ const enrollApprovedVT = async(enrollTechnicalVerification, boolApproved) => {
     {
         //approved
         const updatedVerifieds = {'verified': 1, 'verified_by': userId}
-        console.log(updatedVerifieds)
-        /*console.log('enrollmentsTechnicalVerifications', enrollmentsTechnicalVerifications)
-        console.log('eventParticipants', eventParticipants)
-        removeObjectWithId(enrollTechnicalVerification.id, enrollmentsTechnicalVerifications)
-        addObject(enrollTechnicalVerification, eventParticipants)
-        toast.success("Inscrição com verificação técnica aprovada!")
-        socket.emit('approveTechnicalVerification', enrollTechnicalVerification);*/
         axios.put(`technicalVerifications/${enrollTechnicalVerification.id}/changeVerified`, updatedVerifieds, enrollTechnicalVerification)
         .then((response)=>{
             removeObjectWithId(enrollTechnicalVerification.id, enrollmentsTechnicalVerifications)
@@ -477,13 +427,11 @@ const enrollApprovedVT = async(enrollTechnicalVerification, boolApproved) => {
 }
 
 socket.on('approveTechnicalVerification', (updatedValuesVTapp) => {
-    //console.log(updatedValuesVTapp);
     removeObjectWithId(updatedValuesVTapp.id, enrollmentsTechnicalVerifications)
     addObject(updatedValuesVTapp, eventParticipants)
 })
 
 socket.on('repproveTechnicalVerification', (updatedValuesVTrep) => {
-    //console.log(updatedValuesVTrep);
     removeObjectWithId(updatedValuesVTrep.id, enrollmentsTechnicalVerifications)
 })
 
@@ -516,48 +464,22 @@ const updateRunOrder = async ()=>{
     .catch((error)=>{
         toast.error("Problemas ao alterar.")
     })
-        
-    //console.log('updated:', updatedValues)
 }
 
 socket.on('changeRunOrdersOfEventEnrollments', (updatedValues) => {
-    //console.log('updated values: ', updatedValues);
     const valuesToOrder = []
     updatedValues.forEach(element => {
         valuesToOrder.push({'id': element.id})
     })
-    //console.log('valuesToOrder', valuesToOrder)
-    //console.log('enrollments: ', enrollments.value);
-    //enrollments.value.length = 0;
-    //console.log('valuesToOrder.length', valuesToOrder.length)
     for (let index = 0; index < enrollments.value.length; index++) {
         var auxElem = enrollments.value.find((element) => {
             return element.id == valuesToOrder[index].id;
         })
-        //console.log('auxElem', auxElem)
         auxElem.run_order = index+1;
     }
     enrollments.value = enrollments.value.slice().sort((a,b) => {
         return a.run_order - b.run_order;
     });
-    //console.log('after enrollments: ', enrollments.value);
-    /*updatedValues.forEach(element => {
-        //console.log('run order: ', enrollments.value[++ind].run_order)
-        //console.log('updated values: ', updatedValues[++ind].run_order)
-        //enrollments.value = updatedValues
-    });*/
-
-    /*enrollments.value.slice().sort(function(a, b){
-        return updatedValues.indexOf(a) - updatedValues.indexOf(b);
-    });*/
-
-    /*sortEnrolls(enrollments.value, updatedValues);
-    console.log('after enrollments: ', enrollments.value);*/
-    
-    //console.log(enrollments.value[0].id)
-    //const arrayOrder = mapOrder(enrollments.value, valuesToOrder, 'id');
-    //console.log('arrayOrder', arrayOrder)
-
 })
 
 
@@ -661,9 +583,6 @@ const VTInformationModal = ref({
 })
 
 const updateAVNotes = async(VA) => {
-    //update verificacao administrativa notes
-    //console.log("VA id: ", VA_Id);
-    //console.log("VA notes: ", VA_Notes);
     const VA_Notes = VA.notes
     const VA_Id = VA.id
     const updatedNotes = {'notes': VA_Notes}
@@ -682,9 +601,6 @@ const updateAVNotes = async(VA) => {
 }
 
 const updateTVNotes = async(VT) => {
-    //update verificacao administrativa notes
-    //console.log("VA id: ", VT_Id);
-    //console.log("VA notes: ", VT_Notes);
     const VT_Notes = VT.notes
     const VT_Id = VT.id
     const updatedNotes = {'notes': VT_Notes}
@@ -718,12 +634,10 @@ socket.on('updateNotesForTechnicalVerification', (technicalVerUpdated) => {
 
 
 const AVUpdateDriver = (driver_id) => {
-    //console.log('Driver_id', driver_id)
     router.push({ name: 'DriverHistory', params: { id: driver_id } })
 }
 
 const TVUpdateVehicle = (vehicle_id) => {
-    //console.log('Vehicle_id', vehicle_id)
     router.push({ name: 'VehicleHistory', params: { id: vehicle_id } })
 }
 
@@ -739,11 +653,8 @@ socket.on('updateDriver', (driverUpdated) => {
 })
 
 socket.on('updateVehicle', (vehicleUpdated) => {
-    console.log('vehicleUpdated.id', vehicleUpdated)
-    console.log('enrollmentsTechnicalVerifications.value', enrollmentsTechnicalVerifications.value)
     enrollmentsTechnicalVerifications.value.forEach((element) => {
         if (element.vehicle_id == vehicleUpdated.id) {
-            //console.log('aqui')
             element.vehicle_model = vehicleUpdated.model
             element.vehicle_license_plate = vehicleUpdated.license_plate
         }

@@ -57,20 +57,14 @@
       formData.append('password', editingUserValue.password)
       formData.append('type_id', editingUserValue.type_id)
 
-      console.log('FormData:' + formData.values())
-
       if (operation.value == "insert"){
-        console.log("POST Method")
         axios.post('users', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
           .then((response) => {
             user.value = response.data.data
-            console.log(response.data)
-            console.log(editingUserValue.name)
             toast.success('O utilizador ' +  editingUserValue.name + ' foi criado com sucesso.')
             router.push({name: 'Users'})
           })
           .catch((error) => {
-            console.log(error)
             if (error.status == 422) {
               toast.error('Utilizador não criado devido a erros de validação.')
               errors.value = error.response.data.errors
@@ -79,12 +73,7 @@
             }
           })
       }else{
-        console.log("PUT Method")
         formData.append('_method', 'put')
-        console.log("Nome: " + formData.get("name"))
-        console.log("Email: " + formData.get("email"))
-        console.log("Photo_file: " + formData.get("photo_file"))
-        console.log("_Method: " + formData.get("_method"))
         axios.post('users/' + props.id, formData)
         .then((response) => {
           user.value = response.data.data

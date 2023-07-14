@@ -40,16 +40,14 @@
         axios.get(`stages/${stage_id}`)
           .then((response) => {
             stage.value = response.data.data
-            console.log('stage', stage.value)
           })
           .catch((error) => {
-            console.log(error)
+            console.error(error)
           })
       }
   }
 
   const save = (editingStageValue) => {
-    console.log('event_id', props.event_id)
     errors.value = null
     if (operation.value == "insert")
     {
@@ -70,7 +68,6 @@
     }
     else
     {
-      console.log("PUT Method")
       axios.put(`events/${props.event_id}/stages/${props.stage_id}`, editingStageValue)
       .then((response) => {
         stage.value = response.data.data
@@ -102,27 +99,9 @@
       },
     {immediate: true}  
     )
-
-  onMounted(()=>{
-    console.log('params', router.currentRoute.value.params)
-    console.log('stage_id', router.currentRoute.value.params['stage_id'])
-    setTimeout(()=>{
-      console.log('props.event_id', props.event_id)
-      console.log('props.stage_id', props.stage_id)
-    }, 1000)
-    
-  })
-
 </script>
 
 <template>
-  <!--stage-detail
-    :stage="stage"
-    :errors="errors"
-    :operationType="operation"
-    @save="save"
-    @cancel="cancel"
-  ></stage-detail-->
   <stage-detail
     :stage="stage"
     :operationType="operation"

@@ -35,25 +35,16 @@
     }
   })
 
-  /*const dataAsString = () => {
-      return JSON.stringify(user.value)
-  }*/
-
-  //let originalValueStr = ''
   const loadUser = (id) => {
-    console.log("ID: " + id) 
-    //originalValueStr = ''
       if (!id || (id < 0)) {
         user.value = newUser()
-        //originalValueStr = dataAsString()
       } else {
         axios.get('users/' + id)
           .then((response) => {
             user.value = response.data.data
-            //originalValueStr = dataAsString()
           })
           .catch((error) => {
-            console.log(error)
+            console.error(error)
           })
       }
   }
@@ -112,9 +103,6 @@
   onMounted(()=>{
     setTimeout(()=>{
       photoFullUrl.value = user.value.photo_url ? serverBaseUrl + "/storage/fotos/" + user.value.photo_url : avatarNoneUrl;
-      //console.log("Photo: " + photoFullUrl.value)
-      //console.log("Photo: " + editingUser.value.photo_url)
-      //console.log("Photo props: " + props.user.photo_file)
     },1000);
 }) 
 </script>

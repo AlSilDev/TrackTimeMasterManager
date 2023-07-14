@@ -78,13 +78,8 @@ export const useUserStore = defineStore('user', () => {
         }else{
             var blockValue = {"blocked": 1};
         }
-        console.log("User ID: " + user.id)
         try {
-            console.log("User ID: " + user.id)
             await axios.patch('users/' + user.id + '/blocked', blockValue)
-            console.log("BlockValue: ", blockValue.blocked)
-            //socket.emit('userBlockValueChange', user);
-            //user.blocked = (user.blocked == 0 ? 1 : 0)
             user.blocked = blockValue.blocked
             socket.emit('userBlockValueChange', user);
             return true;
