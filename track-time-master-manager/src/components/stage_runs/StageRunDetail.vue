@@ -42,7 +42,7 @@ const stageRunTitle = computed(() => {
   if (!editingStageRun.value){
     return ""
   }
-  return props.operationType == "insert" ? "Nova Partida" : "Partida #" + editingStageRun.value.id;
+  return props.operationType == "insert" ? "Nova Partida" : "Editar Partida";
 })
 
 const save = () => {
