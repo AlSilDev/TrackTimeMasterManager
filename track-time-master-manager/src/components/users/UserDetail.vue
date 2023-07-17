@@ -2,6 +2,7 @@
 import { ref, watch, computed, inject, onMounted } from "vue";
 import avatarNoneUrl from '@/assets/avatar-none.png'
 import { useRouter } from 'vue-router' 
+import FieldErrorMessage from '../global/FieldErrorMessage.vue'
 
 const router = useRouter()  
 const axios = inject('axios')
@@ -53,10 +54,6 @@ const uploadImage =  ()=>{
 
 const photoFullUrl = ref()
 
-/*const save = () => {
-  emit("save", editingUser.value);
-}*/
-
 const userCategories = ref([])
 const loadUserCategories = (async() => {
     await axios.get('userCategories')
@@ -64,71 +61,16 @@ const loadUserCategories = (async() => {
           userCategories.value = response.data
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
         })
   })
 
 onMounted(()=>{
   setTimeout(()=>{
     photoFullUrl.value = editingUser.value.photo_url ? serverBaseUrl + "/storage/fotos/" + editingUser.value.photo_url : avatarNoneUrl;
-    //console.log("Photo: " + photoFullUrl.value)
-    //console.log("Photo: " + editingUser.value.photo_url)
-    //console.log("Photo props: " + props.user.photo_file)
   },1000);
   loadUserCategories()
 })
-
-/*const save = () => {
-      errors.value = null
-      const formData = new FormData()
-      if(photo_file.value){
-          formData.append('photo_file', photo_file.value)
-      }
-      formData.append('name', editingUser.value.name)
-      formData.append('email', editingUser.value.email)
-      formData.append('password', editingUser.value.password)
-      formData.append('type', editingUser.value.type)
-
-      console.log('FormData:' + formData.values())
-
-      if (props.operationType == "insert"){
-        axios.post('users', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-          .then((response) => {
-            //user.value = response.data.data
-            //originalValueStr = dataAsString()
-            console.log(response.data)
-            console.log(editingUser.value.name)
-            toast.success('User ' +  editingUser.value.name + ' was created successfully.')
-            router.push({name: 'Users'})
-            //emit("save", editingUser.value);
-          })
-          .catch((error) => {
-            if (error.response.status == 422) {
-              toast.error('User was not created due to validation errors!')
-              //errors.value = error.response.data.errors
-            } else {
-              toast.error('User was not created due to unknown server error!')
-            }
-          })
-      }else{
-        console.log("Put method not implemented yet!")
-        axios.put('vehicles/' + props.id, user.value)
-        .then((response) => {
-          vehicle.value = response.data.data
-          originalValueStr = dataAsString()
-          toast.success('Vehicle #' + vehicle.value.id + ' was updated successfully.')
-          router.push({name: 'Vehicles'})
-        })
-        .catch((error) => {
-          if (error.response.status == 422) {
-              toast.error('Vehicle #' + props.id + ' was not updated due to validation errors!')
-              errors.value = error.response.data.errors
-            } else {
-              toast.error('Vehicle #' + props.id + ' was not updated due to unknown server error!')
-            }
-        })
-      }
-  }*/
 
 const save = () => {
   emit("save", editingUser.value, photo_file.value);
@@ -162,6 +104,7 @@ const userTitle = computed(() => {
             required
             v-model="editingUser.name"
           />
+          <field-error-message :errors="props.errors" fieldName="name"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
@@ -174,26 +117,29 @@ const userTitle = computed(() => {
             required
             v-model="editingUser.email"
           />
+          <field-error-message :errors="props.errors" fieldName="email"></field-error-message>
         </div>
 
         <div class="mb-3 px-1">
           <label for="inputCategory" class="form-label">Categoria: </label>
           <br>
-          <select id="inputCategory" v-model="editingUser.type_id">
+          <select id="inputCategory" class="form-select" v-model="editingUser.type_id">
               <option v-for="userCategory in userCategories" v-bind:value="userCategory.id">{{userCategory.name}} ({{userCategory.abv}})</option>
           </select>
+          <field-error-message :errors="props.errors" fieldName="category"></field-error-message>
         </div>
 
         <div class="mb-3 px-1" v-if="props.operationType == 'insert'">
-          <label for="inputEmail" class="form-label">Password</label>
+          <label for="inputPassword" class="form-label">Password</label>
           <input
             type="password"
             class="form-control"
-            id="inputEmail"
+            id="inputPassword"
             placeholder="Password"
             required
             v-model="editingUser.password"
           />
+          <field-error-message :errors="props.errors" fieldName="password"></field-error-message>
         </div>
 
         <!--div class="mb-3 px-1">
@@ -216,6 +162,7 @@ const userTitle = computed(() => {
             <img :src="photoFullUrl" class="w-100" />
           </div>
           <input type="file" ref="image" class="form-control" name="image" v-on:change="uploadImage()"/>
+          <field-error-message :errors="props.errors" fieldName="photo_url"></field-error-message>
         </div>
       </div>
     </div>

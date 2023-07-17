@@ -40,15 +40,10 @@ const clickMenuOption = () => {
 }
 
 const isBackendPage = () =>  {
-  //console.log("Route: ", router.currentRoute.value)
   const myArray = router.currentRoute.value.fullPath.split('/')
-  //console.log("Route path trim: ", myArray)
-  //console.log("Route path 1: ", myArray[1])
   if (myArray[1] == "backend"){
-    //console.log("True")
     return true;
   }
-  //console.log("False")
   return false;
 }
 
@@ -60,9 +55,6 @@ watch (
   () => router.currentRoute.value,
   () => {
     isBackendPage();
-  },
-  (buttonSidebarExpand) => {
-    console.log(buttonSidebarExpand.value)
   }
 )
 
@@ -191,9 +183,27 @@ socket.on('updateUser', (userUpdated) => {
           class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse navbar-collapse"
         >
           <div class="position-relative pt-3">
-            <ul class="nav flex-column bg-info text-white">
+            <ul class="nav flex-column bg-light text-dark">
               <li class="nav flex-column">
-                <h6 class="text-center">Secretariado</h6>
+                <h6 class="text-center divider">Administração</h6>
+              </li>
+            </ul>
+            <ul class="nav flex-column">
+              <li class="nav flex-column">
+                <router-link
+                  class="nav-link w-100 me-3 text-white"
+                  :class="{ active: $route.name === 'Users' }"
+                  :to="{ name: 'Users' }"
+                  @click="clickMenuOption"
+                >
+                  <i class="bi bi-list-check"></i>
+                  Utilizadores
+                </router-link>
+              </li>
+            </ul>
+            <ul class="nav flex-column bg-light text-dark">
+              <li class="nav flex-column">
+                <h6 class="text-center divider">Secretariado</h6>
               </li>
             </ul>
             <ul class="nav flex-column">
@@ -219,26 +229,10 @@ socket.on('updateUser', (userUpdated) => {
                   Concorrentes
                 </router-link>
               </li>
-              <li class="nav flex-column">
-                <router-link
-                  class="nav-link w-100 me-3 text-white"
-                  :class="{ active: $route.name === 'Users' }"
-                  :to="{ name: 'Users' }"
-                  @click="clickMenuOption"
-                >
-                  <i class="bi bi-list-check"></i>
-                  Utilizadores
-                </router-link>
-              </li>
             </ul>
-            <ul class="nav flex-column bg-success text-white">
+            <ul class="nav flex-column bg-light text-dark">
               <li class="nav flex-column">
-                <br>
-              </li>
-            </ul>
-            <ul class="nav flex-column bg-success text-white">
-              <li class="nav flex-column">
-                <h6 class="text-center">Events</h6>
+                <h6 class="text-center divider">Gestão de Provas</h6>
               </li>
             </ul>
             <ul class="nav flex-column">
@@ -301,5 +295,15 @@ socket.on('updateUser', (userUpdated) => {
 
 #sidebarMenu {
   overflow-y: auto;
+  padding-top: 51px;
+}
+
+.divider {
+  font-size: 10pt;
+}
+
+h6 {
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
 }
 </style>

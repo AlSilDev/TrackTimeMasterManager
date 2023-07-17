@@ -47,7 +47,11 @@ export const useUserStore = defineStore('user', () => {
         }
         catch(error) {
             clearUser()
-            return false
+            console.error('login', error)
+            if (error.response.status == 400)
+                return error.response.data.message
+            else
+                return error.response.data
         }
     }
     
@@ -78,13 +82,8 @@ export const useUserStore = defineStore('user', () => {
         }else{
             var blockValue = {"blocked": 1};
         }
-        console.log("User ID: " + user.id)
         try {
-            console.log("User ID: " + user.id)
             await axios.patch('users/' + user.id + '/blocked', blockValue)
-            console.log("BlockValue: ", blockValue.blocked)
-            //socket.emit('userBlockValueChange', user);
-            //user.blocked = (user.blocked == 0 ? 1 : 0)
             user.blocked = blockValue.blocked
             socket.emit('userBlockValueChange', user);
             return true;
@@ -97,13 +96,19 @@ export const useUserStore = defineStore('user', () => {
     }
 
             
-    async function changePassword (passwords) {
+    async function changePassword (userId, passwords) {
         errors.value = null
         if (passwords.password != passwords.password_confirmation) {
             return false
         }
         try {
-            await axios.patch('users/' +userId.value + '/password', passwords)
+            if (user.value.type_id == 1)
+            {
+                await axios.patch('users/' +userId + '/password/asAdmin', passwords)
+                return true;
+            }
+            
+            await axios.patch('users/' +userId + '/password', passwords)
             return true;
         } catch (error) {
             if (error.response.status == 422) {

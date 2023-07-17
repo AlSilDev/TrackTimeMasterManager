@@ -8,21 +8,23 @@ const router = useRouter()
 const axios = inject('axios')
 const toast = inject('toast')
 const credentials = ref({
-  username: '',
+  email: '',
   password: ''
 })
 const userStore = useUserStore()
 
 const emit = defineEmits(['login'])
 const login = async () => {
-  if (await userStore.login(credentials.value)) {
-    toast.success('O utilizador ' + credentials.value.username + ' iniciou sessão.')
+  var response = null
+  response = await userStore.login(credentials.value)
+  if (response === true) {
+    toast.success('O utilizador ' + userStore.user.name + ' iniciou sessão.')
     emit('login')
     router.push({name: 'Vehicles'})
   }
   else {
     credentials.value.password = ''
-    toast.error('Credenciais inválidas!')
+    toast.error(response)
   }
 }
 </script>
@@ -42,15 +44,15 @@ const login = async () => {
             <div class="mb-3">
               <label
                 style="color: white;"
-                for="inputUsername"
+                for="inputEmail"
                 class="form-label"
-              >Username</label>
+              >Email</label>
               <input
                 type="text"
                 class="form-control"
-                id="inputUsername"
+                id="inputEmail"
                 required
-                v-model="credentials.username"
+                v-model="credentials.email"
               >
             </div>
           </div>

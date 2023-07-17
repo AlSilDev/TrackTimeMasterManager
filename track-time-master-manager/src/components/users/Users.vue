@@ -40,13 +40,16 @@
           console.log(users.value)
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
         })
     }*/
 
   const editUser = (user) => {
-    console.log("Chegou " + user.id)
     router.push({ name: 'User', params: { id: user.id } })
+  }
+
+  const changePassword = (user) => {
+    router.push({ name: 'ChangePassword', params: { id: user.id } })
   }
 
   /*onMounted (() => {
@@ -74,6 +77,7 @@
   <user-table
     :showId="false"
     @edit="editUser"
+    @changePassword="changePassword"
     @changeBlockValue="changeBlockValue"
   ></user-table>
 </template>

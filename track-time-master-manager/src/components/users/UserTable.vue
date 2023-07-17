@@ -2,12 +2,13 @@
 import { inject, ref, onMounted, toDisplayString } from "vue";
 import { useUserStore } from "../../stores/user.js"
 import avatarNoneUrl from '@/assets/avatar-none.png'
-import { BIconSearch, BIconArrowUp, BIconArrowDown, BIconShieldSlash, BIconShieldSlashFill, BIconPencil } from 'bootstrap-icons-vue'
+import { BIconSearch, BIconArrowUp, BIconArrowDown, BIconShieldSlash, BIconShieldSlashFill, BIconPencil, BIconKey } from 'bootstrap-icons-vue'
 
 const serverBaseUrl = inject("serverBaseUrl");
 const userStore = useUserStore()
 const axios = inject('axios')
 const socket = inject("socket")
+const moment = inject('moment')
 
 const props = defineProps({
   showId: {
@@ -52,27 +53,20 @@ const editClick = (user) => {
   emit("edit", user);
 };
 
+const changePassword = (user) => {
+  emit("changePassword", user);
+};
+
 const changeBlockValue = (user) => {
   emit("changeBlockValue", user);
 };
 
 socket.on('userBlockValueChange', (user) => {
-    //console.log(`user ${user.id} blocked value updated`)
     const userUpdatedIdx = laravelData.value.data.findIndex((element) => {return element.id == user.id})
-    //userUpdatedIdx->indice do user atualizado
-    //console.log(`user updated(${laravelData.value.data[userUpdatedIdx].id}) => ${laravelData.value.data[userUpdatedIdx].name}, ${laravelData.value.data[userUpdatedIdx].blocked}`);
-    //console.log("old: ", laravelData.value.data[userUpdatedIdx].blocked)
     if (userUpdatedIdx != -1)
     {
       laravelData.value.data[userUpdatedIdx].blocked = user.blocked
     }
-    //console.log("new: ", user.blocked)
-    //console.log(`user updated(${laravelData.value.data[userUpdatedIdx].id}) => ${laravelData.value.data[userUpdatedIdx].name}, ${laravelData.value.data[userUpdatedIdx].blocked}`);
-    //console.log("users", laravelData.value.data)
-    //console.log("user 1 (blocked)", laravelData.value.data[user.id-1].blocked)
-    //console.log("user 1 (blocked)", user.blocked)
-    //laravelData.value.data[user.id-1] = user
-    //console.log("user 1 (blocked)", laravelData.value.data[user.id-1].blocked)
 })
 
 socket.on('updateUser', (userUpdated) => {
@@ -110,14 +104,12 @@ const search = ref()
 const getResultsFiltered = async (page = 1) => {
   if (attribute.value.value === "type")
     search.value.value = search.value.value.charAt(0)
-  console.log('endpoint: ', `users?page=${page}&column=${sortedColumn.value}&order=${order.value}&attribute=${attribute.value.value}&search=${search.value.value}`)
+    
   await axios.get(`users?page=${page}&column=${sortedColumn.value}&order=${order.value}&attribute=${attribute.value.value}&search=${search.value.value}`)
     .then((response) => {
       laravelData.value = response.data
       currentPage.value = page
       filteredPages.value = laravelData.value.links.slice(1, laravelData.value.last_page+1)
-      console.log(laravelData.value)
-      console.log(filteredPages.value)
     })
     .catch((error)=>{
       console.error(error)
@@ -134,6 +126,12 @@ const sortByColumn = (column) => {
     currentPage.value = 1
     getResultsFiltered()
 }
+
+  const formatDate = (value)=>{
+    if (value) {
+      return moment(String(value)).format("DD-MM-YYYY hh:mm:ss")
+    }
+  }
 
 const restartSearch = () => {
   search.value.value = ""
@@ -197,8 +195,10 @@ onMounted(async ()=>{
           <th class="align-middle" @click="sortByColumn('email')">Email <span v-if="sortedColumn == 'email'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
           <th class="align-middle" @click="sortByColumn('type_id')">Tipo <span v-if="sortedColumn == 'type'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
           <th class="align-middle" @click="sortByColumn('blocked')">Bloqueado<span v-if="sortedColumn == 'blocked'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
-          <th></th>
-          <th></th>
+          <th class="align-middle" @click="sortByColumn('created_at')">Data de Criação<span v-if="sortedColumn == 'created_at'"><BIconArrowUp v-if="order === 'asc' "/><BIconArrowDown v-else /></span></th>
+          <th v-if="showEditButton"></th>
+          <th v-if="showBlockButton"></th>
+          <th v-if="showBlockButton"></th>
         </tr>
       </thead>
       <tbody>
@@ -209,7 +209,8 @@ onMounted(async ()=>{
           <td class="align-middle">{{ user.name }}</td>
           <td class="align-middle">{{ user.email }}</td>
           <td class="align-middle">{{ getUserCategoryName(user.type_id) }}</td>
-          <td class="align-middle">{{ user.blocked == 0 ? "Não" : "Sim"}}</td>
+          <td class="align-middle">{{ user.blocked == 0 ? "Não" : "Sim" }}</td>
+          <td class="align-middle">{{ formatDate(user.created_at) }}</td>
           <td class="text-end align-middle" v-if="showEditButton">
             <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id)">
               <button
@@ -218,6 +219,17 @@ onMounted(async ()=>{
                 title="Editar"
               >
                 <BIconPencil/>
+              </button>
+            </div>
+          </td>
+          <td class="text-end align-middle" v-if="showBlockButton">
+            <div class="d-flex justify-content-end" v-if="canViewUserDetailAndBlock(user.id)">
+              <button
+                class="btn btn-xs btn-light"
+                @click="changePassword(user)"
+                title="Mudar Password"
+              >
+                <BIconKey/>
               </button>
             </div>
           </td>
@@ -258,7 +270,7 @@ onMounted(async ()=>{
     <ul class="pagination" style="cursor: pointer">
       <li v-if="currentPage != 1" class="page-item"><a class="page-link text-dark" @click="getResultsFiltered(currentPage-1)">&laquo;</a></li>
       <li v-for="(link, index) in filteredPages" class="page-item" :class="{active: currentPage == filteredPages[index].label}" @click="getResultsFiltered(index+1)"><a class="page-link text-dark">{{filteredPages[index].label}}</a></li>
-      <li v-if="currentPage != laravelData.last_page" class="page-item"><a class="page-link text-dark" @click="getResults(currentPage+1)">&raquo;</a></li>
+      <li v-if="currentPage != laravelData.last_page" class="page-item"><a class="page-link text-dark" @click="getResultsFiltered(currentPage+1)">&raquo;</a></li>
     </ul>
   </div>
 </template>

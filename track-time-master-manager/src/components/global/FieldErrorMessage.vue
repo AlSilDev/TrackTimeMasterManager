@@ -12,8 +12,8 @@
 </script>
 
 <template>
-    <div v-if="errors ? errors[fieldName] : false" class="validation-error">
-      {{ errors[fieldName][0] || '' }}
+    <div v-if="props.errors ? props.errors[fieldName] : false" class="validation-error">
+      {{ props.errors[fieldName][0] || '' }}
     </div>
 </template>
   

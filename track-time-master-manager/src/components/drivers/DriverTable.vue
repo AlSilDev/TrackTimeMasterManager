@@ -69,14 +69,11 @@ const canViewUserDetail = (userId) => {
 }
 
 const getResultsFiltered = async (page = 1) => {
-  console.log('endpoint: ', `drivers?page=${page}&column=${sortedColumn.value}&order=${order.value}&attribute=${attribute.value.value}&search=${search.value.value}`)
   await axios.get(`drivers?page=${page}&column=${sortedColumn.value}&order=${order.value}&attribute=${attribute.value.value}&search=${search.value.value}`)
     .then((response) => {
       laravelData.value = response.data
       currentPage.value = page
       filteredPages.value = laravelData.value.links.slice(1, laravelData.value.last_page+1)
-      console.log(laravelData.value)
-      console.log(filteredPages.value)
     })
     .catch((error)=>{
       console.error(error)

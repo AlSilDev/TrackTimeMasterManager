@@ -3,7 +3,7 @@ import { inject, ref, onMounted } from "vue";
 import { useUserStore } from "../../stores/user.js"
 import {useRouter} from 'vue-router'
 import avatarNoneUrl from '@/assets/avatar-none.png'
-import { BIconClock, BIconPencilSquare, BIconPlus, BIconSearch, BIconTable } from 'bootstrap-icons-vue'
+import { BIconClock, BIconLock, BIconPencilSquare, BIconPlus, BIconSearch, BIconTable } from 'bootstrap-icons-vue'
 import moment from 'moment'
 
 const serverBaseUrl = inject("serverBaseUrl");
@@ -47,7 +47,6 @@ const props = defineProps({
 const stages = ref({})
 
 const editStage = (stage) => {
-  console.log('stage cards id', stage.id)
   router.push({ name: 'Stage', params: { event_id: router.currentRoute.value.params['event_id'], stage_id: stage.id } })
 }
 
@@ -59,15 +58,24 @@ const isAdmin = () => {
 }
 
 const loadStages = async () => {
-  console.log('endpoint: ', `events/${router.currentRoute.value.params['event_id']}/stages`)
   await axios.get(`events/${router.currentRoute.value.params['event_id']}/stages`)
     .then((response) => {
       stages.value = response.data
-      console.log(stages.value)
     })
     .catch((error)=>{
       console.error(error)
     })
+}
+
+const endStage = (stage) => {
+  axios.put(`stages/${stage.id}/end`)
+  .then((response) => {
+    socket.emit('updateStage', response.data.data)
+    toast.success('Etapa terminada com sucesso')
+  })
+  .catch((error)=>{
+    console.error(error)
+  })
 }
 
 const deleteStage = async (stage) => {
@@ -84,16 +92,23 @@ const deleteStage = async (stage) => {
 const loadStageRuns = (stage) => {
   axios.get(`stages/${stage.id}/runs`)
   .then((response)=>{
-    console.log(`stage ${stage.id} response`, response.data)
     stage.runs = response.data
   })
-
-  console.log(`stage ${stage.id}`, stage)
 }
 
 const editStageRun = (stage, stage_run) => {
-  console.log('stage run edit', stage_run)
   router.push({ name: 'StageRun', params: { event_id: router.currentRoute.value.params['event_id'], stage_id: stage.id, stage_run_id: stage_run.id } })
+}
+
+const endStageRun = (run) => {
+  axios.put(`stageRuns/${run.id}/end`)
+  .then((response) => {
+    socket.emit('updateStageRun', response.data.data)
+    toast.success('Partida #' + run.run_num + ' terminada com sucesso')
+  })
+  .catch((error)=>{
+    console.error(error)
+  })
 }
 
 const newStageRun = (stage) => {
@@ -117,21 +132,40 @@ const stageClassifications = (stage) => {
 }
 
 socket.on('updateStageRun', (stageRunUpdated) => {
-  console.log('stages', stages.value)
   const stageRunToUpdate = stages.value[0].runs.find((element) => {
     return element.id == stageRunUpdated.id
   })
-  console.log('stageRunUpdated', stageRunUpdated)
-  console.log('stageRunToUpdate', stageRunToUpdate)
-  //stageRunToUpdate.date_start = (stageRunUpdated.date_start, 'YYYY-MM-DDThh:mm').format('YYYY-MM-DD hh:mm:ss');
+
   stageRunToUpdate.date_start = formatDate(stageRunUpdated.date_start);
   stageRunToUpdate.practice = stageRunUpdated.practice;
+})
+
+socket.on('updateStage', (stageUpdated) => {
+  const stageToUpdate = stages.value.find((element) => {
+    return element.id == stageUpdated.id
+  })
+  
+  stageToUpdate.date_start = formatDate(stageUpdated.date_start)
+  stageToUpdate.name = stageUpdated.name
+  stageToUpdate.ended = stageUpdated.ended
 })
 
 const formatDate = (value)=>{
   if (value) {
     return moment(String(value)).format('DD/MM/YYYY hh:mm:ss')
   }
+}
+
+const showEndRunHeader = (stage) => {
+  var sruns = Object.assign([], stage.runs)
+  for(var i = 0; i < sruns.length; i++)
+  {
+    if (!sruns[i].ended)
+    {
+      return true
+    }
+  }
+  return false
 }
 
 onMounted(async ()=>{
@@ -162,7 +196,7 @@ onMounted(async ()=>{
     </table>
   </div-->
 
-  <div class="accordion" :id="`stage${stage.id}`" v-for="stage in stages">
+  <div class="accordion" :id="`stage${stage.id}`" v-for="(stage, index) in stages">
         <div class="accordion-item">
             <h2 class="accordion-header">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="`#collapseStage${stage.id}`" aria-expanded="false" :aria-controls="`collapseStage${stage.id}`">
@@ -172,6 +206,7 @@ onMounted(async ()=>{
             <div :id="`collapseStage${stage.id}`" class="accordion-collapse collapse" :data-bs-parent="`#stage${stage.id}`">
                 <div class="accordion-body">
                   <p><button class="btn btn-success" @click="editStage(stage)" v-if="userStore.user.type_id == 1"><BIconPencilSquare></BIconPencilSquare> Editar Etapa</button></p>
+                  <p><button class="btn btn-warning" @click="endStage(stage)" v-if="userStore.user.type_id == 1 && !stage.ended"><BIconLock></BIconLock> Terminar Etapa</button></p>
                   <p><button class="btn btn-success" @click="newStageRun(stage)" v-if="userStore.user.type_id == 1"><BIconPlus></BIconPlus> Nova Partida</button></p>
                   <p><button class="btn btn-info" @click="stageClassifications(stage)"><BIconTable></BIconTable> Classificações</button></p>
                   <div class="table-responsive table-scroll">
@@ -185,6 +220,7 @@ onMounted(async ()=>{
                           <th class="align-middle" v-if="userStore.user.type_id == 1 || userStore.user.type_id == 5"></th>
                           <th class="align-middle" v-if="userStore.user.type_id == 1 || userStore.user.type_id == 6"></th>
                           <th class="align-middle"></th>
+                          <th class="align-middle" v-if="userStore.user.type_id == 1 && showEndRunHeader(stage)"></th>
                         </tr>
                       </thead>
                       <tbody>
@@ -196,6 +232,7 @@ onMounted(async ()=>{
                           <td class="align-middle" v-if="userStore.user.type_id == 1 || userStore.user.type_id == 5"><button class="btn btn-success" @click="raceStartTimes(stage, run)"><BIconClock></BIconClock> Partidas</button></td>
                           <td class="align-middle" v-if="userStore.user.type_id == 1 || userStore.user.type_id == 6"><button class="btn btn-info" @click="raceTimeControl(stage, run)"><BIconClock></BIconClock> Tomada</button></td>
                           <td class="align-middle"><button class="btn btn-info" @click="runClassifications(stage, run)"><BIconTable></BIconTable> Classificações</button></td>
+                          <td class="align-middle" v-if="userStore.user.type_id == 1 && !run.ended"><button class="btn btn-warning" @click="endStageRun(run)"><BIconLock></BIconLock></button></td>
                         </tr>
                       </tbody>
                     </table>

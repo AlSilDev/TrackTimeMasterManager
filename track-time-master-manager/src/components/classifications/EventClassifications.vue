@@ -16,9 +16,7 @@ const classifications = ref([])
 const loadClassifications = () => {
     axios.get(`events/${props.event_id}/classifications`)
     .then((response) => {
-        console.log(response.data)
         classifications.value = response.data.classifications
-        console.log('classifications', classifications.value)
     })
     .catch((error) => {
         console.error(error)
@@ -39,15 +37,8 @@ const timeInMinutes = (time_secs) => {
 }
 
 socket.on('updateEventFinalTimeForTimeRun', (eventClassificationUpdated) => {
-    //console.log('eventClassificationUpdated', eventClassificationUpdated)
-    //console.log('classifications', classifications)
-    //console.log('classifications.valuelength', classifications.value.length)
-    //console.log('classifications.value[0]', classifications.value[0][2].participant_id)
-
-
     for (let index = 0; index < classifications.value.length; index++) {
         var lengthInside = classifications.value[index].length;
-        //console.log('lengthInside', lengthInside)
         var elementToUpdatedIdx = -1;
         var elementSecond = -1;
         for (let indexAuxS = 0; indexAuxS < lengthInside; indexAuxS++) {
@@ -60,20 +51,13 @@ socket.on('updateEventFinalTimeForTimeRun', (eventClassificationUpdated) => {
             }
         }
 
-        //console.log('elementToUpdatedIdx', elementToUpdatedIdx)
-        //console.log('elementSecond', elementSecond)
         if(elementToUpdatedIdx != -1) break
     }
-    //console.log('elementToUpdatedIdx', elementToUpdatedIdx)
-    //console.log('elementSecond', elementSecond)
-
-    //console.log('BEFORE classifications.value[elementToUpdatedIdx]', classifications.value[elementSecond][elementToUpdatedIdx])
     classifications.value[elementSecond][elementToUpdatedIdx].penalty = eventClassificationUpdated.penalty
     classifications.value[elementSecond][elementToUpdatedIdx].time_mils = eventClassificationUpdated.time_mils
     classifications.value[elementSecond][elementToUpdatedIdx].points = String(eventClassificationUpdated.time_points)
     classifications.value[elementSecond][elementToUpdatedIdx].time_secs = eventClassificationUpdated.time_secs
 
-    //console.log('classifications.value[elementSecond]', classifications.value[elementSecond])
     classifications.value[elementSecond] = classifications.value[elementSecond].slice().sort( (a,b) => {
         return a.points - b.points
     })

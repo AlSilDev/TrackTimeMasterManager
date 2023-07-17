@@ -1,7 +1,7 @@
 <script setup>
-  import { ref, watch, computed, inject, onMounted } from 'vue'
+  import { ref, watch, computed, inject } from 'vue'
   import StageRunDetail from "./StageRunDetail.vue"
-  import { useRouter, onBeforeRouteLeave } from 'vue-router'  
+  import { useRouter } from 'vue-router'  
   
   const router = useRouter()  
   const axios = inject('axios')
@@ -39,7 +39,6 @@
   const stageRun = ref(newStageRun())
 
   const loadStageRun = (stage_run_id) => {    
-    console.log(stage_run_id)
       errors.value = null
       if (!stage_run_id || (stage_run_id < 0)) {
         stageRun.value = newStageRun()
@@ -47,23 +46,20 @@
         axios.get(`stageRuns/${stage_run_id}`)
           .then((response) => {
             stageRun.value = response.data.data
-            console.log('stageRun', stageRun.value)
           })
           .catch((error) => {
-            console.log(error)
           })
       }
   }
 
   const save = (editingStageRunValue) => {
     errors.value = null
-    console.log('stageRun save', editingStageRunValue)
     if (operation.value == "insert")
     {
-      axios.post(`stageRuns`, editingStageRunValue)
+      axios.post(`stages/${props.stage_id}/stageRuns`, editingStageRunValue)
         .then((response) => {
           stageRun.value = response.data.data
-          toast.success('Partida #' + stageRun.value.id + ' criada com sucesso!')
+          toast.success('Partida criada com sucesso!')
           //TODO
           router.push({name: 'Stages', params: { event_id: props.event_id }})
         })
@@ -78,23 +74,23 @@
     }
     else
     {
-      console.log("PUT Method", editingStageRunValue)
       axios.put(`stageRuns/${props.stage_run_id}`, editingStageRunValue)
       .then((response) => {
-        //console.log(response.data.data)
         stageRun.value = response.data.data
-        toast.success('Partida #' + stageRun.value.id + ' foi atualizada com sucesso!')
+        toast.success('Partida atualizada com sucesso!')
         //TODO
         socket.emit('updateStageRun', stageRun.value);
         router.push({name: 'Stages', params: { event_id: props.event_id }})
       })
       .catch((error) => {
-        console.error(error)
         if (error.response.status == 422) {
-            toast.error('Partida #' + props.stageRun + ' não atualizada devido a erros de validação!')
+            toast.error('Partida não atualizada devido a erros de validação!')
             errors.value = error.response.data.errors
-          } else {
-            toast.error('Partida #' + props.stageRun + ' não atualizada devido a erro desconhecido!')
+          } else if (error.response.status == 401) {
+            toast.error(error.response.data)
+          }
+          else {
+            toast.error('Partida não atualizada devido a erro desconhecido!')
           }
       })
     }
@@ -114,11 +110,6 @@
       },
     {immediate: true}  
     )
-
-  onMounted(()=>{
-    //console.log('params', router.currentRoute.value.params)
-  })
-
 </script>
 
 <template>
@@ -132,6 +123,7 @@
   <stage-run-detail
     :stageRun="stageRun"
     :operationType="operation"
+    :errors="errors"
     @save="save"
     @cancel="cancel"
   ></stage-run-detail>

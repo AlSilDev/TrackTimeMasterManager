@@ -46,7 +46,7 @@
             event.value = response.data.data
           })
           .catch((error) => {
-            console.log(error)
+            console.error(error)
           })
       }
   }
@@ -79,33 +79,32 @@
           axios.post('events', formData, { headers: { 'Content-Type': 'multipart/form-data' }})
             .then((response) => {
               event.value = response.data.data
-              toast.success('Evento ' + event.value.name + '(#' +event.value.id+ ') criado com sucesso!')
+              toast.success('Evento ' + event.value.name + ' criado com sucesso!')
               router.push({name: 'Events'})
             })
             .catch((error) => {
               if (error.response.status == 422) {
-                toast.error('Evento ' + event.value.name + '(#' +event.value.id+ ') não criado devido a erros de validação!')
+                toast.error('Evento ' + event.value.name + ' não criado devido a erros de validação!')
                 errors.value = error.response.data.errors
               } else {
-                toast.error('Evento ' + event.value.name + '(#' +event.value.id+ ') não criado devido a erro(s) desconhecido para o servidor!')
+                toast.error('Evento ' + event.value.name + ' não criado devido a erro(s) desconhecido para o servidor!')
               }
             })
         }else{
-          console.log("PUT Method")
           formData.append('_method', 'put')
           axios.post('events/' + props.id, formData, { headers: { 'Content-Type': 'multipart/form-data' }})
           .then((response) => {
             event.value = response.data.data
-            toast.success('Evento #' + event.value.id + ' atualizado com sucesso.')
+            toast.success('Evento ' + event.value.name + ' atualizado com sucesso.')
             socket.emit('updateEvent', event.value);
             router.push({name: 'Events'})
           })
           .catch((error) => {
             if (error.response.status == 422) {
-                toast.error('Evento #' + props.id + ' não atualizado devido a erros de validação.')
+                toast.error('Evento ' + event.value.name + ' não atualizado devido a erros de validação.')
                 errors.value = error.response.data.errors
               } else {
-                toast.error('Evento #' + props.id + ' não atualizado devido a erro desconhecido.')
+                toast.error('Evento ' + event.value.name + ' não atualizado devido a erro desconhecido.')
               }
           })
         }
@@ -143,6 +142,7 @@
   <event-detail
     :event="event"
     :operationType="operation"
+    :errors="errors"
     @save="save"
     @cancel="cancel"
   ></event-detail>
