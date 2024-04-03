@@ -1,4 +1,4 @@
 steps:
   # running docker-compose
-  - name: 'docker/compose:stable'
-    args: ['up', '-d']
+  - name: 'docker:latest'
+    args: ['compose', 'up', '-d']
