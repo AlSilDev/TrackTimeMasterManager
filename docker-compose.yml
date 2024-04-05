@@ -4,8 +4,12 @@ services:
     build: ./track-time-master-manager
     ports:
       - 8081:80
+    networks:
+      - ttmm_nw
   websockets:
     image: ttmm_ws
     build: ./websocket_server
-    ports:
-      - 8080:8080
+networks:
+  ttmm_nw:
+    name: ttmm_network
+    driver: bridge
