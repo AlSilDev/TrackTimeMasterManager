@@ -1,7 +1,12 @@
+name: ttmm
+version: '1.0'
+
 services:
   vue:
     image: ttmm_vue
     build: ./track-time-master-manager
+    volumes:
+      - ./nginx/ttmm.conf:/etc/nginx/conf.d/ttmm.conf
     ports:
       - 8081:80
     networks:
@@ -9,7 +14,12 @@ services:
   websockets:
     image: ttmm_ws
     build: ./websocket_server
+    ports:
+      - 8080:8080
+    networks:
+      - ttmm_nw
 networks:
   ttmm_nw:
     name: ttmm_network
     driver: bridge
+    external: true
