@@ -1,0 +1,38 @@
+name: ttmm
+version: '1.0'
+
+services:
+  vue:
+    image: ttmm_vue
+    build: ./track-time-master-manager
+    environment:
+      - HTTP_PROTOCOL=https
+      - DOMAIN=
+    volumes:
+      - ./nginx/ttmm-${HTTP_PROTOCOL}.conf:/etc/nginx/conf.d/ttmm.conf
+      - ./certbot/conf/live/${DOMAIN}/:/etc/nginx/ssl/live/${DOMAIN}/
+      - ./certbot/www/:/var/www/certbot/:ro
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - ttmm_nw
+  websockets:
+    image: ttmm_ws
+    build: ./websocket_server
+    ports:
+      - 8080:8080
+    networks:
+      - ttmm_nw
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
+    networks:
+      - ttmm_nw
+networks:
+  ttmm_nw:
+    name: ttmm_network
+    driver: bridge
+    external: true
