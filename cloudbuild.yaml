@@ -1,4 +1,0 @@
-steps:
-  # running docker-compose
-  - name: 'docker:latest'
-    args: ['compose', 'up', '-d']
