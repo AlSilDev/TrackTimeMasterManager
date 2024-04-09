@@ -5,9 +5,16 @@ In this repository, you'll find two of the three components that are essential t
 
 ## Quick Start - Docker
 
-To run this project with only a few commands, you'll need Docker installed in your machine.
-
 Start by cloning this repository into a directory of your choice.
+
+Before you attempt to run the project in containers, you'll need to create a file named `.env` in the track-time-master-manager directory with the following content:
+
+```
+VITE_API_DOMAIN=http://localhost:8000
+VITE_WS_CONNECTION=http://localhost:8081
+```
+
+To run this project with only a few commands, you'll need `Docker` installed in your machine. Refer to the [official documentation](https://docs.docker.com/engine/) for instructions on how to install and set it up.
 
 Before you build and run the containers, and if you haven't already, you'll need to create a network:
 
