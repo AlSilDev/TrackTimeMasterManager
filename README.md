@@ -39,4 +39,4 @@ docker compose up -d
 If you haven't already, check out the [Track Time Master Manager API](https://github.com/AlSilDev/TrackTimeMasterManagerAPI) project, where you'll find everything to get the API up and running!
 
 ## Current status of development
-The project is currently **not** in development. Some features are still lacking. If you are interested in contributing to this project, feel free to fork it or get in touch with us!
+The project is currently in development. Some features are still lacking. If you are interested in contributing to this project, feel free to fork it or get in touch with us!
